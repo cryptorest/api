@@ -60,20 +60,20 @@ func initHandlers() {
 
 	// Online Hashes
 	mux2.HandleFunc(hashes.SHA1Path, hashes.SHA1)
-	for key := range hashes.SHA2_Bits {
+	for key := range hashes.SHA2Bits {
 		mux2.HandleFunc(path.Join(hashes.SHA2Path, key), hashes.SHA2)
 	}
-	for key := range hashes.SHA3_Bits {
+	for key := range hashes.SHA3Bits {
 		mux2.HandleFunc(path.Join(hashes.SHA3Path, key), hashes.SHA3)
 	}
-	for i := range hashes.BLAKE2s_Bits {
-		mux2.HandleFunc(path.Join(hashes.BLAKE2sPath, hashes.BLAKE2s_Bits[i]), hashes.BLAKE2s)
+	for i := range hashes.BLAKE2sBits {
+		mux2.HandleFunc(path.Join(hashes.BLAKE2sPath, hashes.BLAKE2sBits[i]), hashes.BLAKE2s)
 	}
-	for i := range hashes.BLAKE2b_Bits {
-		mux2.HandleFunc(path.Join(hashes.BLAKE2bPath, hashes.BLAKE2b_Bits[i]), hashes.BLAKE2b)
+	for i := range hashes.BLAKE2bBits {
+		mux2.HandleFunc(path.Join(hashes.BLAKE2bPath, hashes.BLAKE2bBits[i]), hashes.BLAKE2b)
 	}
-	for i := range hashes.Base64_Actions {
-		mux2.HandleFunc(path.Join(hashes.Base64Path, hashes.Base64_Actions[i]), hashes.Base64)
+	for i := range hashes.Base64Actions {
+		mux2.HandleFunc(path.Join(hashes.Base64Path, hashes.Base64Actions[i]), hashes.Base64)
 	}
 	mux2.HandleFunc(hashes.RIPEMD160Path, hashes.RIPEMD160)
 }

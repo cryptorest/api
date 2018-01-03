@@ -31,7 +31,7 @@ func WriteHash(w http.ResponseWriter, b []byte) {
 	fmt.Fprintf(w, "%x", b)
 }
 
-func WriteString(w http.ResponseWriter, b []byte) {
+func WriteBytes(w http.ResponseWriter, b []byte) {
 	fmt.Fprintf(w, "%s", b)
 }
 

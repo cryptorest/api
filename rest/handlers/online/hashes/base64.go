@@ -10,7 +10,7 @@ import (
 
 const Base64Path string = online.HashesPath + "/base64"
 
-var Base64_Actions = [2]string{
+var Base64Actions = [2]string{
 	"encode",
 	"decode",
 }
@@ -23,12 +23,12 @@ func Base64(w http.ResponseWriter, r *http.Request) {
 	action := handlers.Path2Action(r)
 
 	switch{
-	case action == Base64_Actions[0]:
+	case action == Base64Actions[0]:
 		data := []byte("data")
 		str := base64.StdEncoding.EncodeToString(data)
 
-		handlers.WriteString(w, []byte(str))
-	case action == Base64_Actions[1]:
+		handlers.WriteBytes(w, []byte(str))
+	case action == Base64Actions[1]:
 		str := "ZGF0YQ=="
 		data, err := base64.StdEncoding.DecodeString(str)
 
@@ -38,6 +38,6 @@ func Base64(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		handlers.WriteString(w, data)
+		handlers.WriteBytes(w, data)
 	}
 }

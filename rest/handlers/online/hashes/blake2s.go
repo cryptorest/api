@@ -11,7 +11,7 @@ import (
 
 const BLAKE2sPath string = online.HashesPath + "/blake2s"
 
-var BLAKE2s_Bits = [1]string{
+var BLAKE2sBits = [1]string{
 	"256",
 }
 
@@ -24,7 +24,7 @@ func BLAKE2s(w http.ResponseWriter, r *http.Request) {
 	data := []byte("data")
 
 	switch{
-	case bit == BLAKE2s_Bits[0]:
+	case bit == BLAKE2sBits[0]:
 		fmt.Fprintf(w, "%x", blake2s.Sum256(data))
 	}
 }
