@@ -2,12 +2,14 @@ package hashes
 
 import (
 	"net/http"
-	"fmt"
 	"hash"
 	"golang.org/x/crypto/sha3"
 
 	"rest/handlers"
+	"rest/handlers/online"
 )
+
+const SHA3Path string = online.HashesPath + "/sha3"
 
 var SHA3_Bits = map[string]func() hash.Hash{
 	"256": sha3.New256,
@@ -21,9 +23,9 @@ func SHA3(w http.ResponseWriter, r *http.Request) {
 	}
 
 	bit := handlers.Path2Bit(r)
-	data := ""
+	data := []byte("data")
 	b := SHA3_Bits[bit]()
 
-	b.Write([]byte(data))
-	fmt.Fprintf(w, "%x", b.Sum(nil))
+	b.Write(data)
+	handlers.WriteHash(w, b.Sum(nil))
 }

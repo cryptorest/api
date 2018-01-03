@@ -5,6 +5,8 @@ import (
 	"io"
 )
 
+const HomePath string = "/"
+
 func Home(w http.ResponseWriter, r *http.Request) {
 	if ErrorMethodGet(w, r) {
 		return

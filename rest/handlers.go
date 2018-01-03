@@ -1,12 +1,13 @@
 package main
 
 import (
+	"path"
 	"strings"
 	"flag"
 	"net/http"
 
 	"rest/handlers"
-	"rest/handlers/hashes"
+	"rest/handlers/online/hashes"
 )
 
 var (
@@ -14,7 +15,7 @@ var (
 	httpAddr  = flag.String("http_addr", "", "Plain HTTP address to listen on ('host:port', or ':port'). Empty means no HTTP.")
 
 	hostHTTP  = flag.String("http_host", "", "Optional host or host:port to use for http:// links to this service. By default, this is implied from -http_addr.")
-	hostHTTPS = flag.String("https_host", "", "Optional host or host:port to use for http:// links to this service. By default, this is implied from -https_addr.")
+	hostHTTPS = flag.String("https_host", "", "Optional host or host:port to use for https:// links to this service. By default, this is implied from -https_addr.")
 )
 
 func httpsHost() string {
@@ -44,10 +45,10 @@ func httpHost() string {
 func initHandlers() {
 	mux2 := http.NewServeMux()
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(handlers.HomePath, func(w http.ResponseWriter, r *http.Request) {
 		switch {
 		case r.TLS == nil:
-			http.Redirect(w, r, "https://"+httpsHost()+"/", http.StatusFound)
+			http.Redirect(w, r, "https://"+httpsHost()+handlers.HomePath, http.StatusFound)
 
 			return
 		}
@@ -55,20 +56,24 @@ func initHandlers() {
 		mux2.ServeHTTP(w, r)
 	})
 
-	mux2.HandleFunc("/", handlers.Home)
-// Online Hashes
-	mux2.HandleFunc("/online/hashes/sha/1", hashes.SHA)
-	mux2.HandleFunc("/online/hashes/sha/256", hashes.SHA)
-	mux2.HandleFunc("/online/hashes/sha/384", hashes.SHA)
-	mux2.HandleFunc("/online/hashes/sha/512", hashes.SHA)
-	mux2.HandleFunc("/online/hashes/sha3/256", hashes.SHA3)
-	mux2.HandleFunc("/online/hashes/sha3/384", hashes.SHA3)
-	mux2.HandleFunc("/online/hashes/sha3/512", hashes.SHA3)
-	mux2.HandleFunc("/online/hashes/ripemd160", hashes.RIPEMD160)
-	mux2.HandleFunc("/online/hashes/blake2s/256", hashes.BLAKE2s)
-	mux2.HandleFunc("/online/hashes/blake2b/256", hashes.BLAKE2b)
-	mux2.HandleFunc("/online/hashes/blake2b/384", hashes.BLAKE2b)
-	mux2.HandleFunc("/online/hashes/blake2b/512", hashes.BLAKE2b)
-	mux2.HandleFunc("/online/hashes/base64/encode", hashes.Base64)
-	mux2.HandleFunc("/online/hashes/base64/decode", hashes.Base64)
+	mux2.HandleFunc(handlers.HomePath, handlers.Home)
+
+	// Online Hashes
+	mux2.HandleFunc(hashes.SHA1Path, hashes.SHA1)
+	for key := range hashes.SHA2_Bits {
+		mux2.HandleFunc(path.Join(hashes.SHA2Path, key), hashes.SHA2)
+	}
+	for key := range hashes.SHA3_Bits {
+		mux2.HandleFunc(path.Join(hashes.SHA3Path, key), hashes.SHA3)
+	}
+	for i := range hashes.BLAKE2s_Bits {
+		mux2.HandleFunc(path.Join(hashes.BLAKE2sPath, hashes.BLAKE2s_Bits[i]), hashes.BLAKE2s)
+	}
+	for i := range hashes.BLAKE2b_Bits {
+		mux2.HandleFunc(path.Join(hashes.BLAKE2bPath, hashes.BLAKE2b_Bits[i]), hashes.BLAKE2b)
+	}
+	for i := range hashes.Base64_Actions {
+		mux2.HandleFunc(path.Join(hashes.Base64Path, hashes.Base64_Actions[i]), hashes.Base64)
+	}
+	mux2.HandleFunc(hashes.RIPEMD160Path, hashes.RIPEMD160)
 }
