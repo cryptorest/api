@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-func Path2Bit (r *http.Request) int {
+func Path2Bits (r *http.Request) int {
 	str_bit := filepath.Base(r.URL.Path)
 
 	i, err := strconv.Atoi(str_bit)
@@ -16,6 +16,10 @@ func Path2Bit (r *http.Request) int {
 	}
 
 	return 0
+}
+
+func Path2Bit (r *http.Request) string {
+	return filepath.Base(r.URL.Path)
 }
 
 func Path2Action (r *http.Request) string {
