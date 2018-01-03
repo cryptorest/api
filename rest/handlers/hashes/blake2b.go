@@ -9,7 +9,7 @@ import (
 )
 
 func BLAKE2b(w http.ResponseWriter, r *http.Request) {
-	if handlers.ErrorMethodPOST(w, r) {
+	if handlers.ErrorMethodPost(w, r) {
 		return
 	}
 

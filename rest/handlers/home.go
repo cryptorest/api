@@ -6,7 +6,7 @@ import (
 )
 
 func Home(w http.ResponseWriter, r *http.Request) {
-	if ErrorMethodGET(w, r) {
+	if ErrorMethodGet(w, r) {
 		return
 	}
 

@@ -4,7 +4,7 @@ import (
 	"net/http"
 )
 
-func ErrorMethodGET(w http.ResponseWriter, r *http.Request) bool {
+func ErrorMethodGet(w http.ResponseWriter, r *http.Request) bool {
 	if r.Method != http.MethodGet {
 		http.Error(w,
 			"ERROR: Method GET required",
@@ -16,7 +16,7 @@ func ErrorMethodGET(w http.ResponseWriter, r *http.Request) bool {
 	return false
 }
 
-func ErrorMethodPOST(w http.ResponseWriter, r *http.Request) bool {
+func ErrorMethodPost(w http.ResponseWriter, r *http.Request) bool {
 	if r.Method != http.MethodPost {
 		http.Error(w,
 			"ERROR: Method POST required",
@@ -28,7 +28,7 @@ func ErrorMethodPOST(w http.ResponseWriter, r *http.Request) bool {
 	return false
 }
 
-func ErrorMethodPATCH(w http.ResponseWriter, r *http.Request) bool {
+func ErrorMethodPatch(w http.ResponseWriter, r *http.Request) bool {
 	if r.Method != http.MethodPatch {
 		http.Error(w,
 			"ERROR: Method PATCH required",
@@ -40,7 +40,7 @@ func ErrorMethodPATCH(w http.ResponseWriter, r *http.Request) bool {
 	return false
 }
 
-func ErrorMethodDELETE(w http.ResponseWriter, r *http.Request) bool {
+func ErrorMethodDelete(w http.ResponseWriter, r *http.Request) bool {
 	if r.Method != http.MethodDelete {
 		http.Error(w,
 			"ERROR: Method DELETE required",
