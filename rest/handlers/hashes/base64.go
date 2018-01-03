@@ -2,8 +2,8 @@ package hashes
 
 import (
 	"net/http"
-	"io"
 	"fmt"
+	"encoding/base64"
 
 	"rest/handlers"
 )
@@ -15,6 +15,21 @@ func Base64(w http.ResponseWriter, r *http.Request) {
 
 	action := handlers.Path2Action(r)
 
-	io.WriteString(w, `Base64`)
-	fmt.Fprintf(w, ": %s", action)
+	switch{
+	case action == "encode":
+		data := []byte("data")
+		str := base64.StdEncoding.EncodeToString(data)
+
+		fmt.Fprintf(w, "%s", str)
+	case action == "decode":
+		str := "ZGF0YQ=="
+		data, err := base64.StdEncoding.DecodeString(str)
+
+		if err != nil {
+			fmt.Println("error:", err)
+			return
+		}
+
+		fmt.Fprintf(w, "%s", data)
+	}
 }
