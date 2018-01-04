@@ -85,4 +85,5 @@ func initHandlers() {
 		mux2.HandleFunc(path.Join(hashes.KeccakPath, key), hashes.KECCAK)
 	}
 	mux2.HandleFunc(hashes.Ripemd160Path, hashes.RIPEMD160)
+	mux2.HandleFunc(hashes.Md4Path, hashes.MD4)
 }
