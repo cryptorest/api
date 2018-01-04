@@ -43,7 +43,7 @@ func httpHost() string {
 }
 
 func initHandlers() {
-	mux2 := http.NewServeMux()
+	mux := http.NewServeMux()
 
 	http.HandleFunc(handlers.HomePath, func(w http.ResponseWriter, r *http.Request) {
 		switch {
@@ -53,50 +53,51 @@ func initHandlers() {
 			return
 		}
 
-		mux2.ServeHTTP(w, r)
+		mux.ServeHTTP(w, r)
 	})
 
-	mux2.HandleFunc(handlers.HomePath, handlers.Home)
+	mux.HandleFunc(handlers.HomePath, handlers.Home)
 
 	// Online Hashes
-	mux2.HandleFunc(hashes.Sha1Path, hashes.SHA1)
+	mux.HandleFunc(hashes.Sha1Path, hashes.SHA1)
 	for key := range hashes.Sha2Bits {
-		mux2.HandleFunc(path.Join(hashes.Sha2Path, key), hashes.SHA2)
+		mux.HandleFunc(path.Join(hashes.Sha2Path, key), hashes.SHA2)
 	}
 	for key := range hashes.Sha3Bits {
-		mux2.HandleFunc(path.Join(hashes.Sha3Path, key), hashes.SHA3)
+		mux.HandleFunc(path.Join(hashes.Sha3Path, key), hashes.SHA3)
 	}
 	for i := range hashes.Blake2sBits {
-		mux2.HandleFunc(path.Join(hashes.Blake2sPath, hashes.Blake2sBits[i]), hashes.BLAKE2s)
+		mux.HandleFunc(path.Join(hashes.Blake2sPath, hashes.Blake2sBits[i]), hashes.BLAKE2s)
 	}
 	for i := range hashes.Blake2bBits {
-		mux2.HandleFunc(path.Join(hashes.Blake2bPath, hashes.Blake2bBits[i]), hashes.BLAKE2b)
+		mux.HandleFunc(path.Join(hashes.Blake2bPath, hashes.Blake2bBits[i]), hashes.BLAKE2b)
 	}
 	for i := range hashes.ShakeBits {
-		mux2.HandleFunc(path.Join(hashes.ShakePath, hashes.ShakeBits[i]), hashes.SHAKE)
+		mux.HandleFunc(path.Join(hashes.ShakePath, hashes.ShakeBits[i]), hashes.SHAKE)
 	}
 	for i := range hashes.Base32Actions {
-		mux2.HandleFunc(path.Join(hashes.Base32Path, hashes.Base64Actions[i]), hashes.Base32)
+		mux.HandleFunc(path.Join(hashes.Base32Path, hashes.Base64Actions[i]), hashes.Base32)
 	}
 	for i := range hashes.Base64Actions {
-		mux2.HandleFunc(path.Join(hashes.Base64Path, hashes.Base64Actions[i]), hashes.Base64)
+		mux.HandleFunc(path.Join(hashes.Base64Path, hashes.Base64Actions[i]), hashes.Base64)
 	}
 	for key := range hashes.KeccakBits {
-		mux2.HandleFunc(path.Join(hashes.KeccakPath, key), hashes.KECCAK)
+		mux.HandleFunc(path.Join(hashes.KeccakPath, key), hashes.KECCAK)
 	}
 	for i := range hashes.Crc8Types {
-		mux2.HandleFunc(path.Join(hashes.Crc8Path, hashes.Crc8Types[i]), hashes.CRC8)
+		mux.HandleFunc(path.Join(hashes.Crc8Path, hashes.Crc8Types[i]), hashes.CRC8)
 	}
 	for i := range hashes.Crc16Types {
-		mux2.HandleFunc(path.Join(hashes.Crc16Path, hashes.Crc16Types[i]), hashes.CRC16)
+		mux.HandleFunc(path.Join(hashes.Crc16Path, hashes.Crc16Types[i]), hashes.CRC16)
 	}
 	for i := range hashes.Crc32Types {
-		mux2.HandleFunc(path.Join(hashes.Crc32Path, hashes.Crc32Types[i]), hashes.CRC32)
+		mux.HandleFunc(path.Join(hashes.Crc32Path, hashes.Crc32Types[i]), hashes.CRC32)
 	}
 	for i := range hashes.Crc64Types {
-		mux2.HandleFunc(path.Join(hashes.Crc64Path, hashes.Crc64Types[i]), hashes.CRC64)
+		mux.HandleFunc(path.Join(hashes.Crc64Path, hashes.Crc64Types[i]), hashes.CRC64)
 	}
-	mux2.HandleFunc(hashes.Ripemd160Path, hashes.RIPEMD160)
-	mux2.HandleFunc(hashes.Md4Path, hashes.MD4)
-	mux2.HandleFunc(hashes.Md5Path, hashes.MD5)
+	mux.HandleFunc(hashes.Ripemd160Path, hashes.RIPEMD160)
+	mux.HandleFunc(hashes.Md2Path, hashes.MD2)
+	mux.HandleFunc(hashes.Md4Path, hashes.MD4)
+	mux.HandleFunc(hashes.Md5Path, hashes.MD5)
 }

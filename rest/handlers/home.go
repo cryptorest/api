@@ -8,15 +8,13 @@ import (
 const HomePath string = "/"
 
 func Home(w http.ResponseWriter, r *http.Request) {
-	if ErrorMethodGet(w, r) {
+	if ErrorPath(w, r) {
 		return
 	}
 
-//	if r.URL.Path != "/" {
-//		http.NotFound(w, r)
-
-		//return
-//	}
+	if ErrorMethodGet(w, r) {
+		return
+	}
 
 	w.Header().Set("Content-Type", "text/plain")
 	r.Header.Write(w)
