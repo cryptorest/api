@@ -11,10 +11,8 @@ import (
 )
 
 var (
-	httpsAddr = flag.String("https_addr", "localhost:64430", "TLS address to listen on ('host:port' or ':port'). Required.")
-	httpAddr  = flag.String("http_addr", "", "Plain HTTP address to listen on ('host:port', or ':port'). Empty means no HTTP.")
+	httpsAddr = flag.String("https_addr", uriBuild(DefaultHost, DefaultPort), "TLS address to listen on ('host:port'). Required.")
 
-	hostHTTP  = flag.String("http_host", "", "Optional host or host:port to use for http:// links to this service. By default, this is implied from -http_addr.")
 	hostHTTPS = flag.String("https_host", "", "Optional host or host:port to use for https:// links to this service. By default, this is implied from -https_addr.")
 )
 
@@ -24,41 +22,14 @@ func httpsHost() string {
 	}
 
 	if v := *httpsAddr; strings.HasPrefix(v, ":") {
-		return "localhost" + v
+		return DefaultHost + v
 	} else {
 		return v
 	}
 }
 
-func httpHost() string {
-	if *hostHTTP != "" {
-		return *hostHTTP
-	}
-
-	if v := *httpAddr; strings.HasPrefix(v, ":") {
-		return "localhost" + v
-	} else {
-		return v
-	}
-}
-
-func initHandlers() {
-	mux := http.NewServeMux()
-
-	http.HandleFunc(handlers.HomePath, func(w http.ResponseWriter, r *http.Request) {
-		switch {
-		case r.TLS == nil:
-			http.Redirect(w, r, "https://"+httpsHost()+handlers.HomePath, http.StatusFound)
-
-			return
-		}
-
-		mux.ServeHTTP(w, r)
-	})
-
-	mux.HandleFunc(handlers.HomePath, handlers.Home)
-
-	// Online Hashes
+// Online Hashes
+func initOnlineHashesHandlers(mux *http.ServeMux) {
 	mux.HandleFunc(hashes.Sha1Path, hashes.SHA1)
 	for key := range hashes.Sha2Bits {
 		mux.HandleFunc(path.Join(hashes.Sha2Path, key), hashes.SHA2)
@@ -100,4 +71,23 @@ func initHandlers() {
 	mux.HandleFunc(hashes.Md2Path, hashes.MD2)
 	mux.HandleFunc(hashes.Md4Path, hashes.MD4)
 	mux.HandleFunc(hashes.Md5Path, hashes.MD5)
+}
+
+func initHandlers() {
+	mux := http.NewServeMux()
+
+	http.HandleFunc(handlers.HomePath, func(w http.ResponseWriter, r *http.Request) {
+		switch {
+		case r.TLS == nil:
+			http.Redirect(w, r, URISchema+httpsHost()+handlers.HomePath, http.StatusFound)
+
+			return
+		}
+
+		mux.ServeHTTP(w, r)
+	})
+
+	mux.HandleFunc(handlers.HomePath, handlers.Home)
+
+	initOnlineHashesHandlers(mux)
 }

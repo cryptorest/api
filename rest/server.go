@@ -10,10 +10,24 @@ import (
 	"golang.org/x/net/http2"
 )
 
+const (
+	URISchema string = "https://"
+	DefaultHost string = "localhost"
+	DefaultPort int = 64443
+)
+
+func uriBuild(host string, port int) string {
+	return fmt.Sprintf("%s:%d", host, port)
+}
+
+func uriFullBuild(host string, port int) string {
+	return fmt.Sprintf("%s%s:%d", URISchema, host, port)
+}
+
 func main() {
 	var srv http.Server
 //	http2.VerboseLogs = true
-	srv.Addr = ":64443"
+	srv.Addr = uriBuild(DefaultHost, DefaultPort)
 	flag.BoolVar(&http2.VerboseLogs, "verbose", false, "Verbose HTTP/2 debugging.")
 	flag.Parse()
 
