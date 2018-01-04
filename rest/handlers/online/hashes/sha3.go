@@ -12,6 +12,7 @@ import (
 const SHA3Path string = online.HashesPath + "/sha3"
 
 var SHA3Bits = map[string]func() hash.Hash{
+	"224": sha3.New224,
 	"256": sha3.New256,
 	"384": sha3.New384,
 	"512": sha3.New512,
