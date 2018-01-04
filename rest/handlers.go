@@ -75,6 +75,9 @@ func initHandlers() {
 	for i := range hashes.ShakeBits {
 		mux2.HandleFunc(path.Join(hashes.ShakePath, hashes.ShakeBits[i]), hashes.SHAKE)
 	}
+	for i := range hashes.Base32Actions {
+		mux2.HandleFunc(path.Join(hashes.Base32Path, hashes.Base64Actions[i]), hashes.Base32)
+	}
 	for i := range hashes.Base64Actions {
 		mux2.HandleFunc(path.Join(hashes.Base64Path, hashes.Base64Actions[i]), hashes.Base64)
 	}
