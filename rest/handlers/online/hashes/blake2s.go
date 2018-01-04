@@ -23,8 +23,8 @@ func BLAKE2s(w http.ResponseWriter, r *http.Request) {
 	bit := handlers.Path2Bit(r)
 	data := []byte("data")
 
-	switch{
-	case bit == Blake2sBits[0]:
+	switch bit {
+	case Blake2sBits[0]:
 		fmt.Fprintf(w, "%x", blake2s.Sum256(data))
 	}
 }

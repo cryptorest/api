@@ -84,6 +84,18 @@ func initHandlers() {
 	for key := range hashes.KeccakBits {
 		mux2.HandleFunc(path.Join(hashes.KeccakPath, key), hashes.KECCAK)
 	}
+	for i := range hashes.Crc8Types {
+		mux2.HandleFunc(path.Join(hashes.Crc8Path, hashes.Crc8Types[i]), hashes.CRC8)
+	}
+	for i := range hashes.Crc16Types {
+		mux2.HandleFunc(path.Join(hashes.Crc16Path, hashes.Crc16Types[i]), hashes.CRC16)
+	}
+	for i := range hashes.Crc32Types {
+		mux2.HandleFunc(path.Join(hashes.Crc32Path, hashes.Crc32Types[i]), hashes.CRC32)
+	}
+	for i := range hashes.Crc64Types {
+		mux2.HandleFunc(path.Join(hashes.Crc64Path, hashes.Crc64Types[i]), hashes.CRC64)
+	}
 	mux2.HandleFunc(hashes.Ripemd160Path, hashes.RIPEMD160)
 	mux2.HandleFunc(hashes.Md4Path, hashes.MD4)
 	mux2.HandleFunc(hashes.Md5Path, hashes.MD5)

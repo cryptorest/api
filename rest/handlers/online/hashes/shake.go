@@ -27,13 +27,13 @@ func SHAKE(w http.ResponseWriter, r *http.Request) {
 	bit := handlers.Path2Bit(r)
 	data := []byte("data")
 
-	switch {
-	case bit == ShakeBits[0]:
+	switch bit {
+	case ShakeBits[0]:
 		hash := make([]byte, minBits / 8)
 		sha3.ShakeSum128(hash, data)
 
 		handlers.WriteString(w, hex.EncodeToString(hash))
-	case bit == ShakeBits[1]:
+	case ShakeBits[1]:
 		hash := make([]byte, minBits / 4)
 		sha3.ShakeSum256(hash, data)
 

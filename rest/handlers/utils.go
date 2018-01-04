@@ -27,6 +27,10 @@ func Path2Action(r *http.Request) string {
 	return filepath.Base(r.URL.Path)
 }
 
+func Path2Type(r *http.Request) string {
+	return filepath.Base(r.URL.Path)
+}
+
 func WriteHash(w http.ResponseWriter, b []byte) {
 	fmt.Fprintf(w, "%x", b)
 }
@@ -37,6 +41,18 @@ func WriteBytes(w http.ResponseWriter, b []byte) {
 
 func WriteString(w http.ResponseWriter, s string) {
 	fmt.Fprintf(w, "%s", s)
+}
+
+func WriteUInt8(w http.ResponseWriter, i uint8) {
+	fmt.Fprintf(w, "%x", i)
+}
+
+func WriteUInt32(w http.ResponseWriter, i uint32) {
+	fmt.Fprintf(w, "%x", i)
+}
+
+func WriteUInt64(w http.ResponseWriter, i uint64) {
+	fmt.Fprintf(w, "%x", i)
 }
 
 func WriteError(w http.ResponseWriter, e error) {

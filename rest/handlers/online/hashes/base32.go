@@ -22,13 +22,13 @@ func Base32(w http.ResponseWriter, r *http.Request) {
 
 	action := handlers.Path2Action(r)
 
-	switch{
-	case action == Base32Actions[0]:
+	switch action {
+	case Base32Actions[0]:
 		data := []byte("data")
 		str := base32.StdEncoding.EncodeToString(data)
 
 		handlers.WriteString(w, str)
-	case action == Base32Actions[1]:
+	case Base32Actions[1]:
 		str := "MRQXIYI="
 		data, err := base32.StdEncoding.DecodeString(str)
 

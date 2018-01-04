@@ -3,7 +3,7 @@ package hashes
 import (
 	"hash"
 	"net/http"
-	"github.com/steakknife/keccak"
+	"github.com/cryptorest/keccakc"
 
 	"rest/handlers"
 	"rest/handlers/online"

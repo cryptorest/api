@@ -22,13 +22,13 @@ func Base64(w http.ResponseWriter, r *http.Request) {
 
 	action := handlers.Path2Action(r)
 
-	switch{
-	case action == Base64Actions[0]:
+	switch action {
+	case Base64Actions[0]:
 		data := []byte("data")
 		str := base64.StdEncoding.EncodeToString(data)
 
 		handlers.WriteString(w, str)
-	case action == Base64Actions[1]:
+	case Base64Actions[1]:
 		str := "ZGF0YQ=="
 		data, err := base64.StdEncoding.DecodeString(str)
 
