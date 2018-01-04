@@ -8,7 +8,7 @@ import (
 	"rest/handlers/online"
 )
 
-const SHA1Path string = online.HashesPath + "/sha1"
+const Sha1Path string = online.HashesPath + "/sha1"
 
 func SHA1(w http.ResponseWriter, r *http.Request) {
 	if handlers.ErrorMethodPost(w, r) {

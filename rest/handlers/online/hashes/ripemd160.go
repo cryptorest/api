@@ -8,7 +8,7 @@ import (
 	"rest/handlers/online"
 )
 
-const RIPEMD160Path string = online.HashesPath + "/ripemd160"
+const Ripemd160Path string = online.HashesPath + "/ripemd160"
 
 func RIPEMD160(w http.ResponseWriter, r *http.Request) {
 	if handlers.ErrorMethodPost(w, r) {

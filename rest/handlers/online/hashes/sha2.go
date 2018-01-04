@@ -10,9 +10,9 @@ import (
 	"rest/handlers/online"
 )
 
-const SHA2Path string = online.HashesPath + "/sha2"
+const Sha2Path string = online.HashesPath + "/sha2"
 
-var SHA2Bits = map[string]func() hash.Hash{
+var Sha2Bits = map[string]func() hash.Hash{
 	"224": sha256.New224,
 	"256": sha256.New,
 	"384": sha512.New384,
@@ -28,7 +28,7 @@ func SHA2(w http.ResponseWriter, r *http.Request) {
 
 	bit := handlers.Path2Bit(r)
 	data := []byte("data")
-	b := SHA2Bits[bit]()
+	b := Sha2Bits[bit]()
 
 	b.Write(data)
 	handlers.WriteHash(w, b.Sum(nil))

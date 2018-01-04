@@ -9,9 +9,9 @@ import (
 	"rest/handlers/online"
 )
 
-const BLAKE2sPath string = online.HashesPath + "/blake2s"
+const Blake2sPath string = online.HashesPath + "/blake2s"
 
-var BLAKE2sBits = [1]string{
+var Blake2sBits = [1]string{
 	"256",
 }
 
@@ -24,7 +24,7 @@ func BLAKE2s(w http.ResponseWriter, r *http.Request) {
 	data := []byte("data")
 
 	switch{
-	case bit == BLAKE2sBits[0]:
+	case bit == Blake2sBits[0]:
 		fmt.Fprintf(w, "%x", blake2s.Sum256(data))
 	}
 }

@@ -59,21 +59,24 @@ func initHandlers() {
 	mux2.HandleFunc(handlers.HomePath, handlers.Home)
 
 	// Online Hashes
-	mux2.HandleFunc(hashes.SHA1Path, hashes.SHA1)
-	for key := range hashes.SHA2Bits {
-		mux2.HandleFunc(path.Join(hashes.SHA2Path, key), hashes.SHA2)
+	mux2.HandleFunc(hashes.Sha1Path, hashes.SHA1)
+	for key := range hashes.Sha2Bits {
+		mux2.HandleFunc(path.Join(hashes.Sha2Path, key), hashes.SHA2)
 	}
-	for key := range hashes.SHA3Bits {
-		mux2.HandleFunc(path.Join(hashes.SHA3Path, key), hashes.SHA3)
+	for key := range hashes.Sha3Bits {
+		mux2.HandleFunc(path.Join(hashes.Sha3Path, key), hashes.SHA3)
 	}
-	for i := range hashes.BLAKE2sBits {
-		mux2.HandleFunc(path.Join(hashes.BLAKE2sPath, hashes.BLAKE2sBits[i]), hashes.BLAKE2s)
+	for i := range hashes.Blake2sBits {
+		mux2.HandleFunc(path.Join(hashes.Blake2sPath, hashes.Blake2sBits[i]), hashes.BLAKE2s)
 	}
-	for i := range hashes.BLAKE2bBits {
-		mux2.HandleFunc(path.Join(hashes.BLAKE2bPath, hashes.BLAKE2bBits[i]), hashes.BLAKE2b)
+	for i := range hashes.Blake2bBits {
+		mux2.HandleFunc(path.Join(hashes.Blake2bPath, hashes.Blake2bBits[i]), hashes.BLAKE2b)
+	}
+	for i := range hashes.ShakeBits {
+		mux2.HandleFunc(path.Join(hashes.ShakePath, hashes.ShakeBits[i]), hashes.SHAKE)
 	}
 	for i := range hashes.Base64Actions {
 		mux2.HandleFunc(path.Join(hashes.Base64Path, hashes.Base64Actions[i]), hashes.Base64)
 	}
-	mux2.HandleFunc(hashes.RIPEMD160Path, hashes.RIPEMD160)
+	mux2.HandleFunc(hashes.Ripemd160Path, hashes.RIPEMD160)
 }

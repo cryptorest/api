@@ -9,9 +9,9 @@ import (
 	"rest/handlers/online"
 )
 
-const SHA3Path string = online.HashesPath + "/sha3"
+const Sha3Path string = online.HashesPath + "/sha3"
 
-var SHA3Bits = map[string]func() hash.Hash{
+var Sha3Bits = map[string]func() hash.Hash{
 	"224": sha3.New224,
 	"256": sha3.New256,
 	"384": sha3.New384,
@@ -25,7 +25,7 @@ func SHA3(w http.ResponseWriter, r *http.Request) {
 
 	bit := handlers.Path2Bit(r)
 	data := []byte("data")
-	b := SHA3Bits[bit]()
+	b := Sha3Bits[bit]()
 
 	b.Write(data)
 	handlers.WriteHash(w, b.Sum(nil))
