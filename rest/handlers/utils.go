@@ -35,6 +35,10 @@ func WriteBytes(w http.ResponseWriter, b []byte) {
 	fmt.Fprintf(w, "%s", b)
 }
 
+func WriteString(w http.ResponseWriter, s string) {
+	fmt.Fprintf(w, "%s", s)
+}
+
 func WriteError(w http.ResponseWriter, e error) {
 	fmt.Fprintf(w, "Error: %s", e)
 }

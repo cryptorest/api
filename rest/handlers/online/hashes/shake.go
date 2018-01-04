@@ -16,10 +16,8 @@ var ShakeBits = [2]string{
 	"256",
 }
 
-var defaultBits = [2]int{
-	256,
-	512,
-}
+var minBits = 256
+//var maxBits = 1024 * 1024
 
 func SHAKE(w http.ResponseWriter, r *http.Request) {
 	if handlers.ErrorMethodPost(w, r) {
@@ -31,14 +29,14 @@ func SHAKE(w http.ResponseWriter, r *http.Request) {
 
 	switch {
 	case bit == ShakeBits[0]:
-		hash := make([]byte, defaultBits[0] / 8)
+		hash := make([]byte, minBits / 8)
 		sha3.ShakeSum128(hash, data)
 
-		handlers.WriteBytes(w, []byte(hex.EncodeToString(hash)))
+		handlers.WriteString(w, hex.EncodeToString(hash))
 	case bit == ShakeBits[1]:
-		hash := make([]byte, defaultBits[1] / 8)
+		hash := make([]byte, minBits / 4)
 		sha3.ShakeSum256(hash, data)
 
-		handlers.WriteBytes(w, []byte(hex.EncodeToString(hash)))
+		handlers.WriteString(w, hex.EncodeToString(hash))
 	}
 }
