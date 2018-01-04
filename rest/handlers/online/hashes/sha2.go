@@ -1,8 +1,8 @@
 package hashes
 
 import (
-	"net/http"
 	"hash"
+	"net/http"
 	"crypto/sha256"
 	"crypto/sha512"
 

@@ -1,8 +1,8 @@
 package hashes
 
 import (
-	"net/http"
 	"fmt"
+	"net/http"
 	"golang.org/x/crypto/blake2s"
 
 	"rest/handlers"

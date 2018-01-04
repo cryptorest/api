@@ -1,8 +1,8 @@
 package hashes
 
 import (
-	"net/http"
 	"hash"
+	"net/http"
 	"golang.org/x/crypto/sha3"
 
 	"rest/handlers"
