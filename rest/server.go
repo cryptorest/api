@@ -35,7 +35,7 @@ func main() {
 
 	http2.ConfigureServer(&srv, &http2.Server{})
 
-	http.HandleFunc("/test", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/info", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Hey client %q\n", html.EscapeString(r.URL.Path))
 		ShowRequestInfoHandler(w, r)
 	})

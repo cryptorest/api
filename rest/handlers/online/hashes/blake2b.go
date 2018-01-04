@@ -3,7 +3,7 @@ package hashes
 import (
 	"fmt"
 	"net/http"
-	"golang.org/x/crypto/blake2b"
+	"github.com/golang/crypto/blake2b"
 
 	"rest/handlers"
 	"rest/handlers/online"
