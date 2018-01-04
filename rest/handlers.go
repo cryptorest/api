@@ -86,4 +86,5 @@ func initHandlers() {
 	}
 	mux2.HandleFunc(hashes.Ripemd160Path, hashes.RIPEMD160)
 	mux2.HandleFunc(hashes.Md4Path, hashes.MD4)
+	mux2.HandleFunc(hashes.Md5Path, hashes.MD5)
 }
