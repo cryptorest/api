@@ -78,5 +78,8 @@ func initHandlers() {
 	for i := range hashes.Base64Actions {
 		mux2.HandleFunc(path.Join(hashes.Base64Path, hashes.Base64Actions[i]), hashes.Base64)
 	}
+	for key := range hashes.KeccakBits {
+		mux2.HandleFunc(path.Join(hashes.KeccakPath, key), hashes.KECCAK)
+	}
 	mux2.HandleFunc(hashes.Ripemd160Path, hashes.RIPEMD160)
 }
