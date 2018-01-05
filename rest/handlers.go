@@ -15,7 +15,15 @@ const RootPath = "/"
 var AllPathes []string
 
 func serverURI(uriPath string) string {
-	return fmt.Sprintf("%s%s:%d%s", ServerUriSchema, *serverHost, *serverPort, uriPath)
+	var scheme string
+
+	if DefaultGlobalPort == *serverPort {
+		scheme = *serverHost
+	} else {
+		scheme = fmt.Sprintf("%s:%d", *serverHost, *serverPort)
+	}
+
+	return ServerUriSchema + scheme + uriPath
 }
 
 func showRequestInfo(w http.ResponseWriter, r *http.Request) {
