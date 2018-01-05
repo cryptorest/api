@@ -85,29 +85,29 @@ func initHandlerAsHash(mux *http.ServeMux, httpPath string, httpFunc func(w http
 	}
 }
 
-func initOnlineHashesHandlers(mux *http.ServeMux) {
-	initHandlerAsString(&*mux, handlers.OnlinePath + hashes.Md2Path, hashes.MD2)
-	initHandlerAsString(&*mux, handlers.OnlinePath + hashes.Md4Path, hashes.MD4)
-	initHandlerAsString(&*mux, handlers.OnlinePath + hashes.Md5Path, hashes.MD5)
-	initHandlerAsString(&*mux, handlers.OnlinePath + hashes.Ripemd160Path, hashes.RIPEMD160)
-	initHandlerAsString(&*mux, handlers.OnlinePath + hashes.Base32Path, hashes.Base32)
-	initHandlerAsString(&*mux, handlers.OnlinePath + hashes.Base64Path, hashes.Base64)
-	initHandlerAsString(&*mux, handlers.OnlinePath + hashes.Sha1Path, hashes.SHA1)
-	initHandlerAsHash(&*mux, handlers.OnlinePath + hashes.Sha2Path, hashes.SHA2, hashes.Sha2Bits)
-	initHandlerAsHash(&*mux, handlers.OnlinePath + hashes.Sha3Path, hashes.SHA3, hashes.Sha3Bits)
-	initHandlerAsHash(&*mux, handlers.OnlinePath + hashes.KeccakPath, hashes.KECCAK, hashes.KeccakBits)
-	initHandlerAsArray(&*mux, handlers.OnlinePath + hashes.Blake2sPath, hashes.BLAKE2s, hashes.Blake2sBits)
-	initHandlerAsArray(&*mux, handlers.OnlinePath + hashes.Blake2bPath, hashes.BLAKE2b, hashes.Blake2bBits)
-	initHandlerAsArray(&*mux, handlers.OnlinePath + hashes.ShakePath, hashes.SHAKE, hashes.ShakeBits)
-	initHandlerAsArray(&*mux, handlers.OnlinePath + hashes.Crc8Path, hashes.CRC8, hashes.Crc8Types)
-	initHandlerAsArray(&*mux, handlers.OnlinePath + hashes.Crc16Path, hashes.CRC16, hashes.Crc16Types)
-	initHandlerAsArray(&*mux, handlers.OnlinePath + hashes.Crc32Path, hashes.CRC32, hashes.Crc32Types)
-	initHandlerAsArray(&*mux, handlers.OnlinePath + hashes.Crc64Path, hashes.CRC64, hashes.Crc64Types)
-}
+func initOnlineHandlers(mux *http.ServeMux, onlinePath string) {
+	// Hashes
+	initHandlerAsString(&*mux, onlinePath + hashes.Md2Path, hashes.MD2)
+	initHandlerAsString(&*mux, onlinePath + hashes.Md4Path, hashes.MD4)
+	initHandlerAsString(&*mux, onlinePath + hashes.Md5Path, hashes.MD5)
+	initHandlerAsString(&*mux, onlinePath + hashes.Ripemd160Path, hashes.RIPEMD160)
+	initHandlerAsString(&*mux, onlinePath + hashes.Base32Path, hashes.Base32)
+	initHandlerAsString(&*mux, onlinePath + hashes.Base64Path, hashes.Base64)
+	initHandlerAsString(&*mux, onlinePath + hashes.Sha1Path, hashes.SHA1)
+	initHandlerAsHash(&*mux, onlinePath + hashes.Sha2Path, hashes.SHA2, hashes.Sha2Bits)
+	initHandlerAsHash(&*mux, onlinePath + hashes.Sha3Path, hashes.SHA3, hashes.Sha3Bits)
+	initHandlerAsHash(&*mux, onlinePath + hashes.KeccakPath, hashes.KECCAK, hashes.KeccakBits)
+	initHandlerAsArray(&*mux, onlinePath + hashes.Blake2sPath, hashes.BLAKE2s, hashes.Blake2sBits)
+	initHandlerAsArray(&*mux, onlinePath + hashes.Blake2bPath, hashes.BLAKE2b, hashes.Blake2bBits)
+	initHandlerAsArray(&*mux, onlinePath + hashes.ShakePath, hashes.SHAKE, hashes.ShakeBits)
+	initHandlerAsArray(&*mux, onlinePath + hashes.Crc8Path, hashes.CRC8, hashes.Crc8Types)
+	initHandlerAsArray(&*mux, onlinePath + hashes.Crc16Path, hashes.CRC16, hashes.Crc16Types)
+	initHandlerAsArray(&*mux, onlinePath + hashes.Crc32Path, hashes.CRC32, hashes.Crc32Types)
+	initHandlerAsArray(&*mux, onlinePath + hashes.Crc64Path, hashes.CRC64, hashes.Crc64Types)
 
-func initOnlineDataHandlers(mux *http.ServeMux) {
-	initHandlerAsArray(&*mux, handlers.OnlinePath + data.Base32Path, data.Base32, data.Base32Actions)
-	initHandlerAsArray(&*mux, handlers.OnlinePath + data.Base64Path, data.Base64, data.Base64Actions)
+	// Data
+	initHandlerAsArray(&*mux, onlinePath + data.Base32Path, data.Base32, data.Base32Actions)
+	initHandlerAsArray(&*mux, onlinePath + data.Base64Path, data.Base64, data.Base64Actions)
 }
 
 func initHandlers() {
@@ -124,10 +124,6 @@ func initHandlers() {
 		mux.ServeHTTP(w, r)
 	})
 
-	// Root
 	mux.HandleFunc(RootPath, Root)
-
-	// Online
-	initOnlineHashesHandlers(&*mux)
-	initOnlineDataHandlers(&*mux)
+	initOnlineHandlers(&*mux, handlers.OnlinePath)
 }
