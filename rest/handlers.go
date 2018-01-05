@@ -11,8 +11,8 @@ import (
 
 const RootPath = "/"
 
-func serverURI(path string) string {
-	return fmt.Sprintf("%s%s:%d%s", ServerUriSchema, *serverHost, *serverPort, path)
+func serverURI(uriPath string) string {
+	return fmt.Sprintf("%s%s:%d%s", ServerUriSchema, *serverHost, *serverPort, uriPath)
 }
 
 func showRequestInfo(w http.ResponseWriter, r *http.Request) {
