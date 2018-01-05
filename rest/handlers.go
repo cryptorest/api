@@ -7,7 +7,7 @@ import (
 	"net/http"
 
 	"rest/errors"
-	"rest/handlers/online/hashes"
+	"rest/data/hashes"
 )
 
 const RootPath = "/"
