@@ -7,10 +7,9 @@ import (
 
 	"rest/data"
 	"rest/errors"
-	"rest/handlers/online"
 )
 
-const Sha3Path = online.HashesPath + "/sha3"
+const Sha3Path = data.HashesPath + "/sha3"
 
 var Sha3Bits = map[string]func() hash.Hash{
 	"224": sha3.New224,

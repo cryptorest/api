@@ -6,10 +6,9 @@ import (
 
 	"rest/data"
 	"rest/errors"
-	"rest/handlers/online"
 )
 
-const Md4Path = online.HashesPath + "/md4"
+const Md4Path = data.HashesPath + "/md4"
 
 func MD4(w http.ResponseWriter, r *http.Request) {
 	if errors.MethodPost(w, r) {

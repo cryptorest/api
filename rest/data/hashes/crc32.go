@@ -6,10 +6,9 @@ import (
 
 	"rest/data"
 	"rest/errors"
-	"rest/handlers/online"
 )
 
-const Crc32Path = online.HashesPath + "/crc32"
+const Crc32Path = data.HashesPath + "/crc32"
 
 var Crc32Types = []string{
 	"ieee",

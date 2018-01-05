@@ -8,10 +8,9 @@ import (
 
 	"rest/data"
 	"rest/errors"
-	"rest/handlers/online"
 )
 
-const Sha2Path = online.HashesPath + "/sha2"
+const Sha2Path = data.HashesPath + "/sha2"
 
 var Sha2Bits = map[string]func() hash.Hash{
 	"224": sha256.New224,

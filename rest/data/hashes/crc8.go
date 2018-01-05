@@ -6,10 +6,9 @@ import (
 
 	"rest/data"
 	"rest/errors"
-	"rest/handlers/online"
 )
 
-const Crc8Path = online.HashesPath + "/crc8"
+const Crc8Path = data.HashesPath + "/crc8"
 
 var Crc8Types = []string{
 	"arc",

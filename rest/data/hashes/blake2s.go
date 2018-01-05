@@ -6,10 +6,9 @@ import (
 
 	"rest/data"
 	"rest/errors"
-	"rest/handlers/online"
 )
 
-const Blake2sPath = online.HashesPath + "/blake2s"
+const Blake2sPath = data.HashesPath + "/blake2s"
 
 var Blake2sBits = []string{
 	"256",

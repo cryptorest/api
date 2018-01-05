@@ -6,10 +6,9 @@ import (
 
 	"rest/data"
 	"rest/errors"
-	"rest/handlers/online"
 )
 
-const Md5Path = online.HashesPath + "/md5"
+const Md5Path = data.HashesPath + "/md5"
 
 func MD5(w http.ResponseWriter, r *http.Request) {
 	if errors.MethodPost(w, r) {

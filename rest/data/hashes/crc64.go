@@ -6,10 +6,9 @@ import (
 
 	"rest/data"
 	"rest/errors"
-	"rest/handlers/online"
 )
 
-const Crc64Path = online.HashesPath + "/crc64"
+const Crc64Path = data.HashesPath + "/crc64"
 
 var Crc64Types = []string{
 	"iso",

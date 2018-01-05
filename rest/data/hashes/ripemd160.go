@@ -6,10 +6,9 @@ import (
 
 	"rest/data"
 	"rest/errors"
-	"rest/handlers/online"
 )
 
-const Ripemd160Path = online.HashesPath + "/ripemd160"
+const Ripemd160Path = data.HashesPath + "/ripemd160"
 
 func RIPEMD160(w http.ResponseWriter, r *http.Request) {
 	if errors.MethodPost(w, r) {

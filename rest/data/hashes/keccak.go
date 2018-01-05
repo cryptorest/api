@@ -7,10 +7,9 @@ import (
 
 	"rest/data"
 	"rest/errors"
-	"rest/handlers/online"
 )
 
-const KeccakPath = online.HashesPath + "/keccak"
+const KeccakPath = data.HashesPath + "/keccak"
 
 var KeccakBits = map[string]func() hash.Hash{
 	"224": keccak.New224,

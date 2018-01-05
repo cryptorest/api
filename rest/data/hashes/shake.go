@@ -7,10 +7,9 @@ import (
 
 	"rest/data"
 	"rest/errors"
-	"rest/handlers/online"
 )
 
-const ShakePath = online.HashesPath + "/shake"
+const ShakePath = data.HashesPath + "/shake"
 
 var ShakeBits = []string{
 	"128",

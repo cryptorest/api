@@ -6,10 +6,9 @@ import (
 
 	"rest/data"
 	"rest/errors"
-	"rest/handlers/online"
 )
 
-const Crc16Path = online.HashesPath + "/crc16"
+const Crc16Path = data.HashesPath + "/crc16"
 
 var Crc16Types = []string{
 	"arc",

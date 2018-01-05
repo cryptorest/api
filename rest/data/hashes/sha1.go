@@ -6,10 +6,9 @@ import (
 
 	"rest/data"
 	"rest/errors"
-	"rest/handlers/online"
 )
 
-const Sha1Path = online.HashesPath + "/sha1"
+const Sha1Path = data.HashesPath + "/sha1"
 
 func SHA1(w http.ResponseWriter, r *http.Request) {
 	if errors.MethodPost(w, r) {

@@ -6,10 +6,9 @@ import (
 
 	"rest/data"
 	"rest/errors"
-	"rest/handlers/online"
 )
 
-const Md2Path = online.HashesPath + "/md2"
+const Md2Path = data.HashesPath + "/md2"
 
 func MD2(w http.ResponseWriter, r *http.Request) {
 	if errors.MethodPost(w, r) {
