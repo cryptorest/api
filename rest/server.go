@@ -26,23 +26,11 @@ var (
 	serverVerbose  = flag.Bool("verbose", false, "Verbose HTTP/2 debugging. Required.")
 )
 
-func serverAddr() string {
-	var port int
-
-	if DefaultGlobalPort == *serverPort {
-		port = DefaultGlobalPort
-	} else {
-		port = *serverPort
-	}
-
-	return fmt.Sprintf("%s:%d", *serverHost, port)
-}
-
 func main() {
 	flag.Parse()
 
 	var server http.Server
-	server.Addr = serverAddr()
+	server.Addr       = fmt.Sprintf("%s:%d", *serverHost, *serverPort)
 	http2.VerboseLogs = *serverVerbose
 
 	initHandlers()
