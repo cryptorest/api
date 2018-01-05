@@ -11,7 +11,7 @@ import (
 
 const Base32Path = online.HashesPath + "/base32"
 
-var Base32Actions = [2]string{
+var Base32Actions = []string{
 	"encode",
 	"decode",
 }

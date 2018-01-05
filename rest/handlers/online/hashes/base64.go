@@ -11,7 +11,7 @@ import (
 
 const Base64Path = online.HashesPath + "/base64"
 
-var Base64Actions = [2]string{
+var Base64Actions = []string{
 	"encode",
 	"decode",
 }

@@ -11,7 +11,7 @@ import (
 
 const Crc8Path = online.HashesPath + "/crc8"
 
-var Crc8Types = [9]string{
+var Crc8Types = []string{
 	"arc",
 	"darc",
 	"dvb-s2",

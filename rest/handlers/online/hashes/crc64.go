@@ -11,7 +11,7 @@ import (
 
 const Crc64Path = online.HashesPath + "/crc64"
 
-var Crc64Types = [2]string{
+var Crc64Types = []string{
 	"iso",
 	"ecma",
 }

@@ -11,7 +11,7 @@ import (
 
 const Blake2bPath = online.HashesPath + "/blake2b"
 
-var Blake2bBits = [3]string{
+var Blake2bBits = []string{
 	"256",
 	"384",
 	"512",

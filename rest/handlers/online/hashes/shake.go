@@ -12,7 +12,7 @@ import (
 
 const ShakePath = online.HashesPath + "/shake"
 
-var ShakeBits = [2]string{
+var ShakeBits = []string{
 	"128",
 	"256",
 }

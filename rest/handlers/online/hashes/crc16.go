@@ -11,7 +11,7 @@ import (
 
 const Crc16Path = online.HashesPath + "/crc16"
 
-var Crc16Types = [4]string{
+var Crc16Types = []string{
 	"arc",
 	"ccitt",
 	"x25",

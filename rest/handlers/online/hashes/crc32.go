@@ -11,7 +11,7 @@ import (
 
 const Crc32Path = online.HashesPath + "/crc32"
 
-var Crc32Types = [3]string{
+var Crc32Types = []string{
 	"ieee",
 	"koopman",
 	"castagnoli",

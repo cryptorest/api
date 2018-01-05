@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"path"
+	"hash"
 	"net/http"
 
 	"rest/errors"
@@ -10,6 +11,8 @@ import (
 )
 
 const RootPath = "/"
+
+var AllPathes []string
 
 func serverURI(uriPath string) string {
 	return fmt.Sprintf("%s%s:%d%s", ServerUriSchema, *serverHost, *serverPort, uriPath)
@@ -27,6 +30,10 @@ func showRequestInfo(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Body.ContentLength: %d (-1 means unknown)\n", r.ContentLength)
 	fmt.Fprintf(w, "Close: %v (relevant for HTTP/1 only)\n", r.Close)
 	fmt.Fprintf(w, "TLS: %#v\n", r.TLS)
+	fmt.Fprint(w, "Pathes:\n")
+	for _, p := range AllPathes {
+		fmt.Fprintf(w, "    %s\n", p)
+	}
 
 	r.Header.Write(w)
 }
@@ -45,48 +52,47 @@ func Root(w http.ResponseWriter, r *http.Request) {
 	showRequestInfo(w, r)
 }
 
+func initHandlerAsString(mux *http.ServeMux, httpPath string, httpFunc func(w http.ResponseWriter, r *http.Request)) {
+	mux.HandleFunc(httpPath, httpFunc)
+	AllPathes = append(AllPathes, httpPath)
+}
+
+func initHandlerAsArray(mux *http.ServeMux, httpPath string, httpFunc func(w http.ResponseWriter, r *http.Request), values []string) {
+	for _, value := range values {
+		p := path.Join(httpPath, value)
+
+		mux.HandleFunc(p, httpFunc)
+		AllPathes = append(AllPathes, p)
+	}
+}
+
+func initHandlerAsHash(mux *http.ServeMux, httpPath string, httpFunc func(w http.ResponseWriter, r *http.Request), values map[string]func() hash.Hash) {
+	for value := range values {
+		p := path.Join(httpPath, value)
+
+		mux.HandleFunc(p, httpFunc)
+		AllPathes = append(AllPathes, p)
+	}
+}
+
 func initOnlineHashesHandlers(mux *http.ServeMux) {
-	mux.HandleFunc(hashes.Sha1Path, hashes.SHA1)
-	for bit := range hashes.Sha2Bits {
-		mux.HandleFunc(path.Join(hashes.Sha2Path, bit), hashes.SHA2)
-	}
-	for bit := range hashes.Sha3Bits {
-		mux.HandleFunc(path.Join(hashes.Sha3Path, bit), hashes.SHA3)
-	}
-	for _, bit := range hashes.Blake2sBits {
-		mux.HandleFunc(path.Join(hashes.Blake2sPath, bit), hashes.BLAKE2s)
-	}
-	for _, bit := range hashes.Blake2bBits {
-		mux.HandleFunc(path.Join(hashes.Blake2bPath, bit), hashes.BLAKE2b)
-	}
-	for _, bit := range hashes.ShakeBits {
-		mux.HandleFunc(path.Join(hashes.ShakePath, bit), hashes.SHAKE)
-	}
-	for _, action := range hashes.Base32Actions {
-		mux.HandleFunc(path.Join(hashes.Base32Path, action), hashes.Base32)
-	}
-	for _, action := range hashes.Base64Actions {
-		mux.HandleFunc(path.Join(hashes.Base64Path, action), hashes.Base64)
-	}
-	for bit := range hashes.KeccakBits {
-		mux.HandleFunc(path.Join(hashes.KeccakPath, bit), hashes.KECCAK)
-	}
-	for _, typ := range hashes.Crc8Types {
-		mux.HandleFunc(path.Join(hashes.Crc8Path, typ), hashes.CRC8)
-	}
-	for _, typ := range hashes.Crc16Types {
-		mux.HandleFunc(path.Join(hashes.Crc16Path, typ), hashes.CRC16)
-	}
-	for _, typ := range hashes.Crc32Types {
-		mux.HandleFunc(path.Join(hashes.Crc32Path, typ), hashes.CRC32)
-	}
-	for _, typ := range hashes.Crc64Types {
-		mux.HandleFunc(path.Join(hashes.Crc64Path, typ), hashes.CRC64)
-	}
-	mux.HandleFunc(hashes.Ripemd160Path, hashes.RIPEMD160)
-	mux.HandleFunc(hashes.Md2Path, hashes.MD2)
-	mux.HandleFunc(hashes.Md4Path, hashes.MD4)
-	mux.HandleFunc(hashes.Md5Path, hashes.MD5)
+	initHandlerAsString(&*mux, hashes.Md2Path, hashes.MD2)
+	initHandlerAsString(&*mux, hashes.Md4Path, hashes.MD4)
+	initHandlerAsString(&*mux, hashes.Md5Path, hashes.MD5)
+	initHandlerAsString(&*mux, hashes.Ripemd160Path, hashes.RIPEMD160)
+	initHandlerAsString(&*mux, hashes.Sha1Path, hashes.SHA1)
+	initHandlerAsHash(&*mux, hashes.Sha2Path, hashes.SHA2, hashes.Sha2Bits)
+	initHandlerAsHash(&*mux, hashes.Sha3Path, hashes.SHA3, hashes.Sha3Bits)
+	initHandlerAsHash(&*mux, hashes.KeccakPath, hashes.KECCAK, hashes.KeccakBits)
+	initHandlerAsArray(&*mux, hashes.Blake2sPath, hashes.BLAKE2s, hashes.Blake2sBits)
+	initHandlerAsArray(&*mux, hashes.Blake2bPath, hashes.BLAKE2b, hashes.Blake2bBits)
+	initHandlerAsArray(&*mux, hashes.ShakePath, hashes.SHAKE, hashes.ShakeBits)
+	initHandlerAsArray(&*mux, hashes.Base32Path, hashes.Base32, hashes.Base32Actions)
+	initHandlerAsArray(&*mux, hashes.Base64Path, hashes.Base64, hashes.Base64Actions)
+	initHandlerAsArray(&*mux, hashes.Crc8Path, hashes.CRC8, hashes.Crc8Types)
+	initHandlerAsArray(&*mux, hashes.Crc16Path, hashes.CRC16, hashes.Crc16Types)
+	initHandlerAsArray(&*mux, hashes.Crc32Path, hashes.CRC32, hashes.Crc32Types)
+	initHandlerAsArray(&*mux, hashes.Crc64Path, hashes.CRC64, hashes.Crc64Types)
 }
 
 func initHandlers() {
