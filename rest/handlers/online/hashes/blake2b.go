@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"github.com/golang/crypto/blake2b"
 
-	"rest/utils"
+	"rest/data"
 	"rest/errors"
 	"rest/handlers/online"
 )
@@ -22,15 +22,15 @@ func BLAKE2b(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	bit := utils.Path2Bit(r)
-	data := []byte("data")
+	bit := data.Path2Bit(r)
+	bData := []byte("data")
 
 	switch bit {
 	case Blake2bBits[0]:
-		utils.Write32Byte(w, blake2b.Sum256(data))
+		data.Write32Byte(w, blake2b.Sum256(bData))
 	case Blake2bBits[1]:
-		utils.Write48Byte(w, blake2b.Sum384(data))
+		data.Write48Byte(w, blake2b.Sum384(bData))
 	case Blake2bBits[2]:
-		utils.Write64Byte(w, blake2b.Sum512(data))
+		data.Write64Byte(w, blake2b.Sum512(bData))
 	}
 }

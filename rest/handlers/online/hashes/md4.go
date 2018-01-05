@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"golang.org/x/crypto/md4"
 
-	"rest/utils"
+	"rest/data"
 	"rest/errors"
 	"rest/handlers/online"
 )
@@ -16,9 +16,9 @@ func MD4(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := []byte("data")
+	bData := []byte("data")
 	md := md4.New()
 
-	md.Write(data)
-	utils.WriteHash(w, md.Sum(nil))
+	md.Write(bData)
+	data.WriteHash(w, md.Sum(nil))
 }

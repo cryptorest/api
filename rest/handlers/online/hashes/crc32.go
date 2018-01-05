@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"hash/crc32"
 
-	"rest/utils"
+	"rest/data"
 	"rest/errors"
 	"rest/handlers/online"
 )
@@ -22,15 +22,15 @@ func CRC32(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pType := utils.Path2Type(r)
-	data := []byte("data")
+	pType := data.Path2Type(r)
+	bData := []byte("data")
 
 	switch pType {
 	case Crc32Types[0]:
-		utils.WriteUInt32(w, crc32.Checksum(data, crc32.MakeTable(crc32.IEEE)))
+		data.WriteUInt32(w, crc32.Checksum(bData, crc32.MakeTable(crc32.IEEE)))
 	case Crc32Types[1]:
-		utils.WriteUInt32(w, crc32.Checksum(data, crc32.MakeTable(crc32.Koopman)))
+		data.WriteUInt32(w, crc32.Checksum(bData, crc32.MakeTable(crc32.Koopman)))
 	case Crc32Types[2]:
-		utils.WriteUInt32(w, crc32.Checksum(data, crc32.MakeTable(crc32.Castagnoli)))
+		data.WriteUInt32(w, crc32.Checksum(bData, crc32.MakeTable(crc32.Castagnoli)))
 	}
 }

@@ -6,7 +6,7 @@ import (
 	"crypto/sha256"
 	"crypto/sha512"
 
-	"rest/utils"
+	"rest/data"
 	"rest/errors"
 	"rest/handlers/online"
 )
@@ -27,10 +27,10 @@ func SHA2(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	bit := utils.Path2Bit(r)
-	data := []byte("data")
+	bit := data.Path2Bit(r)
+	bData := []byte("data")
 	b := Sha2Bits[bit]()
 
-	b.Write(data)
-	utils.WriteHash(w, b.Sum(nil))
+	b.Write(bData)
+	data.WriteHash(w, b.Sum(nil))
 }

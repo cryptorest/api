@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"github.com/cryptorest/crc"
 
-	"rest/utils"
+	"rest/data"
 	"rest/errors"
 	"rest/handlers/online"
 )
@@ -23,17 +23,17 @@ func CRC16(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	bit := utils.Path2Bit(r)
-	data := []byte("data")
+	bit := data.Path2Bit(r)
+	bData := []byte("data")
 
 	switch bit {
 	case Crc16Types[0]:
-		utils.WriteUInt64(w, crc.CalculateCRC(crc.CRC16, data))
+		data.WriteUInt64(w, crc.CalculateCRC(crc.CRC16, bData))
 	case Crc16Types[1]:
-		utils.WriteUInt64(w, crc.CalculateCRC(crc.CCITT, data))
+		data.WriteUInt64(w, crc.CalculateCRC(crc.CCITT, bData))
 	case Crc16Types[2]:
-		utils.WriteUInt64(w, crc.CalculateCRC(crc.X25, data))
+		data.WriteUInt64(w, crc.CalculateCRC(crc.X25, bData))
 	case Crc16Types[3]:
-		utils.WriteUInt64(w, crc.CalculateCRC(crc.XMODEM, data))
+		data.WriteUInt64(w, crc.CalculateCRC(crc.XMODEM, bData))
 	}
 }

@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"github.com/cryptorest/crc8"
 
-	"rest/utils"
+	"rest/data"
 	"rest/errors"
 	"rest/handlers/online"
 )
@@ -28,27 +28,27 @@ func CRC8(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	bit := utils.Path2Bit(r)
-	data := []byte("data")
+	bit := data.Path2Bit(r)
+	bData := []byte("data")
 
 	switch bit {
 	case Crc8Types[0]:
-		utils.WriteUInt8(w, crc8.Checksum(data, crc8.MakeTable(crc8.CRC8)))
+		data.WriteUInt8(w, crc8.Checksum(bData, crc8.MakeTable(crc8.CRC8)))
 	case Crc8Types[1]:
-		utils.WriteUInt8(w, crc8.Checksum(data, crc8.MakeTable(crc8.CRC8_DARC)))
+		data.WriteUInt8(w, crc8.Checksum(bData, crc8.MakeTable(crc8.CRC8_DARC)))
 	case Crc8Types[2]:
-		utils.WriteUInt8(w, crc8.Checksum(data, crc8.MakeTable(crc8.CRC8_DVB_S2)))
+		data.WriteUInt8(w, crc8.Checksum(bData, crc8.MakeTable(crc8.CRC8_DVB_S2)))
 	case Crc8Types[3]:
-		utils.WriteUInt8(w, crc8.Checksum(data, crc8.MakeTable(crc8.CRC8_EBU)))
+		data.WriteUInt8(w, crc8.Checksum(bData, crc8.MakeTable(crc8.CRC8_EBU)))
 	case Crc8Types[4]:
-		utils.WriteUInt8(w, crc8.Checksum(data, crc8.MakeTable(crc8.CRC8_I_CODE)))
+		data.WriteUInt8(w, crc8.Checksum(bData, crc8.MakeTable(crc8.CRC8_I_CODE)))
 	case Crc8Types[5]:
-		utils.WriteUInt8(w, crc8.Checksum(data, crc8.MakeTable(crc8.CRC8_ITU)))
+		data.WriteUInt8(w, crc8.Checksum(bData, crc8.MakeTable(crc8.CRC8_ITU)))
 	case Crc8Types[6]:
-		utils.WriteUInt8(w, crc8.Checksum(data, crc8.MakeTable(crc8.CRC8_MAXIM)))
+		data.WriteUInt8(w, crc8.Checksum(bData, crc8.MakeTable(crc8.CRC8_MAXIM)))
 	case Crc8Types[7]:
-		utils.WriteUInt8(w, crc8.Checksum(data, crc8.MakeTable(crc8.CRC8_ROHC)))
+		data.WriteUInt8(w, crc8.Checksum(bData, crc8.MakeTable(crc8.CRC8_ROHC)))
 	case Crc8Types[8]:
-		utils.WriteUInt8(w, crc8.Checksum(data, crc8.MakeTable(crc8.CRC8_WCDMA)))
+		data.WriteUInt8(w, crc8.Checksum(bData, crc8.MakeTable(crc8.CRC8_WCDMA)))
 	}
 }

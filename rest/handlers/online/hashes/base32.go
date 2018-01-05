@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"encoding/base32"
 
-	"rest/utils"
+	"rest/data"
 	"rest/errors"
 	"rest/handlers/online"
 )
@@ -21,24 +21,24 @@ func Base32(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	action := utils.Path2Action(r)
+	action := data.Path2Action(r)
 
 	switch action {
 	case Base32Actions[0]:
-		data := []byte("data")
-		str := base32.StdEncoding.EncodeToString(data)
+		bData := []byte("data")
+		str := base32.StdEncoding.EncodeToString(bData)
 
-		utils.WriteString(w, str)
+		data.WriteString(w, str)
 	case Base32Actions[1]:
 		str := "MRQXIYI="
-		data, err := base32.StdEncoding.DecodeString(str)
+		bData, err := base32.StdEncoding.DecodeString(str)
 
 		if err != nil {
-			utils.WriteError(w, err)
+			data.WriteError(w, err)
 
 			return
 		}
 
-		utils.WriteBytes(w, data)
+		data.WriteBytes(w, bData)
 	}
 }

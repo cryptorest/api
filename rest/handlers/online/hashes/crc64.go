@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"hash/crc64"
 
-	"rest/utils"
+	"rest/data"
 	"rest/errors"
 	"rest/handlers/online"
 )
@@ -21,13 +21,13 @@ func CRC64(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pType := utils.Path2Type(r)
-	data := []byte("data")
+	pType := data.Path2Type(r)
+	bData := []byte("data")
 
 	switch pType {
 	case Crc64Types[0]:
-		utils.WriteUInt64(w, crc64.Checksum(data, crc64.MakeTable(crc64.ISO)))
+		data.WriteUInt64(w, crc64.Checksum(bData, crc64.MakeTable(crc64.ISO)))
 	case Crc64Types[1]:
-		utils.WriteUInt64(w, crc64.Checksum(data, crc64.MakeTable(crc64.ECMA)))
+		data.WriteUInt64(w, crc64.Checksum(bData, crc64.MakeTable(crc64.ECMA)))
 	}
 }

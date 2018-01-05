@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"github.com/cryptorest/go-md2"
 
-	"rest/utils"
+	"rest/data"
 	"rest/errors"
 	"rest/handlers/online"
 )
@@ -16,9 +16,9 @@ func MD2(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := []byte("data")
+	bData := []byte("data")
 	md := md2.New()
 
-	md.Write(data)
-	utils.WriteHash(w, md.Sum(nil))
+	md.Write(bData)
+	data.WriteHash(w, md.Sum(nil))
 }

@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"crypto/sha1"
 
-	"rest/utils"
+	"rest/data"
 	"rest/errors"
 	"rest/handlers/online"
 )
@@ -16,9 +16,9 @@ func SHA1(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := []byte("data")
+	bData := []byte("data")
 	b := sha1.New()
 
-	b.Write(data)
-	utils.WriteHash(w, b.Sum(nil))
+	b.Write(bData)
+	data.WriteHash(w, b.Sum(nil))
 }
