@@ -1,3 +1,3 @@
 package handlers
 
-const OnlinePath string = HomePath + "online"
+const OnlinePath = "/online"

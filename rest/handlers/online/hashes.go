@@ -4,4 +4,4 @@ import (
 	"rest/handlers"
 )
 
-const HashesPath string = handlers.OnlinePath + "/hashes"
+const HashesPath = handlers.OnlinePath + "/hashes"

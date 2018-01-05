@@ -4,14 +4,15 @@ import (
 	"net/http"
 	"crypto/sha1"
 
-	"rest/handlers"
+	"rest/utils"
+	"rest/errors"
 	"rest/handlers/online"
 )
 
-const Sha1Path string = online.HashesPath + "/sha1"
+const Sha1Path = online.HashesPath + "/sha1"
 
 func SHA1(w http.ResponseWriter, r *http.Request) {
-	if handlers.ErrorMethodPost(w, r) {
+	if errors.MethodPost(w, r) {
 		return
 	}
 
@@ -19,5 +20,5 @@ func SHA1(w http.ResponseWriter, r *http.Request) {
 	b := sha1.New()
 
 	b.Write(data)
-	handlers.WriteHash(w, b.Sum(nil))
+	utils.WriteHash(w, b.Sum(nil))
 }

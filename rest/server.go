@@ -4,60 +4,41 @@ import (
 	"fmt"
 	"log"
 	"flag"
-	"html"
 	"net/http"
 
 	"golang.org/x/net/http2"
 )
 
 const (
-	URISchema string = "https://"
-	DefaultHost string = "localhost"
-	DefaultPort int = 64443
+	ServerUriSchema = "https://"
+	DefaultHost     = "localhost"
+	DefaultPort     = 64443
+	DefaultCertFile = "server.crt"
+	DefaultKeyFile  = "server.key"
 )
 
-func uriBuild(host string, port int) string {
-	return fmt.Sprintf("%s:%d", host, port)
-}
-
-func uriFullBuild(host string, port int) string {
-	return fmt.Sprintf("%s%s:%d", URISchema, host, port)
-}
+var (
+	serverCertFile = flag.String("certFile", DefaultCertFile, "TLS server Cert file.")
+	serverKeyFile  = flag.String("keyFile", DefaultKeyFile, "TLS server Key file.")
+	serverHost     = flag.String("host", DefaultHost, "IP address to listen on ('host:port'). Required.")
+	serverPort     = flag.Int("port", DefaultPort, "Port to listen on ('host:port'). Required.")
+	serverVerbose  = flag.Bool("verbose", false, "Verbose HTTP/2 debugging. Required.")
+)
 
 func main() {
-	var srv http.Server
-//	http2.VerboseLogs = true
-	srv.Addr = uriBuild(DefaultHost, DefaultPort)
-	flag.BoolVar(&http2.VerboseLogs, "verbose", false, "Verbose HTTP/2 debugging.")
 	flag.Parse()
+
+	var server http.Server
+	server.Addr = fmt.Sprintf("%s:%d", *serverHost, *serverPort)
+	http2.VerboseLogs = *serverVerbose
 
 	initHandlers()
 
-	http2.ConfigureServer(&srv, &http2.Server{})
-
-	http.HandleFunc("/info", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "Hey client %q\n", html.EscapeString(r.URL.Path))
-		ShowRequestInfoHandler(w, r)
-	})
+	http2.ConfigureServer(&server, &http2.Server{})
 
 	go func() {
-		log.Fatal(srv.ListenAndServeTLS("server.crt", "server.key"))
+		log.Fatal(server.ListenAndServeTLS(*serverCertFile, *serverKeyFile))
 	}()
 
 	select {}
-}
-
-func ShowRequestInfoHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/plain")
-	fmt.Fprintf(w, "Method: %s\n", r.Method)
-	fmt.Fprintf(w, "Protocol: %s\n", r.Proto)
-	fmt.Fprintf(w, "Host: %s\n", r.Host)
-	fmt.Fprintf(w, "RemoteAddr: %s\n", r.RemoteAddr)
-	fmt.Fprintf(w, "RequestURI: %q\n", r.RequestURI)
-	fmt.Fprintf(w, "URL: %#v\n", r.URL)
-	fmt.Fprintf(w, "Body.ContentLength: %d (-1 means unknown)\n", r.ContentLength)
-	fmt.Fprintf(w, "Close: %v (relevant for HTTP/1 only)\n", r.Close)
-	fmt.Fprintf(w, "TLS: %#v\n", r.TLS)
-	fmt.Fprintf(w, "\nHeaders:\n")
-	r.Header.Write(w)
 }

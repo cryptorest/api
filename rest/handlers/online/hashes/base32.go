@@ -4,11 +4,12 @@ import (
 	"net/http"
 	"encoding/base32"
 
-	"rest/handlers"
+	"rest/utils"
+	"rest/errors"
 	"rest/handlers/online"
 )
 
-const Base32Path string = online.HashesPath + "/base32"
+const Base32Path = online.HashesPath + "/base32"
 
 var Base32Actions = [2]string{
 	"encode",
@@ -16,28 +17,28 @@ var Base32Actions = [2]string{
 }
 
 func Base32(w http.ResponseWriter, r *http.Request) {
-	if handlers.ErrorMethodPost(w, r) {
+	if errors.MethodPost(w, r) {
 		return
 	}
 
-	action := handlers.Path2Action(r)
+	action := utils.Path2Action(r)
 
 	switch action {
 	case Base32Actions[0]:
 		data := []byte("data")
 		str := base32.StdEncoding.EncodeToString(data)
 
-		handlers.WriteString(w, str)
+		utils.WriteString(w, str)
 	case Base32Actions[1]:
 		str := "MRQXIYI="
 		data, err := base32.StdEncoding.DecodeString(str)
 
 		if err != nil {
-			handlers.WriteError(w, err)
+			utils.WriteError(w, err)
 
 			return
 		}
 
-		handlers.WriteBytes(w, data)
+		utils.WriteBytes(w, data)
 	}
 }

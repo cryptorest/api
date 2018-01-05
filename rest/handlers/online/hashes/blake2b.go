@@ -1,15 +1,15 @@
 package hashes
 
 import (
-	"fmt"
 	"net/http"
 	"github.com/golang/crypto/blake2b"
 
-	"rest/handlers"
+	"rest/utils"
+	"rest/errors"
 	"rest/handlers/online"
 )
 
-const Blake2bPath string = online.HashesPath + "/blake2b"
+const Blake2bPath = online.HashesPath + "/blake2b"
 
 var Blake2bBits = [3]string{
 	"256",
@@ -18,19 +18,19 @@ var Blake2bBits = [3]string{
 }
 
 func BLAKE2b(w http.ResponseWriter, r *http.Request) {
-	if handlers.ErrorMethodPost(w, r) {
+	if errors.MethodPost(w, r) {
 		return
 	}
 
-	bit := handlers.Path2Bit(r)
+	bit := utils.Path2Bit(r)
 	data := []byte("data")
 
 	switch bit {
 	case Blake2bBits[0]:
-		fmt.Fprintf(w, "%x", blake2b.Sum256(data))
+		utils.Write32Byte(w, blake2b.Sum256(data))
 	case Blake2bBits[1]:
-		fmt.Fprintf(w, "%x", blake2b.Sum384(data))
+		utils.Write48Byte(w, blake2b.Sum384(data))
 	case Blake2bBits[2]:
-		fmt.Fprintf(w, "%x", blake2b.Sum512(data))
+		utils.Write64Byte(w, blake2b.Sum512(data))
 	}
 }

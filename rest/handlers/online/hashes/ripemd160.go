@@ -4,14 +4,15 @@ import (
 	"net/http"
 	"golang.org/x/crypto/ripemd160"
 
-	"rest/handlers"
+	"rest/utils"
+	"rest/errors"
 	"rest/handlers/online"
 )
 
-const Ripemd160Path string = online.HashesPath + "/ripemd160"
+const Ripemd160Path = online.HashesPath + "/ripemd160"
 
 func RIPEMD160(w http.ResponseWriter, r *http.Request) {
-	if handlers.ErrorMethodPost(w, r) {
+	if errors.MethodPost(w, r) {
 		return
 	}
 
@@ -19,5 +20,5 @@ func RIPEMD160(w http.ResponseWriter, r *http.Request) {
 	md := ripemd160.New()
 
 	md.Write(data)
-	handlers.WriteHash(w, md.Sum(nil))
+	utils.WriteHash(w, md.Sum(nil))
 }

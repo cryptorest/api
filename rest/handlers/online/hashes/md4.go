@@ -4,14 +4,15 @@ import (
 	"net/http"
 	"golang.org/x/crypto/md4"
 
-	"rest/handlers"
+	"rest/utils"
+	"rest/errors"
 	"rest/handlers/online"
 )
 
-const Md4Path string = online.HashesPath + "/md4"
+const Md4Path = online.HashesPath + "/md4"
 
 func MD4(w http.ResponseWriter, r *http.Request) {
-	if handlers.ErrorMethodPost(w, r) {
+	if errors.MethodPost(w, r) {
 		return
 	}
 
@@ -19,5 +20,5 @@ func MD4(w http.ResponseWriter, r *http.Request) {
 	md := md4.New()
 
 	md.Write(data)
-	handlers.WriteHash(w, md.Sum(nil))
+	utils.WriteHash(w, md.Sum(nil))
 }

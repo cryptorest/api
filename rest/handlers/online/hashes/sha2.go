@@ -6,11 +6,12 @@ import (
 	"crypto/sha256"
 	"crypto/sha512"
 
-	"rest/handlers"
+	"rest/utils"
+	"rest/errors"
 	"rest/handlers/online"
 )
 
-const Sha2Path string = online.HashesPath + "/sha2"
+const Sha2Path = online.HashesPath + "/sha2"
 
 var Sha2Bits = map[string]func() hash.Hash{
 	"224": sha256.New224,
@@ -22,14 +23,14 @@ var Sha2Bits = map[string]func() hash.Hash{
 }
 
 func SHA2(w http.ResponseWriter, r *http.Request) {
-	if handlers.ErrorMethodPost(w, r) {
+	if errors.MethodPost(w, r) {
 		return
 	}
 
-	bit := handlers.Path2Bit(r)
+	bit := utils.Path2Bit(r)
 	data := []byte("data")
 	b := Sha2Bits[bit]()
 
 	b.Write(data)
-	handlers.WriteHash(w, b.Sum(nil))
+	utils.WriteHash(w, b.Sum(nil))
 }
