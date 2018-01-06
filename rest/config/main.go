@@ -45,6 +45,9 @@ func Init() {
 	InitDefault(&Default)
 
 	InitCommand(&Server)
+	Server.URISchema = Default.URISchema
+	Server.GlobalPort = Default.GlobalPort
+
 	if Server == Default {
 		InitEnvironment(&Server)
 	}

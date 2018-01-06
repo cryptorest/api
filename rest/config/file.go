@@ -20,7 +20,7 @@ var extensions = [4]string {
 func InitFileYAML(c *Configuration) {
 	cFile, err := ioutil.ReadFile(c.ConfigFile)
 	if err != nil {
-		log.Printf("YAML error: #%v ", err)
+		log.Fatalf("YAML error: #%v ", err)
 	}
 
 	err = yaml.Unmarshal(cFile, c)
@@ -40,7 +40,7 @@ func InitFileTOML(c *Configuration) {
 func InitFileJSON(c *Configuration) {
 	cFile, err := ioutil.ReadFile(c.ConfigFile)
 	if err != nil {
-		log.Printf("JSON error: #%v ", err)
+		log.Fatalf("JSON error: #%v ", err)
 	}
 
 	err =json.Unmarshal(cFile, &c)
