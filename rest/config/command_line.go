@@ -4,14 +4,13 @@ import (
 	"flag"
 )
 
-func InitCommand(c *configuration) bool {
-	c.CertFile = *flag.String("certFile", Default.CertFile, "TLS server Cert file.")
-	c.KeyFile  = *flag.String("keyFile", Default.KeyFile, "TLS server Key file.")
-	c.Host     = *flag.String("host", Default.Host, "IP address to listen on ('host:port'). Required.")
-	c.Port     = *flag.Int("port", Default.Port, "Port to listen on ('host:port'). Required.")
-	c.Verbose  = *flag.Bool("verbose", false, "Verbose HTTP/2 debugging. Required.")
+func InitCommand(c *Configuration) {
+	flag.StringVar(&c.ConfigFile, "configFile", Default.ConfigFile, "Server configuration file(TOML, JSON, YaML).")
+	flag.StringVar(&c.CertFile, "certFile", Default.CertFile, "TLS server Cert file.")
+	flag.StringVar(&c.KeyFile, "keyFile", Default.KeyFile, "TLS server Key file.")
+	flag.StringVar(&c.Host, "host", Default.Host, "IP address to listen on ('host:port'). Required.")
+	flag.IntVar(&c.Port, "port", Default.Port, "Port to listen on ('host:port'). Required.")
+	flag.BoolVar(&c.Verbose, "verbose", Default.Verbose, "Verbose HTTP/2 debugging. Required.")
 
 	flag.Parse()
-
-	return true
 }

@@ -1,5 +1,7 @@
 package config
 
-func InitEnvironment(c *configuration) bool {
-	return false
+var EnvVarPrefix = "CRYPTOREST_"
+
+func InitEnvironment(c *Configuration) {
+	return
 }
