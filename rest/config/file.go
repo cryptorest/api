@@ -5,14 +5,16 @@ import (
 	"strings"
 	"io/ioutil"
 	"path/filepath"
+
 	"encoding/json"
 	"gopkg.in/yaml.v2"
 	"github.com/BurntSushi/toml"
 )
 
-var extensions = [4]string {
+var extensions = []string {
 	"yml",
 	"yaml",
+	"tml",
 	"toml",
 	"json",
 }
@@ -50,14 +52,16 @@ func InitFileJSON(c *Configuration) {
 }
 
 func InitFile(c *Configuration) {
-	if c.ConfigFile != "" {
-		switch strings.Trim(filepath.Ext(c.ConfigFile), ".") {
-		case extensions[0], extensions[1]:
-			InitFileYAML(&*c)
-		case extensions[2]:
-			InitFileTOML(&*c)
-		case extensions[3]:
-			InitFileJSON(&*c)
-		}
+	if c.ConfigFile == "" {
+		return
+	}
+
+	switch strings.Trim(filepath.Ext(c.ConfigFile), ".") {
+	case extensions[0], extensions[1]:
+		InitFileYAML(&*c)
+	case extensions[2], extensions[3]:
+		InitFileTOML(&*c)
+	case extensions[4]:
+		InitFileJSON(&*c)
 	}
 }
