@@ -6,6 +6,14 @@ import (
 	"strconv"
 )
 
+var envVars = [5]string {
+	"CRYPTOREST_CERT_FILE",
+	"CRYPTOREST_KEY_FILE",
+	"CRYPTOREST_HOST",
+	"CRYPTOREST_PORT",
+	"CRYPTOREST_VERBOSE",
+}
+
 func envString(envName string, pDefault string) (string) {
 	e := os.Getenv(envName)
 	if e == "" {
@@ -44,9 +52,9 @@ func envInt(envName string, pDefault int) int {
 }
 
 func InitEnvironment(c *Configuration) {
-	c.CertFile = envString("CRYPTOREST_CERT_FILE", Default.CertFile)
-	c.KeyFile  = envString("CRYPTOREST_KEY_FILE",  Default.KeyFile)
-	c.Host     = envString("CRYPTOREST_HOST",      Default.Host)
-	c.Port     = envInt("CRYPTOREST_PORT",      Default.Port)
-	c.Verbose  = envBool("CRYPTOREST_VERBOSE", Default.Verbose)
+	c.CertFile = envString(envVars[0], Default.CertFile)
+	c.KeyFile  = envString(envVars[1], Default.KeyFile)
+	c.Host     = envString(envVars[2], Default.Host)
+	c.Port     = envInt(envVars[3],    Default.Port)
+	c.Verbose  = envBool(envVars[4],   Default.Verbose)
 }

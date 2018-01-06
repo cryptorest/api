@@ -11,7 +11,7 @@ import (
 	"github.com/BurntSushi/toml"
 )
 
-var extensions = []string {
+var extensions = [5]string {
 	"yml",
 	"yaml",
 	"tml",
