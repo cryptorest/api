@@ -2,11 +2,13 @@ package main
 
 import (
 	"fmt"
-	"path"
+	"sort"
 	"hash"
+	"path"
 	"net/http"
 
 	"rest/errors"
+	"rest/config"
 	"rest/handlers"
 	"rest/data/data"
 	"rest/data/hashes"
@@ -15,18 +17,6 @@ import (
 const RootPath = "/"
 
 var AllPathes []string
-
-func serverURI(uriPath string) string {
-	var scheme string
-
-	if DefaultGlobalPort == *serverPort {
-		scheme = *serverHost
-	} else {
-		scheme = fmt.Sprintf("%s:%d", *serverHost, *serverPort)
-	}
-
-	return ServerUriSchema + scheme + uriPath
-}
 
 func showRequestInfo(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/plain")
@@ -41,11 +31,12 @@ func showRequestInfo(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Close: %v (relevant for HTTP/1 only)\n", r.Close)
 	fmt.Fprintf(w, "TLS: %#v\n", r.TLS)
 	fmt.Fprint(w, "Pathes:\n")
+	sort.Strings(AllPathes)
 	for _, p := range AllPathes {
 		fmt.Fprintf(w, "    %s\n", p)
 	}
 
-	r.Header.Write(w)
+//	r.Header.Write(w)
 }
 
 func Root(w http.ResponseWriter, r *http.Request) {
@@ -116,7 +107,7 @@ func initHandlers() {
 	http.HandleFunc(RootPath, func(w http.ResponseWriter, r *http.Request) {
 		switch {
 		case r.TLS == nil:
-			http.Redirect(w, r, serverURI(RootPath), http.StatusFound)
+			http.Redirect(w, r, config.ServerURI(RootPath), http.StatusFound)
 
 			return
 		}
