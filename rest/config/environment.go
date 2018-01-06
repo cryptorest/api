@@ -1,5 +1,5 @@
 package config
 
-func InitEnvironment() bool {
+func InitEnvironment(c *configuration) bool {
 	return false
 }

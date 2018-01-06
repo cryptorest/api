@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"runtime"
 	"net/http"
 	"golang.org/x/net/http2"
 
@@ -10,18 +11,20 @@ import (
 )
 
 func main() {
+	runtime.GOMAXPROCS(runtime.NumCPU())
+
 	config.Init()
 
 	var server http.Server
-	server.Addr       = fmt.Sprintf("%s:%d", config.ServerHost, config.ServerPort)
-	http2.VerboseLogs = config.ServerVerbose
+	server.Addr       = fmt.Sprintf("%s:%d", config.Server.Host, config.Server.Port)
+	http2.VerboseLogs = config.Server.Verbose
 
 	initHandlers()
 
 	http2.ConfigureServer(&server, &http2.Server{})
 
 	go func() {
-		log.Fatal(server.ListenAndServeTLS(config.ServerCertFile, config.ServerKeyFile))
+		log.Fatal(server.ListenAndServeTLS(config.Server.CertFile, config.Server.KeyFile))
 	}()
 
 	select {}

@@ -1,5 +1,5 @@
 package config
 
-func InitFile() bool {
+func InitFile(c *configuration) bool {
 	return false
 }

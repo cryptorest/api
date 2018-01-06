@@ -4,39 +4,50 @@ import (
 	"fmt"
 )
 
-const (
-	ServerUriSchema   = "https://"
-	DefaultHost       = "localhost"
-	DefaultPort       = 64443
-	DefaultGlobalPort = 443
-	DefaultCertFile   = "server.crt"
-	DefaultKeyFile    = "server.key"
-)
+type configuration struct {
+	UriSchema  string
+	CertFile   string
+	KeyFile    string
+	Host       string
+	Port       int
+	GlobalPort int
+	Verbose    bool
+}
 
-var (
-	ServerCertFile string
-	ServerKeyFile  string
-	ServerHost     string
-	ServerPort     int
-	ServerVerbose  bool
-)
+var Server  configuration
+var Default configuration
+
+func initDefault(c *configuration) {
+	c.UriSchema  = "https://"
+	c.CertFile   = "server.crt"
+	c.KeyFile    = "server.key"
+	c.Host       = "localhost"
+	c.Port       = 64443
+	c.GlobalPort = 443
+	c.Verbose    = false
+}
 
 func ServerURI(uriPath string) string {
 	var scheme string
 
-	if DefaultGlobalPort == ServerPort {
-		scheme = ServerHost
+	if Default.GlobalPort == Server.Port {
+		scheme = Server.Host
 	} else {
-		scheme = fmt.Sprintf("%s:%d", ServerHost, ServerPort)
+		scheme = fmt.Sprintf("%s:%d", Server.Host, Server.Port)
 	}
 
-	return ServerUriSchema + scheme + uriPath
+	return Server.UriSchema + scheme + uriPath
 }
 
 func Init() {
-	if !InitEnvironment() {
-		if !InitFile() {
-			InitCommand()
+	initDefault(&Default)
+
+	if !InitEnvironment(&Server) {
+		if !InitFile(&Server) {
+			InitCommand(&Server)
 		}
 	}
+
+	Server.UriSchema = Default.UriSchema
+	Server.GlobalPort = Default.GlobalPort
 }
