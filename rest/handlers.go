@@ -8,7 +8,6 @@ import (
 	"net/http"
 
 	"rest/errors"
-	"rest/config"
 	"rest/handlers"
 	"rest/content/data"
 	"rest/content/hashes"
@@ -107,7 +106,7 @@ func initHandlers() {
 	http.HandleFunc(RootPath, func(w http.ResponseWriter, r *http.Request) {
 		switch {
 		case r.TLS == nil:
-			http.Redirect(w, r, config.ServerURI(RootPath), http.StatusFound)
+			http.Redirect(w, r, ServerURI(RootPath), http.StatusFound)
 
 			return
 		}

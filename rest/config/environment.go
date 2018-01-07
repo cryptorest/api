@@ -51,7 +51,7 @@ func envInt(envName string, pDefault int) int {
 	return int(i)
 }
 
-func InitEnvironment(c *Configuration) {
+func InitEnvironment(c *Structure) {
 	c.CertFile = envString(envVars[0], Default.CertFile)
 	c.KeyFile  = envString(envVars[1], Default.KeyFile)
 	c.Host     = envString(envVars[2], Default.Host)

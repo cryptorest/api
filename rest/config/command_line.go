@@ -4,7 +4,7 @@ import (
 	"flag"
 )
 
-func InitCommand(c *Configuration) {
+func InitCommand(c *Structure) {
 	flag.StringVar(&c.ConfigFile, "configFile", Default.ConfigFile, "Server configuration file(TOML, JSON, YAML).")
 	flag.StringVar(&c.CertFile, "certFile", Default.CertFile, "TLS server Cert file.")
 	flag.StringVar(&c.KeyFile, "keyFile", Default.KeyFile, "TLS server Key file.")

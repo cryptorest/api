@@ -19,7 +19,7 @@ var extensions = [5]string {
 	"json",
 }
 
-func InitFileYAML(c *Configuration) {
+func InitFileYAML(c *Structure) {
 	cFile, err := ioutil.ReadFile(c.ConfigFile)
 	if err != nil {
 		log.Fatalf("YAML error: #%v ", err)
@@ -31,7 +31,7 @@ func InitFileYAML(c *Configuration) {
 	}
 }
 
-func InitFileTOML(c *Configuration) {
+func InitFileTOML(c *Structure) {
 	_, err := toml.DecodeFile(c.ConfigFile, &c)
 
 	if err != nil {
@@ -39,7 +39,7 @@ func InitFileTOML(c *Configuration) {
 	}
 }
 
-func InitFileJSON(c *Configuration) {
+func InitFileJSON(c *Structure) {
 	cFile, err := ioutil.ReadFile(c.ConfigFile)
 	if err != nil {
 		log.Fatalf("JSON error: #%v ", err)
@@ -51,7 +51,7 @@ func InitFileJSON(c *Configuration) {
 	}
 }
 
-func InitFile(c *Configuration) {
+func InitFile(c *Structure) {
 	if c.ConfigFile == "" {
 		return
 	}
