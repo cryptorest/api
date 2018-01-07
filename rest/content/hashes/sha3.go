@@ -5,11 +5,11 @@ import (
 	"net/http"
 	"golang.org/x/crypto/sha3"
 
-	"rest/data"
+	"rest/content"
 	"rest/errors"
 )
 
-const Sha3Path = data.HashesPath + "/sha3"
+const Sha3Path = content.HashesPath + "/sha3"
 
 var Sha3Bits = map[string]func() hash.Hash{
 	"224": sha3.New224,
@@ -23,10 +23,10 @@ func SHA3(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	bit := data.Path2Bit(r)
+	bit := content.Path2Bit(r)
 	bData := []byte("data")
 	b := Sha3Bits[bit]()
 
 	b.Write(bData)
-	data.WriteHash(w, b.Sum(nil))
+	content.WriteHash(w, b.Sum(nil))
 }

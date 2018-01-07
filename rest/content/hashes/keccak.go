@@ -5,11 +5,11 @@ import (
 	"net/http"
 	"github.com/cryptorest/keccakc"
 
-	"rest/data"
+	"rest/content"
 	"rest/errors"
 )
 
-const KeccakPath = data.HashesPath + "/keccak"
+const KeccakPath = content.HashesPath + "/keccak"
 
 var KeccakBits = map[string]func() hash.Hash{
 	"224": keccak.New224,
@@ -23,10 +23,10 @@ func KECCAK(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	bit := data.Path2Bit(r)
+	bit := content.Path2Bit(r)
 	bData := []byte("data")
 	b := KeccakBits[bit]()
 
 	b.Write(bData)
-	data.WriteHash(w, b.Sum(nil))
+	content.WriteHash(w, b.Sum(nil))
 }

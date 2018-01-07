@@ -10,8 +10,8 @@ import (
 	"rest/errors"
 	"rest/config"
 	"rest/handlers"
-	"rest/data/data"
-	"rest/data/hashes"
+	"rest/content/data"
+	"rest/content/hashes"
 )
 
 const RootPath = "/"

@@ -5,11 +5,11 @@ import (
 	"encoding/hex"
 	"golang.org/x/crypto/sha3"
 
-	"rest/data"
+	"rest/content"
 	"rest/errors"
 )
 
-const ShakePath = data.HashesPath + "/shake"
+const ShakePath = content.HashesPath + "/shake"
 
 var ShakeBits = []string{
 	"128",
@@ -24,7 +24,7 @@ func SHAKE(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	bit := data.Path2Bit(r)
+	bit := content.Path2Bit(r)
 	bData := []byte("data")
 
 	switch bit {
@@ -32,11 +32,11 @@ func SHAKE(w http.ResponseWriter, r *http.Request) {
 		hash := make([]byte, minBits / 8)
 		sha3.ShakeSum128(hash, bData)
 
-		data.WriteString(w, hex.EncodeToString(hash))
+		content.WriteString(w, hex.EncodeToString(hash))
 	case ShakeBits[1]:
 		hash := make([]byte, minBits / 4)
 		sha3.ShakeSum256(hash, bData)
 
-		data.WriteString(w, hex.EncodeToString(hash))
+		content.WriteString(w, hex.EncodeToString(hash))
 	}
 }

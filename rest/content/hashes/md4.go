@@ -4,11 +4,11 @@ import (
 	"net/http"
 	"golang.org/x/crypto/md4"
 
-	"rest/data"
+	"rest/content"
 	"rest/errors"
 )
 
-const Md4Path = data.HashesPath + "/md4"
+const Md4Path = content.HashesPath + "/md4"
 
 func MD4(w http.ResponseWriter, r *http.Request) {
 	if errors.MethodPost(w, r) {
@@ -19,5 +19,5 @@ func MD4(w http.ResponseWriter, r *http.Request) {
 	md := md4.New()
 
 	md.Write(bData)
-	data.WriteHash(w, md.Sum(nil))
+	content.WriteHash(w, md.Sum(nil))
 }

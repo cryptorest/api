@@ -1,4 +1,4 @@
-package data
+package content
 
 import (
 	"strconv"

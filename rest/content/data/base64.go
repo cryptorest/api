@@ -4,11 +4,11 @@ import (
 	"net/http"
 	"encoding/base64"
 
-	"rest/data"
+	"rest/content"
 	"rest/errors"
 )
 
-const Base64Path = data.DataPath + "/base64"
+const Base64Path = content.DataPath + "/base64"
 
 var Base64Actions = []string{
 	"encode",
@@ -20,24 +20,24 @@ func Base64(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	action := data.Path2Action(r)
+	action := content.Path2Action(r)
 
 	switch action {
 	case Base64Actions[0]:
 		bData := []byte("data")
 		str := base64.StdEncoding.EncodeToString(bData)
 
-		data.WriteString(w, str)
+		content.WriteString(w, str)
 	case Base64Actions[1]:
 		str := "ZGF0YQ=="
 		bData, err := base64.StdEncoding.DecodeString(str)
 
 		if err != nil {
-			data.WriteError(w, err)
+			content.WriteError(w, err)
 
 			return
 		}
 
-		data.WriteBytes(w, bData)
+		content.WriteBytes(w, bData)
 	}
 }

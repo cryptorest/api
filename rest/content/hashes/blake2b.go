@@ -4,11 +4,11 @@ import (
 	"net/http"
 	"github.com/golang/crypto/blake2b"
 
-	"rest/data"
+	"rest/content"
 	"rest/errors"
 )
 
-const Blake2bPath = data.HashesPath + "/blake2b"
+const Blake2bPath = content.HashesPath + "/blake2b"
 
 var Blake2bBits = []string{
 	"256",
@@ -21,15 +21,15 @@ func BLAKE2b(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	bit := data.Path2Bit(r)
+	bit := content.Path2Bit(r)
 	bData := []byte("data")
 
 	switch bit {
 	case Blake2bBits[0]:
-		data.Write32Byte(w, blake2b.Sum256(bData))
+		content.Write32Byte(w, blake2b.Sum256(bData))
 	case Blake2bBits[1]:
-		data.Write48Byte(w, blake2b.Sum384(bData))
+		content.Write48Byte(w, blake2b.Sum384(bData))
 	case Blake2bBits[2]:
-		data.Write64Byte(w, blake2b.Sum512(bData))
+		content.Write64Byte(w, blake2b.Sum512(bData))
 	}
 }

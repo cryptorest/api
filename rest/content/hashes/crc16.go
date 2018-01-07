@@ -4,11 +4,11 @@ import (
 	"net/http"
 	"github.com/cryptorest/crc"
 
-	"rest/data"
+	"rest/content"
 	"rest/errors"
 )
 
-const Crc16Path = data.HashesPath + "/crc16"
+const Crc16Path = content.HashesPath + "/crc16"
 
 var Crc16Types = []string{
 	"arc",
@@ -22,17 +22,17 @@ func CRC16(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	bit := data.Path2Bit(r)
+	bit := content.Path2Bit(r)
 	bData := []byte("data")
 
 	switch bit {
 	case Crc16Types[0]:
-		data.WriteUInt64(w, crc.CalculateCRC(crc.CRC16, bData))
+		content.WriteUInt64(w, crc.CalculateCRC(crc.CRC16, bData))
 	case Crc16Types[1]:
-		data.WriteUInt64(w, crc.CalculateCRC(crc.CCITT, bData))
+		content.WriteUInt64(w, crc.CalculateCRC(crc.CCITT, bData))
 	case Crc16Types[2]:
-		data.WriteUInt64(w, crc.CalculateCRC(crc.X25, bData))
+		content.WriteUInt64(w, crc.CalculateCRC(crc.X25, bData))
 	case Crc16Types[3]:
-		data.WriteUInt64(w, crc.CalculateCRC(crc.XMODEM, bData))
+		content.WriteUInt64(w, crc.CalculateCRC(crc.XMODEM, bData))
 	}
 }

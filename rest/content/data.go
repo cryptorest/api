@@ -1,3 +1,3 @@
-package data
+package content
 
 const DataPath = "/data"

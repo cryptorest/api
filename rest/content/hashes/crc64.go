@@ -4,11 +4,11 @@ import (
 	"net/http"
 	"hash/crc64"
 
-	"rest/data"
+	"rest/content"
 	"rest/errors"
 )
 
-const Crc64Path = data.HashesPath + "/crc64"
+const Crc64Path = content.HashesPath + "/crc64"
 
 var Crc64Types = []string{
 	"iso",
@@ -20,13 +20,13 @@ func CRC64(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pType := data.Path2Type(r)
+	pType := content.Path2Type(r)
 	bData := []byte("data")
 
 	switch pType {
 	case Crc64Types[0]:
-		data.WriteUInt64(w, crc64.Checksum(bData, crc64.MakeTable(crc64.ISO)))
+		content.WriteUInt64(w, crc64.Checksum(bData, crc64.MakeTable(crc64.ISO)))
 	case Crc64Types[1]:
-		data.WriteUInt64(w, crc64.Checksum(bData, crc64.MakeTable(crc64.ECMA)))
+		content.WriteUInt64(w, crc64.Checksum(bData, crc64.MakeTable(crc64.ECMA)))
 	}
 }

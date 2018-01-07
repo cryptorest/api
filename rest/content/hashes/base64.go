@@ -4,11 +4,11 @@ import (
 	"net/http"
 	"encoding/base64"
 
-	"rest/data"
+	"rest/content"
 	"rest/errors"
 )
 
-const Base64Path = data.HashesPath + "/base64"
+const Base64Path = content.HashesPath + "/base64"
 
 func Base64(w http.ResponseWriter, r *http.Request) {
 	if errors.MethodPost(w, r) {
@@ -18,5 +18,5 @@ func Base64(w http.ResponseWriter, r *http.Request) {
 	bData := []byte("data")
 	str := base64.StdEncoding.EncodeToString(bData)
 
-	data.WriteString(w, str)
+	content.WriteString(w, str)
 }

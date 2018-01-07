@@ -1,3 +1,3 @@
-package data
+package content
 
 const HashesPath = "/hashes"
