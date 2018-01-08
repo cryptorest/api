@@ -13,7 +13,7 @@ import (
 func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
-	initConfig()
+	config.Init()
 
 	var server http.Server
 	server.Addr       = fmt.Sprintf("%s:%d", config.Server.Host, config.Server.Port)
