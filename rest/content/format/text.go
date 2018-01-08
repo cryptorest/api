@@ -3,6 +3,7 @@ package format
 import (
 	"log"
 	"strings"
+	"net/http"
 	"path/filepath"
 
 	"github.com/BurntSushi/toml"
@@ -43,9 +44,11 @@ func InputText(s *InputStructure, hr bool) (string, error) {
 	return "", nil
 }
 
-func OutputText(s *OutputStructure, hr bool) (string, error) {
+func OutputText(w http.ResponseWriter, s *OutputStructure, hr bool) error {
 	hr      = true
 	s.Error = ""
 
-	return s.Content, nil
+	_, err := w.Write([]byte(s.Content))
+
+	return err
 }

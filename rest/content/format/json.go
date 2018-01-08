@@ -3,6 +3,7 @@ package format
 import (
 	"log"
 	"strings"
+	"net/http"
 	"io/ioutil"
 	"path/filepath"
 	"encoding/json"
@@ -47,7 +48,7 @@ func InputJson(s *InputStructure, hr bool) (string, error) {
 	return "", nil
 }
 
-func OutputJson(s *OutputStructure, hr bool) (string, error) {
+func OutputJson(w http.ResponseWriter, s *OutputStructure, hr bool) error {
 	var b []byte
 	var err error
 
@@ -57,5 +58,9 @@ func OutputJson(s *OutputStructure, hr bool) (string, error) {
 		b, err = json.Marshal(&s)
 	}
 
-	return string(b), err
+	if err == nil {
+		_, err = w.Write(b)
+	}
+
+	return err
 }

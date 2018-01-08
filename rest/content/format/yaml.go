@@ -3,6 +3,7 @@ package format
 import (
 	"log"
 	"strings"
+	"net/http"
 	"io/ioutil"
 	"path/filepath"
 
@@ -49,10 +50,16 @@ func InputYaml(s *InputStructure, hr bool) (string, error) {
 	return "", nil
 }
 
-func OutputYaml(s *OutputStructure, hr bool) (string, error) {
+func OutputYaml(w http.ResponseWriter, s *OutputStructure, hr bool) error {
 	hr = true
+	var err error
+	var b []byte
 
-	b, err := yaml.Marshal(&s)
+	b, err = yaml.Marshal(&s)
 
-	return string(b), err
+	if err == nil {
+		_, err = w.Write(b)
+	}
+
+	return err
 }

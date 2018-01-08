@@ -1,7 +1,7 @@
 package format
 
 const HumanReadablePrefix = ""
-const HumanReadableIndent = "   "
+const HumanReadableIndent = "  "
 
 type InputStructure struct {
 	ConfigFile string `yaml:"ConfigFile"`

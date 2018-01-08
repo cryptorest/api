@@ -3,10 +3,10 @@ package format
 import (
 	"log"
 	"strings"
+	"net/http"
 	"path/filepath"
 
 	"github.com/BurntSushi/toml"
-	"os"
 )
 
 var TomlMimeTypes = [5]string {
@@ -45,10 +45,10 @@ func InputToml(s *InputStructure, hr bool) (string, error) {
 	return "", nil
 }
 
-func OutputToml(s *OutputStructure, hr bool) (string, error) {
+func OutputToml(w http.ResponseWriter, s *OutputStructure, hr bool) error {
 	hr = true
 
-	err := toml.NewEncoder(os.Stdout).Encode(&s)
+	err := toml.NewEncoder(w).Encode(&s)
 
-	return s.Content, err
+	return err
 }

@@ -10,21 +10,21 @@ import (
 	"rest/content/format"
 )
 
-var OutputFuncs = [4]func(c *format.OutputStructure, hr bool) (string, error) {
+var OutputFuncs = [4]func(w http.ResponseWriter, c *format.OutputStructure, hr bool) error {
 	format.OutputText,
 	format.OutputJson,
 	format.OutputYaml,
 	format.OutputToml,
 }
 
-func DefaultOutputFormat() (string, bool, func(c *format.OutputStructure, hr bool) (string, error)) {
+func DefaultOutputFormat() (string, bool, func(w http.ResponseWriter, c *format.OutputStructure, hr bool) error) {
 	return format.TextMimeTypes[4], false, format.OutputText
 }
 
-func OutputFormat(r *http.Request) (string, bool, func(c *format.OutputStructure, hr bool) (string, error)) {
+func OutputFormat(r *http.Request) (string, bool, func(w http.ResponseWriter, c *format.OutputStructure, hr bool) error) {
 	var mimeType string
 	var hr bool
-	var f func(c *format.OutputStructure, hr bool) (string, error)
+	var f func(w http.ResponseWriter, c *format.OutputStructure, hr bool) error
 	rType := r.Header.Get(MimeKeyResponse)
 
 	if rType == "" {
@@ -62,24 +62,24 @@ func Output(w http.ResponseWriter, r *http.Request, d string, e error) {
 		d = ""
 	}
 
-    var outputStruct = &format.OutputStructure{
-    	Host:      config.Server.Host,
+	var outputStruct = &format.OutputStructure{
+		Host:      config.Server.Host,
 		Port:      config.Server.Port,
-    	Content:   d,
-    	Error:     eStr,
-    	Date:      tm.String(),
+		Content:   d,
+		Error:     eStr,
+		Date:      tm.String(),
 		Timestamp: tm.Unix(),
 	}
 
-	d, err := f(outputStruct, hr)
+	err := f(w, outputStruct, hr)
 
 	if err != nil {
 		d = ""
 		outputStruct.Content = d
-		outputStruct.Error   = errorContent(e)
+		outputStruct.Error = errorContent(e)
+		io.WriteString(w, outputStruct.Error)
 	}
 
-	io.WriteString(w, d)
 	w.Header().Set(MimeKeyRequest, t)
 }
 
