@@ -18,5 +18,5 @@ func Base64(w http.ResponseWriter, r *http.Request) {
 	bData := []byte("data")
 	str := base64.StdEncoding.EncodeToString(bData)
 
-	content.WriteString(w, str)
+	content.OutputString(w, r, str)
 }

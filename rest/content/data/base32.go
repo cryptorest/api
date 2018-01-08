@@ -27,17 +27,17 @@ func Base32(w http.ResponseWriter, r *http.Request) {
 		bData := []byte("data")
 		str := base32.StdEncoding.EncodeToString(bData)
 
-		content.WriteString(w, str)
+		content.OutputString(w, r, str)
 	case Base32Actions[1]:
 		str := "MRQXIYI="
 		bData, err := base32.StdEncoding.DecodeString(str)
 
 		if err != nil {
-			content.WriteError(w, err)
+			content.OutputError(w, r, err)
 
 			return
 		}
 
-		content.WriteBytes(w, bData)
+		content.OutputBytes(w, r, bData)
 	}
 }

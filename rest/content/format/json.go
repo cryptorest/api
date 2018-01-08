@@ -20,25 +20,42 @@ var jsonExtensions = [1]string {
 	"json",
 }
 
-func JsonInputData(c *InputStructure) {
-	cFile, err := ioutil.ReadFile(c.ConfigFile)
+func InputJsonFile(s *InputStructure) {
+	cFile, err := ioutil.ReadFile(s.ConfigFile)
 	if err != nil {
 		log.Fatalf("JSON error: #%v ", err)
 	}
 
-	err =json.Unmarshal(cFile, &c)
+	err =json.Unmarshal(cFile, &s)
 	if err != nil {
 		log.Fatalf("Unmarshal JSON: %v", err)
 	}
 }
 
-func InitJsonInputData(c *InputStructure) {
-	if c.ConfigFile == "" {
+func InitJsonInputData(s *InputStructure) {
+	if s.ConfigFile == "" {
 		return
 	}
 
-	switch strings.Trim(filepath.Ext(c.ConfigFile), ".") {
+	switch strings.Trim(filepath.Ext(s.ConfigFile), ".") {
 	case jsonExtensions[0]:
-		JsonInputData(&*c)
+		InputJsonFile(&*s)
 	}
+}
+
+func InputJson(s *InputStructure, hr bool) (string, error) {
+	return "", nil
+}
+
+func OutputJson(s *OutputStructure, hr bool) (string, error) {
+	var b []byte
+	var err error
+
+	if hr {
+		b, err = json.MarshalIndent(&s, HumanReadablePrefix, HumanReadableIndent)
+	} else {
+		b, err = json.Marshal(&s)
+	}
+
+	return string(b), err
 }

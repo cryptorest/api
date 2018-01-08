@@ -19,5 +19,5 @@ func RIPEMD160(w http.ResponseWriter, r *http.Request) {
 	md := ripemd160.New()
 
 	md.Write(bData)
-	content.WriteHash(w, md.Sum(nil))
+	content.OutputHash(w, r, md.Sum(nil))
 }

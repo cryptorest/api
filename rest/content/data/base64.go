@@ -27,17 +27,17 @@ func Base64(w http.ResponseWriter, r *http.Request) {
 		bData := []byte("data")
 		str := base64.StdEncoding.EncodeToString(bData)
 
-		content.WriteString(w, str)
+		content.OutputString(w, r, str)
 	case Base64Actions[1]:
 		str := "ZGF0YQ=="
 		bData, err := base64.StdEncoding.DecodeString(str)
 
 		if err != nil {
-			content.WriteError(w, err)
+			content.OutputError(w, r, err)
 
 			return
 		}
 
-		content.WriteBytes(w, bData)
+		content.OutputBytes(w, r, bData)
 	}
 }

@@ -26,10 +26,10 @@ func CRC32(w http.ResponseWriter, r *http.Request) {
 
 	switch pType {
 	case Crc32Types[0]:
-		content.WriteUInt32(w, crc32.Checksum(bData, crc32.MakeTable(crc32.IEEE)))
+		content.OutputUInt32(w, r, crc32.Checksum(bData, crc32.MakeTable(crc32.IEEE)))
 	case Crc32Types[1]:
-		content.WriteUInt32(w, crc32.Checksum(bData, crc32.MakeTable(crc32.Koopman)))
+		content.OutputUInt32(w, r, crc32.Checksum(bData, crc32.MakeTable(crc32.Koopman)))
 	case Crc32Types[2]:
-		content.WriteUInt32(w, crc32.Checksum(bData, crc32.MakeTable(crc32.Castagnoli)))
+		content.OutputUInt32(w, r, crc32.Checksum(bData, crc32.MakeTable(crc32.Castagnoli)))
 	}
 }

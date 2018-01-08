@@ -27,12 +27,12 @@ func CRC16(w http.ResponseWriter, r *http.Request) {
 
 	switch bit {
 	case Crc16Types[0]:
-		content.WriteUInt64(w, crc.CalculateCRC(crc.CRC16, bData))
+		content.OutputUInt64(w, r, crc.CalculateCRC(crc.CRC16, bData))
 	case Crc16Types[1]:
-		content.WriteUInt64(w, crc.CalculateCRC(crc.CCITT, bData))
+		content.OutputUInt64(w, r, crc.CalculateCRC(crc.CCITT, bData))
 	case Crc16Types[2]:
-		content.WriteUInt64(w, crc.CalculateCRC(crc.X25, bData))
+		content.OutputUInt64(w, r, crc.CalculateCRC(crc.X25, bData))
 	case Crc16Types[3]:
-		content.WriteUInt64(w, crc.CalculateCRC(crc.XMODEM, bData))
+		content.OutputUInt64(w, r, crc.CalculateCRC(crc.XMODEM, bData))
 	}
 }

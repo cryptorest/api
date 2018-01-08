@@ -31,5 +31,5 @@ func SHA2(w http.ResponseWriter, r *http.Request) {
 	b := Sha2Bits[bit]()
 
 	b.Write(bData)
-	content.WriteHash(w, b.Sum(nil))
+	content.OutputHash(w, r, b.Sum(nil))
 }

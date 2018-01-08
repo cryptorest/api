@@ -4,6 +4,7 @@ import (
 	"log"
 	"strings"
 	"path/filepath"
+
 	"github.com/BurntSushi/toml"
 )
 
@@ -19,21 +20,32 @@ var textExtensions = [1]string {
 	"txt",
 }
 
-func TextInputData(c *InputStructure) {
-	_, err := toml.DecodeFile(c.ConfigFile, &c)
+func TextInputData(s *InputStructure) {
+	_, err := toml.DecodeFile(s.ConfigFile, &s)
 
 	if err != nil {
 		log.Fatalf("Unmarshal TEXT: %v", err)
 	}
 }
 
-func InitTextInputData(c *InputStructure) {
-	if c.ConfigFile == "" {
+func InitTextInputData(s *InputStructure) {
+	if s.ConfigFile == "" {
 		return
 	}
 
-	switch strings.Trim(filepath.Ext(c.ConfigFile), ".") {
+	switch strings.Trim(filepath.Ext(s.ConfigFile), ".") {
 	case textExtensions[0]:
-		TextInputData(&*c)
+		TextInputData(&*s)
 	}
+}
+
+func InputText(s *InputStructure, hr bool) (string, error) {
+	return "", nil
+}
+
+func OutputText(s *OutputStructure, hr bool) (string, error) {
+	hr      = true
+	s.Error = ""
+
+	return s.Content, nil
 }

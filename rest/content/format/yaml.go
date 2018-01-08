@@ -22,26 +22,37 @@ var yamlExtensions = [2]string {
 	"yaml",
 }
 
-func YamlInputData(c *InputStructure) {
-	cFile, err := ioutil.ReadFile(c.ConfigFile)
+func YamlInputData(s *InputStructure) {
+	cFile, err := ioutil.ReadFile(s.ConfigFile)
 	if err != nil {
 		log.Fatalf("YAML error: #%v ", err)
 	}
 
-	err = yaml.Unmarshal(cFile, c)
+	err = yaml.Unmarshal(cFile, s)
 	if err != nil {
 		log.Fatalf("Unmarshal YAML: %v", err)
 	}
 }
 
-func InitYamlInputData(c *InputStructure) {
-	if c.ConfigFile == "" {
+func InitYamlInputData(s *InputStructure) {
+	if s.ConfigFile == "" {
 		return
 	}
 
-	switch strings.Trim(filepath.Ext(c.ConfigFile), ".") {
+	switch strings.Trim(filepath.Ext(s.ConfigFile), ".") {
 	case yamlExtensions[0], yamlExtensions[1]:
-		YamlInputData(&*c)
-
+		YamlInputData(&*s)
 	}
+}
+
+func InputYaml(s *InputStructure, hr bool) (string, error) {
+	return "", nil
+}
+
+func OutputYaml(s *OutputStructure, hr bool) (string, error) {
+	hr = true
+
+	b, err := yaml.Marshal(&s)
+
+	return string(b), err
 }
