@@ -43,6 +43,7 @@ func InitJsonFile(c *Structure) {
 	}
 
 	err =json.Unmarshal(cFile, &c)
+
 	if err != nil {
 		log.Fatalf("Unmarshal JSON: %v", err)
 	}

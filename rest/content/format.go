@@ -10,7 +10,7 @@ import (
 const MimeKeyRequest  = "Content-Type"
 const MimeKeyResponse = "Accept"
 
-var ioMimePrefix = [2]string {
+var MimePrefixs = [2]string {
 	"text",
 	"application",
 }
@@ -26,9 +26,9 @@ func humanReadableFormat(m string) bool {
 	var hr bool
 
 	switch {
-	case strings.HasPrefix(m, ioMimePrefix[0]):
+	case strings.HasPrefix(m, MimePrefixs[0]):
 		hr = true
-	case strings.HasPrefix(m, ioMimePrefix[1]):
+	case strings.HasPrefix(m, MimePrefixs[1]):
 		hr = false
 	default:
 		hr = false
