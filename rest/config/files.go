@@ -9,29 +9,25 @@ import (
 	"encoding/json"
 	"gopkg.in/yaml.v2"
 	"github.com/BurntSushi/toml"
+
+	"rest/content/format"
 )
 
-var extensions = [5]string {
-	"yml",
-	"yaml",
-	"tml",
-	"toml",
-	"json",
-}
-
-func InitFileYAML(c *Structure) {
+func InitYamlFile(c *Structure) {
 	cFile, err := ioutil.ReadFile(c.ConfigFile)
+
 	if err != nil {
 		log.Fatalf("YAML error: #%v ", err)
 	}
 
 	err = yaml.Unmarshal(cFile, c)
+
 	if err != nil {
 		log.Fatalf("Unmarshal YAML: %v", err)
 	}
 }
 
-func InitFileTOML(c *Structure) {
+func InitTomlFile(c *Structure) {
 	_, err := toml.DecodeFile(c.ConfigFile, &c)
 
 	if err != nil {
@@ -39,8 +35,9 @@ func InitFileTOML(c *Structure) {
 	}
 }
 
-func InitFileJSON(c *Structure) {
+func InitJsonFile(c *Structure) {
 	cFile, err := ioutil.ReadFile(c.ConfigFile)
+
 	if err != nil {
 		log.Fatalf("JSON error: #%v ", err)
 	}
@@ -57,11 +54,11 @@ func InitFile(c *Structure) {
 	}
 
 	switch strings.Trim(filepath.Ext(c.ConfigFile), ".") {
-	case extensions[0], extensions[1]:
-		InitFileYAML(&*c)
-	case extensions[2], extensions[3]:
-		InitFileTOML(&*c)
-	case extensions[4]:
-		InitFileJSON(&*c)
+	case format.YamlExtensions[0], format.YamlExtensions[1]:
+		InitYamlFile(&*c)
+	case format.TomlExtensions[0], format.TomlExtensions[1]:
+		InitTomlFile(&*c)
+	case format.JsonExtensions[0]:
+		InitJsonFile(&*c)
 	}
 }
