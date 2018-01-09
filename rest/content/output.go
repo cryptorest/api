@@ -57,7 +57,7 @@ func OutputFormat(output *Output) {
 }
 
 func OutputBuild(output *Output) {
-	tm  := time.Now().UTC()
+	tm := time.Now().UTC()
 
 	if output.Structure.Error == "" {
 		output.Structure.Status = "OK"
