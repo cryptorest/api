@@ -5,11 +5,11 @@ import (
 )
 
 var TextHttpMimeTypes = [5]string {
-	"application/vnd.cryptorest+text",
-	"application/x-text",
-	"application/text",
-	"text/x-plane",
 	"text/plane",
+	"text/x-plane",
+	"application/text",
+	"application/x-text",
+	"application/vnd.cryptorest+text",
 }
 
 var TextFileExtensions = [1]string {

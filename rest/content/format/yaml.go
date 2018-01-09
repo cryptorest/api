@@ -7,11 +7,11 @@ import (
 )
 
 var YamlHttpMimeTypes = [5]string {
-	"application/vnd.cryptorest+yaml",
-	"application/x-yaml",
-	"application/yaml",
-	"text/x-yaml",
 	"text/yaml",
+	"text/x-yaml",
+	"application/yaml",
+	"application/x-yaml",
+	"application/vnd.cryptorest+yaml",
 }
 
 var YamlFileExtensions = [2]string {

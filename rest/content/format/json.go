@@ -7,11 +7,11 @@ import (
 )
 
 var JsonHttpMimeTypes = [5]string {
-	"application/vnd.cryptorest+json",
-	"application/x-json",
-	"application/json",
-	"text/x-json",
 	"text/json",
+	"text/x-json",
+	"application/json",
+	"application/x-json",
+	"application/vnd.cryptorest+json",
 }
 
 var JsonFileExtensions = [1]string {

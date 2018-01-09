@@ -7,11 +7,11 @@ import (
 )
 
 var TomlHttpMimeTypes = [5]string {
-	"application/vnd.cryptorest+toml",
-	"application/x-toml",
-	"application/toml",
-	"text/x-toml",
 	"text/toml",
+	"text/x-toml",
+	"application/toml",
+	"application/x-toml",
+	"application/vnd.cryptorest+toml",
 }
 
 var TomlFileExtensions = [2]string {

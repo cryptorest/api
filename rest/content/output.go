@@ -22,17 +22,17 @@ func OutputHttpMimeType(r *http.Request) string {
 }
 
 type Output struct {
-	Format          func(w io.Writer, s *format.OutputStructure, hr bool) error
+	IsHumanReadable bool
 	HttpMimeType    string
 	Writer          http.ResponseWriter
 	Structure       format.OutputStructure
-	IsHumanReadable bool
+	Format          func(w io.Writer, s *format.OutputStructure, hr bool) error
 }
 
 func DefaultOutputHttpFormat(output *Output) {
-	output.HttpMimeType    = format.TextHttpMimeTypes[4]
 	output.IsHumanReadable = false
 	output.Format          = format.OutputText
+	output.HttpMimeType    = format.TextHttpMimeTypes[0]
 }
 
 func OutputFormat(output *Output) {
@@ -73,9 +73,7 @@ func OutputBuild(output *Output) {
 		output.Structure.Host = config.Server.Host
 		output.Structure.Port = config.Server.Port
 
-		if output.Writer != nil {
-			output.Writer.Header().Set(MimeKeyRequest, output.HttpMimeType)
-		}
+		output.Writer.Header().Set(MimeKeyRequest, output.HttpMimeType)
 	}
 
 	err := output.Format(output.Writer, &output.Structure, output.IsHumanReadable)
@@ -85,19 +83,16 @@ func OutputBuild(output *Output) {
 		output.Structure.Status  = ""
 		output.Structure.Content = ""
 
-		if output.Writer != nil {
-			io.WriteString(output.Writer, output.Structure.Error)
-		}
+		io.WriteString(output.Writer, output.Structure.Error)
 	}
 }
 
 func OutputHttpExecute(w http.ResponseWriter, r *http.Request, c string, e error) {
-	var output    Output
-	var structure format.OutputStructure
+	var output Output
 
 	output.Writer            = w
 	output.HttpMimeType      = OutputHttpMimeType(r)
-	output.Structure         = structure
+	output.Structure         = format.OutputStructure{}
 	output.Structure.Error   = errorMessage(e)
 	output.Structure.Content = c
 

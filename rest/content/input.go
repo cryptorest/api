@@ -2,6 +2,7 @@ package content
 
 import (
 	"io"
+	"fmt"
 	"net/http"
 
 	"rest/content/format"
@@ -18,19 +19,58 @@ func InputHttpMimeType(r *http.Request) string {
 	return r.Header.Get(MimeKeyRequest)
 }
 
-func DefaultInputFormat() (string, bool, func(w io.Reader, c *format.InputStructure, hr bool) error) {
-	return format.TextHttpMimeTypes[4], false, format.InputText
+type Input struct {
+	HttpMimeType string
+	Reader       *http.Request
+	Structure    format.InputStructure
+	Format       func(w io.Reader, s *format.InputStructure, hr bool) error
 }
 
-type Intput struct {
-	Format          func(w io.Reader, s *format.InputStructure, hr bool) error
-	HttpMimeType    string
-	Reader          *http.Request
-	Structure       format.InputStructure
-	IsHumanReadable bool
-}
-
-func DefaultInputHttpFormat(input *Intput) {
-	input.HttpMimeType = format.TextHttpMimeTypes[4]
+func DefaultInputHttpFormat(input *Input) {
 	input.Format       = format.InputText
+	input.HttpMimeType = format.TextHttpMimeTypes[0]
+}
+
+func InputFormat(input *Input) {
+	inputHttpMimeType := input.HttpMimeType
+	input.HttpMimeType = ""
+
+	for i, formatHttpMimeType := range HttpMimeTypes {
+		for _, httpMimeType := range formatHttpMimeType {
+			if inputHttpMimeType == httpMimeType {
+				input.HttpMimeType = httpMimeType
+				input.Format       = InputFormatFuncs[i]
+
+				break
+			}
+		}
+	}
+
+	if input.HttpMimeType == "" {
+		DefaultInputHttpFormat(&*input)
+	}
+}
+
+func InputBuild(input *Input) {
+
+}
+
+func InputHttpExecute(r *http.Request, c string) {
+	var input Input
+
+	input.Reader            = r
+	input.HttpMimeType      = InputHttpMimeType(r)
+	input.Structure         = format.InputStructure{}
+	input.Structure.Content = c
+
+	InputFormat(&input)
+	InputBuild(&input)
+}
+
+func InputHash(r *http.Request, b []byte) {
+	InputHttpExecute(r, fmt.Sprintf("%x", b))
+}
+
+func InputBytes(r *http.Request, b []byte) {
+	InputHttpExecute(r, fmt.Sprintf("%s", b))
 }
