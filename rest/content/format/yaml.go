@@ -6,12 +6,11 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-var YamlHttpMimeTypes = [5]string {
+var YamlHttpMimeTypes = [2]string {
+	// RFC 2046
 	"text/yaml",
-	"text/x-yaml",
+	// RFC 2046
 	"application/yaml",
-	"application/x-yaml",
-	"application/vnd.cryptorest+yaml",
 }
 
 var YamlFileExtensions = [2]string {

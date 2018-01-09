@@ -6,12 +6,11 @@ import (
 	"github.com/BurntSushi/toml"
 )
 
-var TomlHttpMimeTypes = [5]string {
+var TomlHttpMimeTypes = [2]string {
+	// RFC 2046
 	"text/toml",
-	"text/x-toml",
+	// RFC 2046
 	"application/toml",
-	"application/x-toml",
-	"application/vnd.cryptorest+toml",
 }
 
 var TomlFileExtensions = [2]string {

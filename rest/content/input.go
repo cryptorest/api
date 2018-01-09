@@ -33,7 +33,7 @@ func DefaultInputHttpFormat(input *Input) {
 
 func InputFormat(input *Input) {
 	inputHttpMimeType := input.HttpMimeType
-	input.HttpMimeType = ""
+	input.HttpMimeType = EmptyString
 
 	for i, formatHttpMimeType := range HttpMimeTypes {
 		for _, httpMimeType := range formatHttpMimeType {
@@ -46,7 +46,7 @@ func InputFormat(input *Input) {
 		}
 	}
 
-	if input.HttpMimeType == "" {
+	if input.HttpMimeType == EmptyString {
 		DefaultInputHttpFormat(&*input)
 	}
 }

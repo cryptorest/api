@@ -10,6 +10,8 @@ import (
 	"rest/content/format"
 )
 
+const StatusOKString = "OK"
+
 var OutputFormatFuncs = [4]func(w io.Writer, s *format.OutputStructure, hr bool) error {
 	format.OutputText,
 	format.OutputJson,
@@ -37,13 +39,13 @@ func DefaultOutputHttpFormat(output *Output) {
 
 func OutputFormat(output *Output) {
 	outputHttpMimeType := output.HttpMimeType
-	output.HttpMimeType = ""
+	output.HttpMimeType = EmptyString
 
 	for i, formatHttpMimeType := range HttpMimeTypes {
 		for _, httpMimeType := range formatHttpMimeType {
 			if outputHttpMimeType == httpMimeType {
 				output.HttpMimeType    = httpMimeType
-				output.IsHumanReadable = humanReadableFormat(httpMimeType)
+				output.IsHumanReadable = HumanReadableFormat(httpMimeType)
 				output.Format          = OutputFormatFuncs[i]
 
 				break
@@ -51,7 +53,7 @@ func OutputFormat(output *Output) {
 		}
 	}
 
-	if output.HttpMimeType == "" {
+	if output.HttpMimeType == EmptyString {
 		DefaultOutputHttpFormat(&*output)
 	}
 }
@@ -59,17 +61,17 @@ func OutputFormat(output *Output) {
 func OutputBuild(output *Output) {
 	tm := time.Now().UTC()
 
-	if output.Structure.Error == "" {
-		output.Structure.Status = "OK"
+	if output.Structure.Error == EmptyString {
+		output.Structure.Status = StatusOKString
 	} else {
-		output.Structure.Status  = ""
-		output.Structure.Content = ""
+		output.Structure.Status  = EmptyString
+		output.Structure.Content = EmptyString
 	}
 
 	output.Structure.Date      = tm.String()
 	output.Structure.Timestamp = tm.Unix()
 
-	if output.HttpMimeType != "" {
+	if output.HttpMimeType != EmptyString {
 		output.Structure.Host = config.Server.Host
 		output.Structure.Port = config.Server.Port
 
@@ -80,8 +82,8 @@ func OutputBuild(output *Output) {
 
 	if err != nil {
 		output.Structure.Error   = errorMessage(err)
-		output.Structure.Status  = ""
-		output.Structure.Content = ""
+		output.Structure.Status  = EmptyString
+		output.Structure.Content = EmptyString
 
 		io.WriteString(output.Writer, output.Structure.Error)
 	}
@@ -137,5 +139,5 @@ func Output64Byte(w http.ResponseWriter, r *http.Request, b [64]byte) {
 }
 
 func OutputError(w http.ResponseWriter, r *http.Request, e error) {
-	OutputHttpExecute(w, r, "", e)
+	OutputHttpExecute(w, r, EmptyString, e)
 }

@@ -4,12 +4,9 @@ import (
 	"io"
 )
 
-var TextHttpMimeTypes = [5]string {
+var TextHttpMimeTypes = [2]string {
+	// RFC2046, RFC3676, RFC5147
 	"text/plane",
-	"text/x-plane",
-	"application/text",
-	"application/x-text",
-	"application/vnd.cryptorest+text",
 }
 
 var TextFileExtensions = [1]string {

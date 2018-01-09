@@ -6,16 +6,15 @@ import (
 	"encoding/json"
 )
 
-var JsonHttpMimeTypes = [5]string {
+var JsonHttpMimeTypes = [2]string {
+	// RFC 2046, for human readable mode
 	"text/json",
-	"text/x-json",
+	// RFC8259
 	"application/json",
-	"application/x-json",
-	"application/vnd.cryptorest+json",
 }
 
 var JsonFileExtensions = [1]string {
-	"json",
+	".json",
 }
 
 func InputJson(w io.Reader, s *InputStructure, hr bool) error {

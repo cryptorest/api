@@ -10,19 +10,23 @@ import (
 const MimeKeyRequest  = "Content-Type"
 const MimeKeyResponse = "Accept"
 
+const EmptyString = ""
+
 var HttpMimePrefixs = [2]string {
+	// For human readable mode
 	"text",
+	// For applications
 	"application",
 }
 
-var HttpMimeTypes = [4][5]string {
+var HttpMimeTypes = [4][2]string {
 	format.TextHttpMimeTypes,
 	format.JsonHttpMimeTypes,
 	format.YamlHttpMimeTypes,
 	format.TomlHttpMimeTypes,
 }
 
-func humanReadableFormat(m string) bool {
+func HumanReadableFormat(m string) bool {
 	var hr bool
 
 	switch {
