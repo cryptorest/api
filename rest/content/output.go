@@ -77,6 +77,7 @@ func Output(w http.ResponseWriter, r *http.Request, d string, e error) {
 		d = ""
 		outputStruct.Content = d
 		outputStruct.Error = errorContent(e)
+
 		io.WriteString(w, outputStruct.Error)
 	}
 
