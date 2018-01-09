@@ -1,15 +1,10 @@
 package format
 
 import (
-	"log"
-	"strings"
-	"net/http"
-	"path/filepath"
-
-	"github.com/BurntSushi/toml"
+	"io"
 )
 
-var TextMimeTypes = [5]string {
+var TextHttpMimeTypes = [5]string {
 	"application/vnd.cryptorest+text",
 	"application/x-text",
 	"application/text",
@@ -17,36 +12,16 @@ var TextMimeTypes = [5]string {
 	"text/plane",
 }
 
-var textExtensions = [1]string {
-	"txt",
+var TextFileExtensions = [1]string {
+	".txt",
 }
 
-func TextInputData(s *InputStructure) {
-	_, err := toml.DecodeFile(s.ConfigFile, &s)
-
-	if err != nil {
-		log.Fatalf("Unmarshal TEXT: %v", err)
-	}
+func InputText(w io.Reader, s *InputStructure, hr bool) error {
+	return nil
 }
 
-func InitTextInputData(s *InputStructure) {
-	if s.ConfigFile == "" {
-		return
-	}
-
-	switch strings.Trim(filepath.Ext(s.ConfigFile), ".") {
-	case textExtensions[0]:
-		TextInputData(&*s)
-	}
-}
-
-func InputText(s *InputStructure, hr bool) (string, error) {
-	return "", nil
-}
-
-func OutputText(w http.ResponseWriter, s *OutputStructure, hr bool) error {
-	hr      = true
-	s.Error = ""
+func OutputText(w io.Writer, s *OutputStructure, hr bool) error {
+	hr = false
 
 	_, err := w.Write([]byte(s.Content))
 

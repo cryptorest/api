@@ -1,12 +1,12 @@
 package format
 
 import (
-	"net/http"
+	"io"
 
 	"encoding/json"
 )
 
-var JsonMimeTypes = [5]string {
+var JsonHttpMimeTypes = [5]string {
 	"application/vnd.cryptorest+json",
 	"application/x-json",
 	"application/json",
@@ -14,17 +14,17 @@ var JsonMimeTypes = [5]string {
 	"text/json",
 }
 
-var JsonExtensions = [1]string {
+var JsonFileExtensions = [1]string {
 	"json",
 }
 
-func InputJson(s *InputStructure, hr bool) (string, error) {
-	return "", nil
+func InputJson(w io.Reader, s *InputStructure, hr bool) error {
+	return nil
 }
 
-func OutputJson(w http.ResponseWriter, s *OutputStructure, hr bool) error {
-	var b []byte
+func OutputJson(w io.Writer, s *OutputStructure, hr bool) error {
 	var err error
+	var b   []byte
 
 	if hr {
 		b, err = json.MarshalIndent(&s, HumanReadablePrefix, HumanReadableIndent)

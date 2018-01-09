@@ -1,48 +1,36 @@
 package content
 
 import (
+	"io"
 	"net/http"
 
 	"rest/content/format"
 )
 
-
-var InputFuncs = [4]func(c *format.InputStructure, hr bool) (string, error) {
+var InputFormatFuncs = [4]func(w io.Reader, s *format.InputStructure, hr bool) error {
 	format.InputText,
 	format.InputJson,
 	format.InputYaml,
 	format.InputToml,
 }
 
-func DefaultInputFormat() (string, bool, func(c *format.InputStructure, hr bool) (string, error)) {
-	return format.TextMimeTypes[4], false, format.InputText
+func InputHttpMimeType(r *http.Request) string {
+	return r.Header.Get(MimeKeyRequest)
 }
 
-func InputFormat(r *http.Request) (string, bool, func(c *format.InputStructure, hr bool) (string, error)) {
-	var mimeType string
-	var hr bool
-	var f func(c *format.InputStructure, hr bool) (string, error)
-	rType := r.Header.Get(MimeKeyRequest)
+func DefaultInputFormat() (string, bool, func(w io.Reader, c *format.InputStructure, hr bool) error) {
+	return format.TextHttpMimeTypes[4], false, format.InputText
+}
 
-	if rType == "" {
-		return DefaultInputFormat()
-	}
+type Intput struct {
+	Format          func(w io.Reader, s *format.InputStructure, hr bool) error
+	HttpMimeType    string
+	Reader          *http.Request
+	Structure       format.InputStructure
+	IsHumanReadable bool
+}
 
-	for i, m := range MimeTypes {
-		for _, t := range m {
-			if rType == t {
-				mimeType = rType
-				hr = humanReadableFormat(mimeType)
-				f = InputFuncs[i]
-
-				break
-			}
-		}
-	}
-
-	if mimeType == "" {
-		mimeType, hr, f = DefaultInputFormat()
-	}
-
-	return mimeType, hr, f
+func DefaultInputHttpFormat(input *Intput) {
+	input.HttpMimeType = format.TextHttpMimeTypes[4]
+	input.Format       = format.InputText
 }

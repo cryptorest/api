@@ -1,12 +1,12 @@
 package format
 
 import (
-	"net/http"
+	"io"
 
 	"gopkg.in/yaml.v2"
 )
 
-var YamlMimeTypes = [5]string {
+var YamlHttpMimeTypes = [5]string {
 	"application/vnd.cryptorest+yaml",
 	"application/x-yaml",
 	"application/yaml",
@@ -14,19 +14,19 @@ var YamlMimeTypes = [5]string {
 	"text/yaml",
 }
 
-var YamlExtensions = [2]string {
-	"yml",
-	"yaml",
+var YamlFileExtensions = [2]string {
+	".yml",
+	".yaml",
 }
 
-func InputYaml(s *InputStructure, hr bool) (string, error) {
-	return "", nil
+func InputYaml(w io.Reader, s *InputStructure, hr bool) error {
+	return nil
 }
 
-func OutputYaml(w http.ResponseWriter, s *OutputStructure, hr bool) error {
+func OutputYaml(w io.Writer, s *OutputStructure, hr bool) error {
 	hr = true
 	var err error
-	var b []byte
+	var b   []byte
 
 	b, err = yaml.Marshal(&s)
 

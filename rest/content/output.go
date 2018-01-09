@@ -10,116 +10,137 @@ import (
 	"rest/content/format"
 )
 
-var OutputFuncs = [4]func(w http.ResponseWriter, c *format.OutputStructure, hr bool) error {
+var OutputFormatFuncs = [4]func(w io.Writer, s *format.OutputStructure, hr bool) error {
 	format.OutputText,
 	format.OutputJson,
 	format.OutputYaml,
 	format.OutputToml,
 }
 
-func DefaultOutputFormat() (string, bool, func(w http.ResponseWriter, c *format.OutputStructure, hr bool) error) {
-	return format.TextMimeTypes[4], false, format.OutputText
+func OutputHttpMimeType(r *http.Request) string {
+	return r.Header.Get(MimeKeyResponse)
 }
 
-func OutputFormat(r *http.Request) (string, bool, func(w http.ResponseWriter, c *format.OutputStructure, hr bool) error) {
-	var mimeType string
-	var hr bool
-	var f func(w http.ResponseWriter, c *format.OutputStructure, hr bool) error
-	rType := r.Header.Get(MimeKeyResponse)
+type Output struct {
+	Format          func(w io.Writer, s *format.OutputStructure, hr bool) error
+	HttpMimeType    string
+	Writer          http.ResponseWriter
+	Structure       format.OutputStructure
+	IsHumanReadable bool
+}
 
-	if rType == "" {
-		return DefaultOutputFormat()
-	}
+func DefaultOutputHttpFormat(output *Output) {
+	output.HttpMimeType    = format.TextHttpMimeTypes[4]
+	output.IsHumanReadable = false
+	output.Format          = format.OutputText
+}
 
-	for i, m := range MimeTypes {
-		for _, t := range m {
-			if rType == t {
-				mimeType = rType
-				hr = humanReadableFormat(mimeType)
-				f = OutputFuncs[i]
+func OutputFormat(output *Output) {
+	outputHttpMimeType := output.HttpMimeType
+	output.HttpMimeType = ""
+
+	for i, formatHttpMimeType := range HttpMimeTypes {
+		for _, httpMimeType := range formatHttpMimeType {
+			if outputHttpMimeType == httpMimeType {
+				output.HttpMimeType    = httpMimeType
+				output.IsHumanReadable = humanReadableFormat(httpMimeType)
+				output.Format          = OutputFormatFuncs[i]
 
 				break
 			}
 		}
 	}
 
-	if mimeType == "" {
-		mimeType, hr, f = DefaultOutputFormat()
+	if output.HttpMimeType == "" {
+		DefaultOutputHttpFormat(&*output)
 	}
-
-	return mimeType, hr, f
 }
 
-func Output(w http.ResponseWriter, r *http.Request, d string, e error) {
-	var eStr string
-	tm := time.Now().UTC()
-	t, hr, f := OutputFormat(r)
+func OutputBuild(output *Output) {
+	tm  := time.Now().UTC()
 
-	if e == nil {
-		eStr = ""
+	if output.Structure.Error == "" {
+		output.Structure.Status = "OK"
 	} else {
-		eStr = errorContent(e)
-		d = ""
+		output.Structure.Status  = ""
+		output.Structure.Content = ""
 	}
 
-	var outputStruct = &format.OutputStructure{
-		Host:      config.Server.Host,
-		Port:      config.Server.Port,
-		Content:   d,
-		Error:     eStr,
-		Date:      tm.String(),
-		Timestamp: tm.Unix(),
+	output.Structure.Date      = tm.String()
+	output.Structure.Timestamp = tm.Unix()
+
+	if output.HttpMimeType != "" {
+		output.Structure.Host = config.Server.Host
+		output.Structure.Port = config.Server.Port
+
+		if output.Writer != nil {
+			output.Writer.Header().Set(MimeKeyRequest, output.HttpMimeType)
+		}
 	}
 
-	err := f(w, outputStruct, hr)
+	err := output.Format(output.Writer, &output.Structure, output.IsHumanReadable)
 
 	if err != nil {
-		d = ""
-		outputStruct.Content = d
-		outputStruct.Error = errorContent(e)
+		output.Structure.Error   = errorMessage(err)
+		output.Structure.Status  = ""
+		output.Structure.Content = ""
 
-		io.WriteString(w, outputStruct.Error)
+		if output.Writer != nil {
+			io.WriteString(output.Writer, output.Structure.Error)
+		}
 	}
+}
 
-	w.Header().Set(MimeKeyRequest, t)
+func OutputHttpExecute(w http.ResponseWriter, r *http.Request, c string, e error) {
+	var output    Output
+	var structure format.OutputStructure
+
+	output.Writer            = w
+	output.HttpMimeType      = OutputHttpMimeType(r)
+	output.Structure         = structure
+	output.Structure.Error   = errorMessage(e)
+	output.Structure.Content = c
+
+	OutputFormat(&output)
+	OutputBuild(&output)
 }
 
 func OutputHash(w http.ResponseWriter, r *http.Request, b []byte) {
-	Output(w, r, fmt.Sprintf("%x", b), nil)
+	OutputHttpExecute(w, r, fmt.Sprintf("%x", b), nil)
 }
 
 func OutputBytes(w http.ResponseWriter, r *http.Request, b []byte) {
-	Output(w, r, fmt.Sprintf("%s", b), nil)
+	OutputHttpExecute(w, r, fmt.Sprintf("%s", b), nil)
 }
 
 func OutputString(w http.ResponseWriter, r *http.Request, s string) {
-	Output(w, r, s, nil)
+	OutputHttpExecute(w, r, s, nil)
 }
 
 func OutputUInt8(w http.ResponseWriter, r *http.Request, i uint8) {
-	Output(w, r, fmt.Sprintf("%x", i), nil)
+	OutputHttpExecute(w, r, fmt.Sprintf("%x", i), nil)
 }
 
 func OutputUInt32(w http.ResponseWriter, r *http.Request, i uint32) {
-	Output(w, r, fmt.Sprintf("%x", i), nil)
+	OutputHttpExecute(w, r, fmt.Sprintf("%x", i), nil)
 }
 
 func OutputUInt64(w http.ResponseWriter, r *http.Request, i uint64) {
-	Output(w, r, fmt.Sprintf("%x", i), nil)
+	OutputHttpExecute(w, r, fmt.Sprintf("%x", i), nil)
 }
 
 func Output32Byte(w http.ResponseWriter, r *http.Request, b [32]byte) {
-	Output(w, r, fmt.Sprintf("%x", b), nil)
+	OutputHttpExecute(w, r, fmt.Sprintf("%x", b), nil)
 }
 
 func Output48Byte(w http.ResponseWriter, r *http.Request, b [48]byte) {
-	Output(w, r, fmt.Sprintf("%x", b), nil)
+	OutputHttpExecute(w, r, fmt.Sprintf("%x", b), nil)
 }
 
 func Output64Byte(w http.ResponseWriter, r *http.Request, b [64]byte) {
-	Output(w, r, fmt.Sprintf("%x", b), nil)
+	OutputHttpExecute(w, r, fmt.Sprintf("%x", b), nil)
 }
 
 func OutputError(w http.ResponseWriter, r *http.Request, e error) {
-	Output(w, r, "", e)
+	OutputHttpExecute(w, r, "", e)
 }

@@ -13,16 +13,6 @@ type InputStructure struct {
 	Content    string `yaml:"Content"`
 }
 
-func DefaultInputStructure(c *InputStructure) {
-	c.ConfigFile = ""
-	c.Date       = "server.crt"
-	c.ID         = ""
-	c.UserID     = ""
-	c.Host       = "localhost"
-	c.Port       = 64443
-	c.Content    = ""
-}
-
 type OutputStructure struct {
 	Date       string `yaml:"Date"`
 	Timestamp  int64  `yaml:"Timestamp"`
@@ -32,15 +22,5 @@ type OutputStructure struct {
 	Port       int    `yaml:"Port"`
 	Content    string `yaml:"Content"`
 	Error      string `yaml:"Error"`
-}
-
-func DefaultOutputStructure(c *OutputStructure) {
-	c.Date       = ""
-	c.Timestamp  = 0
-	c.ID         = ""
-	c.UserID     = ""
-	c.Host       = "localhost"
-	c.Port       = 64443
-	c.Content    = ""
-	c.Error      = ""
+	Status     string `yaml:"Status"`
 }

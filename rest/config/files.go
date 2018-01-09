@@ -2,7 +2,6 @@ package config
 
 import (
 	"log"
-	"strings"
 	"io/ioutil"
 	"path/filepath"
 
@@ -54,12 +53,12 @@ func InitFile(c *Structure) {
 		return
 	}
 
-	switch strings.Trim(filepath.Ext(c.ConfigFile), ".") {
-	case format.YamlExtensions[0], format.YamlExtensions[1]:
+	switch filepath.Ext(c.ConfigFile) {
+	case format.YamlFileExtensions[0], format.YamlFileExtensions[1]:
 		InitYamlFile(&*c)
-	case format.TomlExtensions[0], format.TomlExtensions[1]:
+	case format.TomlFileExtensions[0], format.TomlFileExtensions[1]:
 		InitTomlFile(&*c)
-	case format.JsonExtensions[0]:
+	case format.JsonFileExtensions[0]:
 		InitJsonFile(&*c)
 	}
 }

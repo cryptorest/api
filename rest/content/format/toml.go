@@ -1,12 +1,12 @@
 package format
 
 import (
-	"net/http"
+	"io"
 
 	"github.com/BurntSushi/toml"
 )
 
-var TomlMimeTypes = [5]string {
+var TomlHttpMimeTypes = [5]string {
 	"application/vnd.cryptorest+toml",
 	"application/x-toml",
 	"application/toml",
@@ -14,16 +14,16 @@ var TomlMimeTypes = [5]string {
 	"text/toml",
 }
 
-var TomlExtensions = [2]string {
-	"tml",
-	"toml",
+var TomlFileExtensions = [2]string {
+	".tml",
+	".toml",
 }
 
-func InputToml(s *InputStructure, hr bool) (string, error) {
-	return "", nil
+func InputToml(w io.Reader, s *InputStructure, hr bool) error {
+	return nil
 }
 
-func OutputToml(w http.ResponseWriter, s *OutputStructure, hr bool) error {
+func OutputToml(w io.Writer, s *OutputStructure, hr bool) error {
 	hr = true
 
 	err := toml.NewEncoder(w).Encode(&s)

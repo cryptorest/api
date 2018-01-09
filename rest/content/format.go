@@ -10,25 +10,25 @@ import (
 const MimeKeyRequest  = "Content-Type"
 const MimeKeyResponse = "Accept"
 
-var MimePrefixs = [2]string {
+var HttpMimePrefixs = [2]string {
 	"text",
 	"application",
 }
 
-var MimeTypes = [4][5]string {
-	format.TextMimeTypes,
-	format.JsonMimeTypes,
-	format.YamlMimeTypes,
-	format.TomlMimeTypes,
+var HttpMimeTypes = [4][5]string {
+	format.TextHttpMimeTypes,
+	format.JsonHttpMimeTypes,
+	format.YamlHttpMimeTypes,
+	format.TomlHttpMimeTypes,
 }
 
 func humanReadableFormat(m string) bool {
 	var hr bool
 
 	switch {
-	case strings.HasPrefix(m, MimePrefixs[0]):
+	case strings.HasPrefix(m, HttpMimePrefixs[0]):
 		hr = true
-	case strings.HasPrefix(m, MimePrefixs[1]):
+	case strings.HasPrefix(m, HttpMimePrefixs[1]):
 		hr = false
 	default:
 		hr = false
@@ -37,6 +37,14 @@ func humanReadableFormat(m string) bool {
 	return hr
 }
 
-func errorContent(e error) string {
-	return fmt.Sprintf("%s", e)
+func errorMessage(e error) string {
+	var str string
+
+	if e == nil {
+		str = ""
+	} else {
+		str = fmt.Sprintf("%s", e)
+	}
+
+	return str
 }
