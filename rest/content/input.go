@@ -2,7 +2,6 @@ package content
 
 import (
 	"io"
-	"fmt"
 	"net/http"
 
 	"rest/content/format"
@@ -52,26 +51,27 @@ func InputFormat(input *Input) {
 	}
 }
 
-func InputBuild(input *Input) {
-
+func InputBuild(input *Input) []byte {
+	return input.Structure.Content
 }
 
-func InputHttpExecute(r *http.Request, c string) {
+func InputHttpExecute(r *http.Request) []byte {
 	var input Input
 
 	input.Reader            = r
 	input.HttpMimeType      = InputHttpMimeType(r)
 	input.Structure         = format.InputStructure{}
-	input.Structure.Content = c
+	input.Structure.Content = []byte("data")
 
 	InputFormat(&input)
-	InputBuild(&input)
+
+	return InputBuild(&input)
 }
 
-func InputHash(r *http.Request, b []byte) {
-	InputHttpExecute(r, fmt.Sprintf("%x", b))
+func InputBytes(r *http.Request) []byte {
+	return InputHttpExecute(r)
 }
 
-func InputBytes(r *http.Request, b []byte) {
-	InputHttpExecute(r, fmt.Sprintf("%s", b))
+func InputString(r *http.Request) string {
+	return string(InputHttpExecute(r))
 }

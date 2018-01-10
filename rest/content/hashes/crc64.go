@@ -21,12 +21,12 @@ func CRC64(w http.ResponseWriter, r *http.Request) {
 	}
 
 	pType := content.Path2Type(r)
-	bData := []byte("data")
+	data  := content.InputBytes(r)
 
 	switch pType {
 	case Crc64Types[0]:
-		content.OutputUInt64(w, r, crc64.Checksum(bData, crc64.MakeTable(crc64.ISO)))
+		content.OutputUInt64(w, r, crc64.Checksum(data, crc64.MakeTable(crc64.ISO)))
 	case Crc64Types[1]:
-		content.OutputUInt64(w, r, crc64.Checksum(bData, crc64.MakeTable(crc64.ECMA)))
+		content.OutputUInt64(w, r, crc64.Checksum(data, crc64.MakeTable(crc64.ECMA)))
 	}
 }

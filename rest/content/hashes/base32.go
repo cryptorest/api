@@ -15,8 +15,8 @@ func Base32(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	bData := []byte("data")
-	str := base32.StdEncoding.EncodeToString(bData)
+	data := content.InputBytes(r)
+	str  := base32.StdEncoding.EncodeToString(data)
 
 	content.OutputString(w, r, str)
 }

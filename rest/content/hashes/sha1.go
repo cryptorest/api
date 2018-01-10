@@ -15,9 +15,9 @@ func SHA1(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	bData := []byte("data")
-	b := sha1.New()
+	data := content.InputBytes(r)
+	b    := sha1.New()
 
-	b.Write(bData)
+	b.Write(data)
 	content.OutputHash(w, r, b.Sum(nil))
 }

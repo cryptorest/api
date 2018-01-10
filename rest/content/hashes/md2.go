@@ -15,9 +15,9 @@ func MD2(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	bData := []byte("data")
-	md := md2.New()
+	data := content.InputBytes(r)
+	md   := md2.New()
 
-	md.Write(bData)
+	md.Write(data)
 	content.OutputHash(w, r, md.Sum(nil))
 }

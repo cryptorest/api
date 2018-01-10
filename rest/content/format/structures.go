@@ -10,7 +10,7 @@ type InputStructure struct {
 	UserID     string `yaml:"UserID"`
 	Host       string `yaml:"Host"`
 	Port       int    `yaml:"Port"`
-	Content    string `yaml:"Content"`
+	Content    []byte `yaml:"Content"`
 }
 
 type OutputStructure struct {

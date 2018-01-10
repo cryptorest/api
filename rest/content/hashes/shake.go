@@ -24,18 +24,18 @@ func SHAKE(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	bit := content.Path2Bit(r)
-	bData := []byte("data")
+	bit  := content.Path2Bit(r)
+	data := content.InputBytes(r)
 
 	switch bit {
 	case ShakeBits[0]:
 		hash := make([]byte, minBits / 8)
-		sha3.ShakeSum128(hash, bData)
+		sha3.ShakeSum128(hash, data)
 
 		content.OutputString(w, r, hex.EncodeToString(hash))
 	case ShakeBits[1]:
 		hash := make([]byte, minBits / 4)
-		sha3.ShakeSum256(hash, bData)
+		sha3.ShakeSum256(hash, data)
 
 		content.OutputString(w, r, hex.EncodeToString(hash))
 	}

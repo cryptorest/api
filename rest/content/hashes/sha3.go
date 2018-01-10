@@ -23,10 +23,10 @@ func SHA3(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	bit := content.Path2Bit(r)
-	bData := []byte("data")
-	b := Sha3Bits[bit]()
+	bit  := content.Path2Bit(r)
+	data := content.InputBytes(r)
+	b    := Sha3Bits[bit]()
 
-	b.Write(bData)
+	b.Write(data)
 	content.OutputHash(w, r, b.Sum(nil))
 }

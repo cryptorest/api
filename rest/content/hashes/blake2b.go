@@ -21,15 +21,15 @@ func BLAKE2b(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	bit := content.Path2Bit(r)
-	bData := []byte("data")
+	bit  := content.Path2Bit(r)
+	data := content.InputBytes(r)
 
 	switch bit {
 	case Blake2bBits[0]:
-		content.Output32Byte(w, r, blake2b.Sum256(bData))
+		content.Output32Byte(w, r, blake2b.Sum256(data))
 	case Blake2bBits[1]:
-		content.Output48Byte(w, r, blake2b.Sum384(bData))
+		content.Output48Byte(w, r, blake2b.Sum384(data))
 	case Blake2bBits[2]:
-		content.Output64Byte(w, r, blake2b.Sum512(bData))
+		content.Output64Byte(w, r, blake2b.Sum512(data))
 	}
 }

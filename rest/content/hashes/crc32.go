@@ -22,14 +22,14 @@ func CRC32(w http.ResponseWriter, r *http.Request) {
 	}
 
 	pType := content.Path2Type(r)
-	bData := []byte("data")
+	data  := content.InputBytes(r)
 
 	switch pType {
 	case Crc32Types[0]:
-		content.OutputUInt32(w, r, crc32.Checksum(bData, crc32.MakeTable(crc32.IEEE)))
+		content.OutputUInt32(w, r, crc32.Checksum(data, crc32.MakeTable(crc32.IEEE)))
 	case Crc32Types[1]:
-		content.OutputUInt32(w, r, crc32.Checksum(bData, crc32.MakeTable(crc32.Koopman)))
+		content.OutputUInt32(w, r, crc32.Checksum(data, crc32.MakeTable(crc32.Koopman)))
 	case Crc32Types[2]:
-		content.OutputUInt32(w, r, crc32.Checksum(bData, crc32.MakeTable(crc32.Castagnoli)))
+		content.OutputUInt32(w, r, crc32.Checksum(data, crc32.MakeTable(crc32.Castagnoli)))
 	}
 }

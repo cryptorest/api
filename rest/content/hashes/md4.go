@@ -15,9 +15,9 @@ func MD4(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	bData := []byte("data")
-	md := md4.New()
+	data := content.InputBytes(r)
+	md   := md4.New()
 
-	md.Write(bData)
+	md.Write(data)
 	content.OutputHash(w, r, md.Sum(nil))
 }
