@@ -38,55 +38,55 @@ type Output struct {
 	Format          func(w io.Writer, s *format.OutputStructure, hr bool) error
 }
 
-func (output *Output) FormatFind() {
-	outputHttpMimeType := output.HttpMimeType
-	output.HttpMimeType = EmptyString
+func (o *Output) FormatFind() {
+	outputHttpMimeType := o.HttpMimeType
+	o.HttpMimeType = EmptyString
 
-	for i, formatHttpMimeType := range HttpMimeTypes {
+	for f, formatHttpMimeType := range HttpMimeTypes {
 		for _, httpMimeType := range formatHttpMimeType {
 			if outputHttpMimeType == httpMimeType {
-				output.HttpMimeType    = httpMimeType
-				output.IsHumanReadable = HumanReadableFormat(httpMimeType)
-				output.Format          = OutputFormatFuncs[i]
+				o.HttpMimeType    = httpMimeType
+				o.IsHumanReadable = HumanReadableFormat(httpMimeType)
+				o.Format          = OutputFormatFuncs[f]
 
 				break
 			}
 		}
 	}
 
-	if output.HttpMimeType == EmptyString {
-		DefaultOutputHttpFormat(&*output)
+	if o.HttpMimeType == EmptyString {
+		DefaultOutputHttpFormat(&*o)
 	}
 }
 
-func (output *Output) Build() {
+func (o *Output) Build() {
 	tm := time.Now().UTC()
 
-	if output.Structure.Error == EmptyString {
-		output.Structure.Status = StatusOKString
+	if o.Structure.Error == EmptyString {
+		o.Structure.Status = StatusOKString
 	} else {
-		output.Structure.Status  = EmptyString
-		output.Structure.Content = EmptyString
+		o.Structure.Status  = EmptyString
+		o.Structure.Content = EmptyString
 	}
 
-	output.Structure.Date      = tm.String()
-	output.Structure.Timestamp = tm.Unix()
+	o.Structure.Date      = tm.String()
+	o.Structure.Timestamp = tm.Unix()
 
-	if output.HttpMimeType != EmptyString {
-		output.Structure.Host = config.Server.Host
-		output.Structure.Port = config.Server.Port
+	if o.HttpMimeType != EmptyString {
+		o.Structure.Host = config.Server.Host
+		o.Structure.Port = config.Server.Port
 
-		output.Writer.Header().Set(MimeKeyRequest, output.HttpMimeType)
+		o.Writer.Header().Set(MimeKeyRequest, o.HttpMimeType)
 	}
 
-	err := output.Format(output.Writer, &output.Structure, output.IsHumanReadable)
+	err := o.Format(o.Writer, &o.Structure, o.IsHumanReadable)
 
 	if err != nil {
-		output.Structure.Error   = errorMessage(err)
-		output.Structure.Status  = EmptyString
-		output.Structure.Content = EmptyString
+		o.Structure.Error   = errorMessage(err)
+		o.Structure.Status  = EmptyString
+		o.Structure.Content = EmptyString
 
-		io.WriteString(output.Writer, output.Structure.Error)
+		io.WriteString(o.Writer, o.Structure.Error)
 	}
 }
 

@@ -31,28 +31,28 @@ func DefaultInputHttpFormat(input *Input) {
 	input.HttpMimeType = format.TextHttpMimeTypes[0]
 }
 
-func (input *Input) FormatFind() {
-	inputHttpMimeType := input.HttpMimeType
-	input.HttpMimeType = EmptyString
+func (i *Input) FormatFind() {
+	inputHttpMimeType := i.HttpMimeType
+	i.HttpMimeType = EmptyString
 
-	for i, formatHttpMimeType := range HttpMimeTypes {
+	for f, formatHttpMimeType := range HttpMimeTypes {
 		for _, httpMimeType := range formatHttpMimeType {
 			if inputHttpMimeType == httpMimeType {
-				input.HttpMimeType = httpMimeType
-				input.Format       = InputFormatFuncs[i]
+				i.HttpMimeType = httpMimeType
+				i.Format       = InputFormatFuncs[f]
 
 				break
 			}
 		}
 	}
 
-	if input.HttpMimeType == EmptyString {
-		DefaultInputHttpFormat(&*input)
+	if i.HttpMimeType == EmptyString {
+		DefaultInputHttpFormat(&*i)
 	}
 }
 
-func (input Input) Build() []byte {
-	return input.Structure.Content
+func (i *Input) Build() []byte {
+	return i.Structure.Content
 }
 
 func InputHttpExecute(r *http.Request) []byte {
