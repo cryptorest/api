@@ -90,7 +90,7 @@ func (o *Output) Build() {
 	}
 }
 
-func OutputHttpExecute(w http.ResponseWriter, r *http.Request, c string, e error) {
+var OutputHttpExecute = func(w http.ResponseWriter, r *http.Request, c string, e error) {
 	var output Output
 
 	output.Writer            = w
