@@ -26,9 +26,9 @@ type Input struct {
 	Format       func(w io.Reader, s *format.InputStructure, hr bool) error
 }
 
-func DefaultInputHttpFormat(input *Input) {
-	input.Format       = format.InputText
-	input.HttpMimeType = format.TextHttpMimeTypes[0]
+func DefaultInputHttpFormat(i *Input) {
+	i.Format       = format.InputText
+	i.HttpMimeType = format.TextHttpMimeTypes[0]
 }
 
 func (i *Input) FormatFind() {

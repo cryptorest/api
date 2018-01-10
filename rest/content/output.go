@@ -24,10 +24,10 @@ func OutputHttpMimeType(r *http.Request) string {
 	return r.Header.Get(MimeKeyResponse)
 }
 
-func DefaultOutputHttpFormat(output *Output) {
-	output.IsHumanReadable = false
-	output.Format          = format.OutputText
-	output.HttpMimeType    = format.TextHttpMimeTypes[0]
+func DefaultOutputHttpFormat(o *Output) {
+	o.IsHumanReadable = false
+	o.Format          = format.OutputText
+	o.HttpMimeType    = format.TextHttpMimeTypes[0]
 }
 
 type Output struct {
