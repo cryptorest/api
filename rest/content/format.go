@@ -19,11 +19,12 @@ var HttpMimePrefixs = [2]string {
 	"application",
 }
 
-var HttpMimeTypes = [4][2]string {
+var HttpMimeTypes = [5][2]string {
 	format.TextHttpMimeTypes,
 	format.JsonHttpMimeTypes,
 	format.YamlHttpMimeTypes,
 	format.TomlHttpMimeTypes,
+	format.XmlHttpMimeTypes,
 }
 
 func HumanReadableFormat(m string) bool {

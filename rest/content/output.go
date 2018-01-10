@@ -12,11 +12,12 @@ import (
 
 const StatusOKString = "OK"
 
-var OutputFormatFuncs = [4]func(w io.Writer, s *format.OutputStructure, hr bool) error {
+var OutputFormatFuncs = [5]func(w io.Writer, s *format.OutputStructure, hr bool) error {
 	format.OutputText,
 	format.OutputJson,
 	format.OutputYaml,
 	format.OutputToml,
+	format.OutputXml,
 }
 
 func OutputHttpMimeType(r *http.Request) string {

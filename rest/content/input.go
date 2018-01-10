@@ -8,11 +8,12 @@ import (
 	"rest/content/format"
 )
 
-var InputFormatFuncs = [4]func(w io.Reader, s *format.InputStructure, hr bool) error {
+var InputFormatFuncs = [5]func(w io.Reader, s *format.InputStructure, hr bool) error {
 	format.InputText,
 	format.InputJson,
 	format.InputYaml,
 	format.InputToml,
+	format.InputXml,
 }
 
 func InputHttpMimeType(r *http.Request) string {

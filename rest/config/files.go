@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"path/filepath"
 
+	"encoding/xml"
 	"encoding/json"
 	"gopkg.in/yaml.v2"
 	"github.com/BurntSushi/toml"
@@ -41,10 +42,24 @@ func InitJsonFile(c *Structure) {
 		log.Fatalf("JSON error: #%v ", err)
 	}
 
-	err =json.Unmarshal(cFile, &c)
+	err = json.Unmarshal(cFile, &c)
 
 	if err != nil {
 		log.Fatalf("Unmarshal JSON: %v", err)
+	}
+}
+
+func InitXmlFile(c *Structure) {
+	cFile, err := ioutil.ReadFile(c.ConfigFile)
+
+	if err != nil {
+		log.Fatalf("XML error: #%v ", err)
+	}
+
+	err = xml.Unmarshal(cFile, &c)
+
+	if err != nil {
+		log.Fatalf("Unmarshal XML: %v", err)
 	}
 }
 
@@ -60,5 +75,7 @@ func InitFile(c *Structure) {
 		InitTomlFile(&*c)
 	case format.JsonFileExtensions[0]:
 		InitJsonFile(&*c)
+	case format.XmlFileExtensions[0]:
+		InitXmlFile(&*c)
 	}
 }

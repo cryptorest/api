@@ -9,7 +9,7 @@ import (
 var JsonHttpMimeTypes = [2]string {
 	// RFC 2046, for human readable mode
 	"text/json",
-	// RFC8259
+	// RFC 8259
 	"application/json",
 }
 
