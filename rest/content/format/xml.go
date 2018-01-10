@@ -13,7 +13,7 @@ var XmlHttpMimeTypes = [2]string {
 	"application/xml",
 }
 
-var XmlFileExtensions = [1]string {
+var XmlFileExtensions = []string {
 	".xml",
 }
 

@@ -9,7 +9,7 @@ var TextHttpMimeTypes = [2]string {
 	"text/plane",
 }
 
-var TextFileExtensions = [1]string {
+var TextFileExtensions = []string {
 	".txt",
 }
 

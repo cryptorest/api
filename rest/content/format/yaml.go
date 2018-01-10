@@ -13,7 +13,7 @@ var YamlHttpMimeTypes = [2]string {
 	"application/yaml",
 }
 
-var YamlFileExtensions = [2]string {
+var YamlFileExtensions = []string {
 	".yml",
 	".yaml",
 }

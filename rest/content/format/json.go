@@ -2,6 +2,8 @@ package format
 
 import (
 	"io"
+	"log"
+	"io/ioutil"
 
 	"encoding/json"
 )
@@ -13,8 +15,25 @@ var JsonHttpMimeTypes = [2]string {
 	"application/json",
 }
 
-var JsonFileExtensions = [1]string {
+var JsonFileExtensions = []string {
 	".json",
+}
+
+
+func InputJsonFile(s *InputStructure) error {
+	cFile, err := ioutil.ReadFile(s.File)
+
+	if err != nil {
+		log.Fatalf("JSON error: #%v ", err)
+	}
+
+	err = json.Unmarshal(cFile, &s)
+
+	if err != nil {
+		log.Fatalf("Unmarshal JSON: %v", err)
+	}
+
+	return err
 }
 
 func InputJson(w io.Reader, s *InputStructure, hr bool) error {

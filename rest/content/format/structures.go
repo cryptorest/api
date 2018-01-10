@@ -4,11 +4,14 @@ const HumanReadablePrefix = ""
 const HumanReadableIndent = "  "
 
 type InputStructure struct {
-	ConfigFile string `yaml:"ConfigFile"`
-	Date       string `yaml:"Date"`
-	Host       string `yaml:"Host"`
-	Port       int    `yaml:"Port"`
-	Content    []byte `yaml:"Content"`
+	FileExtensions []byte `yaml:"FileExtension"`
+	File           string `yaml:"File"`
+	Date           string `yaml:"Date"`
+	Host           string `yaml:"Host"`
+	Port           int    `yaml:"Port"`
+	Content        []byte `yaml:"Content"`
+	Error          string `yaml:"Error"`
+	Status         int    `yaml:"Status"`
 }
 
 type OutputStructure struct {
@@ -18,5 +21,5 @@ type OutputStructure struct {
 	Port       int    `yaml:"Port"`
 	Content    string `yaml:"Content"`
 	Error      string `yaml:"Error"`
-	Status     string `yaml:"Status"`
+	Status     int    `yaml:"Status"`
 }

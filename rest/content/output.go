@@ -4,13 +4,12 @@ import (
 	"io"
 	"fmt"
 	"time"
+	"strings"
 	"net/http"
 
 	"rest/config"
 	"rest/content/format"
 )
-
-const StatusOKString = "OK"
 
 var OutputFormatFuncs = [5]func(w io.Writer, s *format.OutputStructure, hr bool) error {
 	format.OutputText,
@@ -42,14 +41,16 @@ func (o *Output) FormatFind() {
 	outputHttpMimeType := o.HttpMimeType
 	o.HttpMimeType = EmptyString
 
-	for f, formatHttpMimeType := range HttpMimeTypes {
-		for _, httpMimeType := range formatHttpMimeType {
-			if outputHttpMimeType == httpMimeType {
-				o.HttpMimeType    = httpMimeType
-				o.IsHumanReadable = HumanReadableFormat(httpMimeType)
-				o.Format          = OutputFormatFuncs[f]
+	for _, mimeType := range strings.Split(outputHttpMimeType, ";") {
+		for f, formatHttpMimeType := range HttpMimeTypes {
+			for _, httpMimeType := range formatHttpMimeType {
+				if mimeType == httpMimeType {
+					o.HttpMimeType = httpMimeType
+					o.IsHumanReadable = HumanReadableFormat(httpMimeType)
+					o.Format = OutputFormatFuncs[f]
 
-				break
+					break
+				}
 			}
 		}
 	}
@@ -63,9 +64,9 @@ func (o *Output) Build() {
 	tm := time.Now().UTC()
 
 	if o.Structure.Error == EmptyString {
-		o.Structure.Status = StatusOKString
+		o.Structure.Status = http.StatusOK
 	} else {
-		o.Structure.Status  = EmptyString
+		o.Structure.Status  = http.StatusOK
 		o.Structure.Content = EmptyString
 	}
 
@@ -83,7 +84,7 @@ func (o *Output) Build() {
 
 	if err != nil {
 		o.Structure.Error   = errorMessage(err)
-		o.Structure.Status  = EmptyString
+		o.Structure.Status  = http.StatusOK
 		o.Structure.Content = EmptyString
 
 		io.WriteString(o.Writer, o.Structure.Error)

@@ -27,6 +27,14 @@ var HttpMimeTypes = [5][2]string {
 	format.XmlHttpMimeTypes,
 }
 
+var FileExtensions = [5][]string {
+	format.TextFileExtensions,
+	format.JsonFileExtensions,
+	format.YamlFileExtensions,
+	format.TomlFileExtensions,
+	format.XmlFileExtensions,
+}
+
 func HumanReadableFormat(m string) bool {
 	var hr bool
 

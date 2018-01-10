@@ -13,7 +13,7 @@ var TomlHttpMimeTypes = [2]string {
 	"application/toml",
 }
 
-var TomlFileExtensions = [2]string {
+var TomlFileExtensions = []string {
 	".tml",
 	".toml",
 }
