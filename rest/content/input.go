@@ -55,7 +55,7 @@ func (i *Input) Build() []byte {
 	return i.Structure.Content
 }
 
-func InputHttpExecute(r *http.Request) []byte {
+var InputHttpExecute = func(r *http.Request) []byte {
 	var input Input
 
 	input.Reader            = r
