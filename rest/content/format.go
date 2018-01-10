@@ -12,7 +12,7 @@ const MimeKeyResponse = "Accept"
 
 const EmptyString = ""
 
-var HttpMimePrefixs = [2]string {
+var HttpMimePrefixes = [2]string {
 	// For human readable mode
 	"text",
 	// For applications
@@ -31,9 +31,9 @@ func HumanReadableFormat(m string) bool {
 	var hr bool
 
 	switch {
-	case strings.HasPrefix(m, HttpMimePrefixs[0]):
+	case strings.HasPrefix(m, HttpMimePrefixes[0]):
 		hr = true
-	case strings.HasPrefix(m, HttpMimePrefixs[1]):
+	case strings.HasPrefix(m, HttpMimePrefixes[1]):
 		hr = false
 	default:
 		hr = false

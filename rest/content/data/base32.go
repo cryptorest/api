@@ -29,8 +29,8 @@ func Base32(w http.ResponseWriter, r *http.Request) {
 
 		content.OutputString(w, r, str)
 	case Base32Actions[1]:
-		str        := content.InputString(r)
-		bData, err := base32.StdEncoding.DecodeString(str)
+		str       := content.InputString(r)
+		data, err := base32.StdEncoding.DecodeString(str)
 
 		if err != nil {
 			content.OutputError(w, r, err)
@@ -38,6 +38,6 @@ func Base32(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		content.OutputBytes(w, r, bData)
+		content.OutputBytes(w, r, data)
 	}
 }

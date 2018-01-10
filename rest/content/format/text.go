@@ -19,8 +19,14 @@ func InputText(w io.Reader, s *InputStructure, hr bool) error {
 
 func OutputText(w io.Writer, s *OutputStructure, hr bool) error {
 	hr = false
+	var data []byte
 
-	_, err := w.Write([]byte(s.Content))
+	if s.Error == "" {
+		data = []byte(s.Content)
+	} else {
+		data = []byte(s.Error)
+	}
+	_, err := w.Write(data)
 
 	return err
 }
