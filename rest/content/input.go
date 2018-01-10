@@ -31,7 +31,7 @@ func DefaultInputHttpFormat(input *Input) {
 	input.HttpMimeType = format.TextHttpMimeTypes[0]
 }
 
-func InputFormat(input *Input) {
+func (input *Input) FormatFind() {
 	inputHttpMimeType := input.HttpMimeType
 	input.HttpMimeType = EmptyString
 
@@ -51,7 +51,7 @@ func InputFormat(input *Input) {
 	}
 }
 
-func InputBuild(input *Input) []byte {
+func (input Input) Build() []byte {
 	return input.Structure.Content
 }
 
@@ -63,9 +63,9 @@ func InputHttpExecute(r *http.Request) []byte {
 	input.Structure         = format.InputStructure{}
 	input.Structure.Content = []byte("data")
 
-	InputFormat(&input)
+	input.FormatFind()
 
-	return InputBuild(&input)
+	return input.Build()
 }
 
 func InputBytes(r *http.Request) []byte {

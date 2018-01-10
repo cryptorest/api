@@ -24,6 +24,12 @@ func OutputHttpMimeType(r *http.Request) string {
 	return r.Header.Get(MimeKeyResponse)
 }
 
+func DefaultOutputHttpFormat(output *Output) {
+	output.IsHumanReadable = false
+	output.Format          = format.OutputText
+	output.HttpMimeType    = format.TextHttpMimeTypes[0]
+}
+
 type Output struct {
 	IsHumanReadable bool
 	HttpMimeType    string
@@ -32,13 +38,7 @@ type Output struct {
 	Format          func(w io.Writer, s *format.OutputStructure, hr bool) error
 }
 
-func DefaultOutputHttpFormat(output *Output) {
-	output.IsHumanReadable = false
-	output.Format          = format.OutputText
-	output.HttpMimeType    = format.TextHttpMimeTypes[0]
-}
-
-func OutputFormat(output *Output) {
+func (output *Output) FormatFind() {
 	outputHttpMimeType := output.HttpMimeType
 	output.HttpMimeType = EmptyString
 
@@ -59,7 +59,7 @@ func OutputFormat(output *Output) {
 	}
 }
 
-func OutputBuild(output *Output) {
+func (output *Output) Build() {
 	tm := time.Now().UTC()
 
 	if output.Structure.Error == EmptyString {
@@ -99,8 +99,8 @@ func OutputHttpExecute(w http.ResponseWriter, r *http.Request, c string, e error
 	output.Structure.Error   = errorMessage(e)
 	output.Structure.Content = c
 
-	OutputFormat(&output)
-	OutputBuild(&output)
+	output.FormatFind()
+	output.Build()
 }
 
 func OutputHash(w http.ResponseWriter, r *http.Request, b []byte) {
