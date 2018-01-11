@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"encoding/base64"
 
-	"rest/content"
 	"rest/errors"
+	"rest/content"
 )
 
 const Base64Path = content.DataPath + "/base64"
@@ -23,21 +23,31 @@ func Base64(w http.ResponseWriter, r *http.Request) {
 	action := content.Path2Action(r)
 
 	switch action {
-	case Base64Actions[0]:
-		data := content.InputBytes(r)
-		str  := base64.StdEncoding.EncodeToString(data)
+	// Encode
+	case Base32Actions[0]:
+		data, err, s := content.InputHttpBytes(r)
 
-		content.OutputString(w, r, str)
-	case Base64Actions[1]:
-		str        := content.InputString(r)
-		bData, err := base64.StdEncoding.DecodeString(str)
+		if err == nil {
+			str := base64.StdEncoding.EncodeToString(data)
 
-		if err != nil {
-			content.OutputError(w, r, err)
-
-			return
+			content.OutputHttpString(w, r, str)
+		} else {
+			content.OutputHttpError(w, r, err, s)
 		}
+	// Decode
+	case Base32Actions[1]:
+		str, err, s := content.InputHttpString(r)
 
-		content.OutputBytes(w, r, bData)
+		if err == nil {
+			data, err := base64.StdEncoding.DecodeString(str)
+
+			if err == nil {
+				content.OutputHttpBytes(w, r, data)
+			} else {
+				content.OutputHttpError(w, r, err, http.StatusUnprocessableEntity)
+			}
+		} else {
+			content.OutputHttpError(w, r, err, s)
+		}
 	}
 }

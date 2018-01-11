@@ -1,7 +1,6 @@
 package content
 
 import (
-	"fmt"
 	"strings"
 
 	"rest/content/format"
@@ -48,16 +47,4 @@ func HumanReadableFormat(m string) bool {
 	}
 
 	return hr
-}
-
-func errorMessage(e error) string {
-	var str string
-
-	if e == nil {
-		str = ""
-	} else {
-		str = fmt.Sprintf("%s", e)
-	}
-
-	return str
 }

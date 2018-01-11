@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"encoding/base32"
 
-	"rest/content"
 	"rest/errors"
+	"rest/content"
 )
 
 const Base32Path = content.DataPath + "/base32"
@@ -23,21 +23,31 @@ func Base32(w http.ResponseWriter, r *http.Request) {
 	action := content.Path2Action(r)
 
 	switch action {
+	// Encode
 	case Base32Actions[0]:
-		data := content.InputBytes(r)
-		str  := base32.StdEncoding.EncodeToString(data)
+		data, err, s := content.InputHttpBytes(r)
 
-		content.OutputString(w, r, str)
-	case Base32Actions[1]:
-		str       := content.InputString(r)
-		data, err := base32.StdEncoding.DecodeString(str)
+		if err == nil {
+			str := base32.StdEncoding.EncodeToString(data)
 
-		if err != nil {
-			content.OutputError(w, r, err)
-
-			return
+			content.OutputHttpString(w, r, str)
+		} else {
+			content.OutputHttpError(w, r, err, s)
 		}
+	// Decode
+	case Base32Actions[1]:
+		str, err, s := content.InputHttpString(r)
 
-		content.OutputBytes(w, r, data)
+		if err == nil {
+			data, err := base32.StdEncoding.DecodeString(str)
+
+			if err == nil {
+				content.OutputHttpBytes(w, r, data)
+			} else {
+				content.OutputHttpError(w, r, err, http.StatusUnprocessableEntity)
+			}
+		} else {
+			content.OutputHttpError(w, r, err, s)
+		}
 	}
 }

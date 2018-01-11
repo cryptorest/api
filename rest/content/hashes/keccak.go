@@ -3,10 +3,10 @@ package hashes
 import (
 	"hash"
 	"net/http"
-	"github.com/cryptorest/keccakc"
 
-	"rest/content"
 	"rest/errors"
+	"rest/content"
+	"github.com/cryptorest/keccakc"
 )
 
 const KeccakPath = content.HashesPath + "/keccak"
@@ -23,10 +23,14 @@ func KECCAK(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	bit  := content.Path2Bit(r)
-	data := content.InputBytes(r)
-	b    := KeccakBits[bit]()
+	bit          := content.Path2Bit(r)
+	data, err, s := content.InputHttpBytes(r)
+	b            := KeccakBits[bit]()
 
-	b.Write(data)
-	content.OutputHash(w, r, b.Sum(nil))
+	if err == nil {
+		b.Write(data)
+		content.OutputHttpHash(w, r, b.Sum(nil))
+	} else {
+		content.OutputHttpError(w, r, err, s)
+	}
 }

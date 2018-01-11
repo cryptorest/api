@@ -39,15 +39,15 @@ type Output struct {
 
 func (o *Output) FormatFind() {
 	outputHttpMimeType := o.HttpMimeType
-	o.HttpMimeType = EmptyString
+	o.HttpMimeType      = EmptyString
 
 	for _, mimeType := range strings.Split(outputHttpMimeType, ";") {
 		for f, formatHttpMimeType := range HttpMimeTypes {
 			for _, httpMimeType := range formatHttpMimeType {
 				if mimeType == httpMimeType {
-					o.HttpMimeType = httpMimeType
+					o.HttpMimeType    = httpMimeType
 					o.IsHumanReadable = HumanReadableFormat(httpMimeType)
-					o.Format = OutputFormatFuncs[f]
+					o.Format          = OutputFormatFuncs[f]
 
 					break
 				}
@@ -64,10 +64,12 @@ func (o *Output) Build() {
 	t := time.Now().UTC()
 
 	if o.Structure.Error == EmptyString {
-		o.Structure.Status = http.StatusOK
-	} else {
 		o.Structure.Status  = http.StatusOK
+	} else {
 		o.Structure.Content = EmptyString
+		if o.Structure.Status < 100 {
+			o.Structure.Status = http.StatusInternalServerError
+		}
 	}
 
 	o.Structure.Date      = t.String()
@@ -83,63 +85,64 @@ func (o *Output) Build() {
 	err := o.Format(o.Writer, &o.Structure, o.IsHumanReadable)
 
 	if err != nil {
-		o.Structure.Error   = errorMessage(err)
-		o.Structure.Status  = http.StatusOK
+		o.Structure.Error   = err.Error()
+		o.Structure.Status  = http.StatusUnsupportedMediaType
 		o.Structure.Content = EmptyString
 
 		io.WriteString(o.Writer, o.Structure.Error)
 	}
 }
 
-var OutputHttpExecute = func(w http.ResponseWriter, r *http.Request, c string, e error) {
+var OutputHttpExecute = func(w http.ResponseWriter, r *http.Request, c string, e error, s int) {
 	var output Output
 
 	output.Writer            = w
 	output.HttpMimeType      = OutputHttpMimeType(r)
 	output.Structure         = format.OutputStructure{}
-	output.Structure.Error   = errorMessage(e)
+	output.Structure.Error   = e.Error()
+	output.Structure.Status  = s
 	output.Structure.Content = c
 
 	output.FormatFind()
 	output.Build()
 }
 
-func OutputHash(w http.ResponseWriter, r *http.Request, b []byte) {
-	OutputHttpExecute(w, r, fmt.Sprintf("%x", b), nil)
+func OutputHttpHash(w http.ResponseWriter, r *http.Request, b []byte) {
+	OutputHttpExecute(w, r, fmt.Sprintf("%x", b), nil, 0)
 }
 
-func OutputBytes(w http.ResponseWriter, r *http.Request, b []byte) {
-	OutputHttpExecute(w, r, fmt.Sprintf("%s", b), nil)
+func OutputHttpBytes(w http.ResponseWriter, r *http.Request, b []byte) {
+	OutputHttpExecute(w, r, fmt.Sprintf("%s", b), nil, 0)
 }
 
-func OutputString(w http.ResponseWriter, r *http.Request, s string) {
-	OutputHttpExecute(w, r, s, nil)
+func OutputHttpString(w http.ResponseWriter, r *http.Request, s string) {
+	OutputHttpExecute(w, r, s, nil, 0)
 }
 
-func OutputUInt8(w http.ResponseWriter, r *http.Request, i uint8) {
-	OutputHttpExecute(w, r, fmt.Sprintf("%x", i), nil)
+func OutputHttpUInt8(w http.ResponseWriter, r *http.Request, i uint8) {
+	OutputHttpExecute(w, r, fmt.Sprintf("%x", i), nil, 0)
 }
 
-func OutputUInt32(w http.ResponseWriter, r *http.Request, i uint32) {
-	OutputHttpExecute(w, r, fmt.Sprintf("%x", i), nil)
+func OutputHttpUInt32(w http.ResponseWriter, r *http.Request, i uint32) {
+	OutputHttpExecute(w, r, fmt.Sprintf("%x", i), nil, 0)
 }
 
-func OutputUInt64(w http.ResponseWriter, r *http.Request, i uint64) {
-	OutputHttpExecute(w, r, fmt.Sprintf("%x", i), nil)
+func OutputHttpUInt64(w http.ResponseWriter, r *http.Request, i uint64) {
+	OutputHttpExecute(w, r, fmt.Sprintf("%x", i), nil, 0)
 }
 
-func Output32Byte(w http.ResponseWriter, r *http.Request, b [32]byte) {
-	OutputHttpExecute(w, r, fmt.Sprintf("%x", b), nil)
+func OutputHttp32Byte(w http.ResponseWriter, r *http.Request, b [32]byte) {
+	OutputHttpExecute(w, r, fmt.Sprintf("%x", b), nil, 0)
 }
 
-func Output48Byte(w http.ResponseWriter, r *http.Request, b [48]byte) {
-	OutputHttpExecute(w, r, fmt.Sprintf("%x", b), nil)
+func OutputHttp48Byte(w http.ResponseWriter, r *http.Request, b [48]byte) {
+	OutputHttpExecute(w, r, fmt.Sprintf("%x", b), nil, 0)
 }
 
-func Output64Byte(w http.ResponseWriter, r *http.Request, b [64]byte) {
-	OutputHttpExecute(w, r, fmt.Sprintf("%x", b), nil)
+func OutputHttp64Byte(w http.ResponseWriter, r *http.Request, b [64]byte) {
+	OutputHttpExecute(w, r, fmt.Sprintf("%x", b), nil, 0)
 }
 
-func OutputError(w http.ResponseWriter, r *http.Request, e error) {
-	OutputHttpExecute(w, r, EmptyString, e)
+func OutputHttpError(w http.ResponseWriter, r *http.Request, e error, s int) {
+	OutputHttpExecute(w, r, EmptyString, e, s)
 }

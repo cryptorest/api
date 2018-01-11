@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"hash/crc32"
 
-	"rest/content"
 	"rest/errors"
+	"rest/content"
 )
 
 const Crc32Path = content.HashesPath + "/crc32"
@@ -21,15 +21,22 @@ func CRC32(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pType := content.Path2Type(r)
-	data  := content.InputBytes(r)
+	pType        := content.Path2Type(r)
+	data, err, s := content.InputHttpBytes(r)
 
-	switch pType {
-	case Crc32Types[0]:
-		content.OutputUInt32(w, r, crc32.Checksum(data, crc32.MakeTable(crc32.IEEE)))
-	case Crc32Types[1]:
-		content.OutputUInt32(w, r, crc32.Checksum(data, crc32.MakeTable(crc32.Koopman)))
-	case Crc32Types[2]:
-		content.OutputUInt32(w, r, crc32.Checksum(data, crc32.MakeTable(crc32.Castagnoli)))
+	if err == nil {
+		switch pType {
+		// IEEE
+		case Crc32Types[0]:
+			content.OutputHttpUInt32(w, r, crc32.Checksum(data, crc32.MakeTable(crc32.IEEE)))
+		// Koopman
+		case Crc32Types[1]:
+			content.OutputHttpUInt32(w, r, crc32.Checksum(data, crc32.MakeTable(crc32.Koopman)))
+		// Castagnoli
+		case Crc32Types[2]:
+			content.OutputHttpUInt32(w, r, crc32.Checksum(data, crc32.MakeTable(crc32.Castagnoli)))
+		}
+	} else {
+		content.OutputHttpError(w, r, err, s)
 	}
 }

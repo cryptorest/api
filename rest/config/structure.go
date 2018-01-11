@@ -1,8 +1,12 @@
 package config
 
 import (
+	"os"
 	"fmt"
+	"log"
 )
+
+const DirectoryPermisson = 0700
 
 type Structure struct {
 	ConfigFile string `yaml:"ConfigFile"`
@@ -31,30 +35,44 @@ func InitDefault(c *Structure) {
 	c.Verbose    = false
 }
 
+func DirectoryCreate(pathDir string, title string) {
+	_, err := os.Stat(pathDir)
+
+	if os.IsNotExist(err) {
+		err = os.MkdirAll(pathDir, 0000)
+		if err != nil {
+			log.Fatalf("%s: %v", title, err)
+		}
+	}
+}
+
 func ServerURI(uriPath string) string {
-	var scheme string
+	var schema string
 
 	if Default.GlobalPort == Server.Port {
-		scheme = Server.Host
+		schema = Server.Host
 	} else {
-		scheme = fmt.Sprintf("%s:%d", Server.Host, Server.Port)
+		schema = fmt.Sprintf("%s:%d", Server.Host, Server.Port)
 	}
 
-	return Server.URISchema + scheme + uriPath
+	return Server.URISchema + schema + uriPath
 }
 
 func Init() {
 	InitDefault(&Default)
 
 	InitCommand(&Server)
-	Server.URISchema = Default.URISchema
+	Server.URISchema  = Default.URISchema
 	Server.GlobalPort = Default.GlobalPort
+	Server.UploadDir  = Default.UploadDir
 
 	if Server == Default {
 		InitEnvironment(&Server)
 	}
 	InitFile(&Server)
 
-	Server.URISchema = Default.URISchema
+	Server.URISchema  = Default.URISchema
 	Server.GlobalPort = Default.GlobalPort
+
+	DirectoryCreate(Server.UploadDir, "Upload directory")
 }

@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"hash/crc64"
 
-	"rest/content"
 	"rest/errors"
+	"rest/content"
 )
 
 const Crc64Path = content.HashesPath + "/crc64"
@@ -20,13 +20,19 @@ func CRC64(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pType := content.Path2Type(r)
-	data  := content.InputBytes(r)
+	pType        := content.Path2Type(r)
+	data, err, s := content.InputHttpBytes(r)
 
-	switch pType {
-	case Crc64Types[0]:
-		content.OutputUInt64(w, r, crc64.Checksum(data, crc64.MakeTable(crc64.ISO)))
-	case Crc64Types[1]:
-		content.OutputUInt64(w, r, crc64.Checksum(data, crc64.MakeTable(crc64.ECMA)))
+	if err == nil {
+		switch pType {
+		// ISO
+		case Crc64Types[0]:
+			content.OutputHttpUInt64(w, r, crc64.Checksum(data, crc64.MakeTable(crc64.ISO)))
+		// ECMA
+		case Crc64Types[1]:
+			content.OutputHttpUInt64(w, r, crc64.Checksum(data, crc64.MakeTable(crc64.ECMA)))
+		}
+	} else {
+		content.OutputHttpError(w, r, err, s)
 	}
 }

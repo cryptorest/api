@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"encoding/base32"
 
-	"rest/content"
 	"rest/errors"
+	"rest/content"
 )
 
 const Base32Path = content.HashesPath + "/base32"
@@ -15,8 +15,14 @@ func Base32(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := content.InputBytes(r)
-	str  := base32.StdEncoding.EncodeToString(data)
+	data, err, s := content.InputHttpBytes(r)
 
-	content.OutputString(w, r, str)
+	if err == nil {
+		// Encode
+		str := base32.StdEncoding.EncodeToString(data)
+
+		content.OutputHttpString(w, r, str)
+	} else {
+		content.OutputHttpError(w, r, err, s)
+	}
 }

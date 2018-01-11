@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"github.com/cryptorest/crc"
 
-	"rest/content"
 	"rest/errors"
+	"rest/content"
 )
 
 const Crc16Path = content.HashesPath + "/crc16"
@@ -22,17 +22,25 @@ func CRC16(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	bit  := content.Path2Bit(r)
-	data := content.InputBytes(r)
+	bit          := content.Path2Bit(r)
+	data, err, s := content.InputHttpBytes(r)
 
-	switch bit {
-	case Crc16Types[0]:
-		content.OutputUInt64(w, r, crc.CalculateCRC(crc.CRC16, data))
-	case Crc16Types[1]:
-		content.OutputUInt64(w, r, crc.CalculateCRC(crc.CCITT, data))
-	case Crc16Types[2]:
-		content.OutputUInt64(w, r, crc.CalculateCRC(crc.X25, data))
-	case Crc16Types[3]:
-		content.OutputUInt64(w, r, crc.CalculateCRC(crc.XMODEM, data))
+	if err == nil {
+		switch bit {
+		// ARC
+		case Crc16Types[0]:
+			content.OutputHttpUInt64(w, r, crc.CalculateCRC(crc.CRC16, data))
+		// CCITT
+		case Crc16Types[1]:
+			content.OutputHttpUInt64(w, r, crc.CalculateCRC(crc.CCITT, data))
+		// X25
+		case Crc16Types[2]:
+			content.OutputHttpUInt64(w, r, crc.CalculateCRC(crc.X25, data))
+		// XMODEM
+		case Crc16Types[3]:
+			content.OutputHttpUInt64(w, r, crc.CalculateCRC(crc.XMODEM, data))
+		}
+	} else {
+		content.OutputHttpError(w, r, err, s)
 	}
 }

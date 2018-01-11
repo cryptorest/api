@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"github.com/cryptorest/crc8"
 
-	"rest/content"
 	"rest/errors"
+	"rest/content"
 )
 
 const Crc8Path = content.HashesPath + "/crc8"
@@ -27,27 +27,40 @@ func CRC8(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	bit  := content.Path2Bit(r)
-	data := content.InputBytes(r)
+	bit          := content.Path2Bit(r)
+	data, err, s := content.InputHttpBytes(r)
 
-	switch bit {
-	case Crc8Types[0]:
-		content.OutputUInt8(w, r, crc8.Checksum(data, crc8.MakeTable(crc8.CRC8)))
-	case Crc8Types[1]:
-		content.OutputUInt8(w, r, crc8.Checksum(data, crc8.MakeTable(crc8.CRC8_DARC)))
-	case Crc8Types[2]:
-		content.OutputUInt8(w, r, crc8.Checksum(data, crc8.MakeTable(crc8.CRC8_DVB_S2)))
-	case Crc8Types[3]:
-		content.OutputUInt8(w, r, crc8.Checksum(data, crc8.MakeTable(crc8.CRC8_EBU)))
-	case Crc8Types[4]:
-		content.OutputUInt8(w, r, crc8.Checksum(data, crc8.MakeTable(crc8.CRC8_I_CODE)))
-	case Crc8Types[5]:
-		content.OutputUInt8(w, r, crc8.Checksum(data, crc8.MakeTable(crc8.CRC8_ITU)))
-	case Crc8Types[6]:
-		content.OutputUInt8(w, r, crc8.Checksum(data, crc8.MakeTable(crc8.CRC8_MAXIM)))
-	case Crc8Types[7]:
-		content.OutputUInt8(w, r, crc8.Checksum(data, crc8.MakeTable(crc8.CRC8_ROHC)))
-	case Crc8Types[8]:
-		content.OutputUInt8(w, r, crc8.Checksum(data, crc8.MakeTable(crc8.CRC8_WCDMA)))
+	if err == nil {
+		switch bit {
+		// ARC
+		case Crc8Types[0]:
+			content.OutputHttpUInt8(w, r, crc8.Checksum(data, crc8.MakeTable(crc8.CRC8)))
+		// DARC
+		case Crc8Types[1]:
+			content.OutputHttpUInt8(w, r, crc8.Checksum(data, crc8.MakeTable(crc8.CRC8_DARC)))
+		// DVB S2
+		case Crc8Types[2]:
+			content.OutputHttpUInt8(w, r, crc8.Checksum(data, crc8.MakeTable(crc8.CRC8_DVB_S2)))
+		// EBU
+		case Crc8Types[3]:
+			content.OutputHttpUInt8(w, r, crc8.Checksum(data, crc8.MakeTable(crc8.CRC8_EBU)))
+		// iCODE
+		case Crc8Types[4]:
+			content.OutputHttpUInt8(w, r, crc8.Checksum(data, crc8.MakeTable(crc8.CRC8_I_CODE)))
+		// ITU
+		case Crc8Types[5]:
+			content.OutputHttpUInt8(w, r, crc8.Checksum(data, crc8.MakeTable(crc8.CRC8_ITU)))
+		// MAXIM
+		case Crc8Types[6]:
+			content.OutputHttpUInt8(w, r, crc8.Checksum(data, crc8.MakeTable(crc8.CRC8_MAXIM)))
+		// ROHC
+		case Crc8Types[7]:
+			content.OutputHttpUInt8(w, r, crc8.Checksum(data, crc8.MakeTable(crc8.CRC8_ROHC)))
+		// WCDMA
+		case Crc8Types[8]:
+			content.OutputHttpUInt8(w, r, crc8.Checksum(data, crc8.MakeTable(crc8.CRC8_WCDMA)))
+		}
+	} else {
+		content.OutputHttpError(w, r, err, s)
 	}
 }

@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"github.com/cryptorest/go-md2"
 
-	"rest/content"
 	"rest/errors"
+	"rest/content"
 )
 
 const Md2Path = content.HashesPath + "/md2"
@@ -15,9 +15,13 @@ func MD2(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := content.InputBytes(r)
-	md   := md2.New()
+	data, err, s := content.InputHttpBytes(r)
+	md           := md2.New()
 
-	md.Write(data)
-	content.OutputHash(w, r, md.Sum(nil))
+	if err == nil {
+		md.Write(data)
+		content.OutputHttpHash(w, r, md.Sum(nil))
+	} else {
+		content.OutputHttpError(w, r, err, s)
+	}
 }

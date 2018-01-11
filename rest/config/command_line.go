@@ -6,6 +6,7 @@ import (
 
 func InitCommand(c *Structure) {
 	flag.StringVar(&c.ConfigFile, "configFile", Default.ConfigFile, "Server configuration file(TOML, JSON, YAML).")
+	flag.StringVar(&c.Host, "uploadDir", Default.UploadDir, "Upload directory. Required.")
 	flag.StringVar(&c.CertFile, "certFile", Default.CertFile, "TLS server Cert file.")
 	flag.StringVar(&c.KeyFile, "keyFile", Default.KeyFile, "TLS server Key file.")
 	flag.StringVar(&c.Host, "host", Default.Host, "IP address to listen on ('host:port'). Required.")

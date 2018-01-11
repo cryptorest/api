@@ -3,8 +3,7 @@ package content
 import (
 	"io"
 	"os"
-	"log"
-	"strconv"
+//	"strconv"
 	"strings"
 	"net/http"
 	"io/ioutil"
@@ -13,6 +12,7 @@ import (
 
 	"rest/config"
 	"rest/content/format"
+	"errors"
 )
 
 const Size24K = (1 << 10) * 24
@@ -50,8 +50,8 @@ func (i *Input) FormatFind() {
 		for f, formatHttpMimeType := range HttpMimeTypes {
 			for _, httpMimeType := range formatHttpMimeType {
 				if mimeType == httpMimeType {
-					i.HttpMimeType = httpMimeType
-					i.Format = InputFormatFuncs[f]
+					i.HttpMimeType   = httpMimeType
+					i.Format         = InputFormatFuncs[f]
 					i.FileExtensions = FileExtensions[f]
 
 					break
@@ -65,56 +65,57 @@ func (i *Input) FormatFind() {
 	}
 }
 
-func (i *Input) Read() {
+func (i *Input) Read() error {
 	var err error
 
-	defer func() {
-		if err != nil {
-//			http.Error(w, err.Error(), status)
-		}
+	defer func() error {
+		i.Structure.Status = http.StatusInternalServerError
+
+		return err
 	}()
 
 	err = i.Reader.ParseMultipartForm(Size24K)
 	if err != nil {
 		i.Structure.Status = http.StatusInternalServerError
+		i.Structure.Error  = err.Error()
 
-		return
+		return err
 	}
 
-	for _, fheaders := range i.Reader.MultipartForm.File {
-		for _, hdr := range fheaders {
+	for _, fileHeaders := range i.Reader.MultipartForm.File {
+		for _, header := range fileHeaders {
 			// open uploaded
-			var infile multipart.File
+			var inFile multipart.File
 
-			infile, err = hdr.Open()
+			inFile, err = header.Open()
 			if err != nil {
-				i.Structure.Status = http.StatusInternalServerError
+				i.Structure.Error = err.Error()
 
-				return
+				return err
 			}
 
 			// open destination
-			var outfile *os.File
+			var outFile *os.File
 
-			i.Structure.File = filepath.Join(config.Server.UploadDir, hdr.Filename)
-			outfile, err = os.Create(i.Structure.File)
+			i.Structure.File = filepath.Join(config.Server.UploadDir, header.Filename)
+			outFile, err = os.Create(i.Structure.File)
 			if err != nil {
-				i.Structure.Status = http.StatusInternalServerError
+				i.Structure.Error = "Upload file error on system"
 
-				return
+				return errors.New(i.Structure.Error)
 			}
 
 			// 32K buffer copy
-			var written int64
+//			var written int64
 
-			written, err = io.Copy(outfile, infile)
+			_, err = io.Copy(outFile, inFile)
 			if err != nil {
-				i.Structure.Status = http.StatusInternalServerError
+				i.Structure.Error = err.Error()
 
-				return
+				return err
 			}
 
-			i.Structure.Content = []byte(strconv.Itoa(int(written)))
+//			i.Structure.Content = []byte(strconv.Itoa(int(written)))
 //			w.Write([]byte("uploaded file:" + hdr.Filename + ";length:" + strconv.Itoa(int(written))))
 		}
 	}
@@ -122,39 +123,60 @@ func (i *Input) Read() {
 //	err = format.InputJsonFile(&i.Structure)
 //	if err != nil {
 //		i.Structure.Status = http.StatusInternalServerError
+//		i.Structure.Error  = err.Error()
 //
-//		return i.Structure.Content
+//		return
 //	}
 
 	content, err := ioutil.ReadFile(i.Structure.File)
-	if err != nil {
-		log.Fatal(err)
+	if err == nil {
+		i.Structure.Content = content
+
+		err = os.Remove(i.Structure.File)
+		if err != nil {
+			i.Structure.Status = http.StatusInternalServerError
+			i.Structure.Error  = err.Error()
+
+			return err
+		}
+	} else {
+		i.Structure.Status = http.StatusInternalServerError
+		i.Structure.Error  = err.Error()
+
+		return err
 	}
-	i.Structure.Content = content
-	err = os.Remove(i.Structure.File)
+
+	return nil
 }
 
-func (i *Input) Build() []byte {
-	return i.Structure.Content
+func (i *Input) Build() ([]byte, error, int) {
+	return i.Structure.Content, nil, i.Structure.Status
 }
 
-var InputHttpExecute = func(r *http.Request) []byte {
+var InputHttpExecute = func(r *http.Request) ([]byte, error, int) {
 	var input Input
+	var err   error
 
 	input.Reader       = r
 	input.HttpMimeType = InputHttpMimeType(r)
 	input.Structure    = format.InputStructure{}
 
 	input.FormatFind()
-	input.Read()
+	err = input.Read()
 
-	return input.Build()
+	if err == nil {
+		return input.Build()
+	} else {
+		return input.Structure.Content, err, input.Structure.Status
+	}
 }
 
-func InputBytes(r *http.Request) []byte {
+func InputHttpBytes(r *http.Request) ([]byte, error, int) {
 	return InputHttpExecute(r)
 }
 
-func InputString(r *http.Request) string {
-	return string(InputHttpExecute(r))
+func InputHttpString(r *http.Request) (string, error, int) {
+	i, err, s := InputHttpExecute(r)
+
+	return string(i), err, s
 }
