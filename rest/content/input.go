@@ -3,14 +3,16 @@ package content
 import (
 	"io"
 	"os"
+	"log"
 	"strconv"
 	"strings"
 	"net/http"
+	"io/ioutil"
+	"path/filepath"
 	"mime/multipart"
 
+	"rest/config"
 	"rest/content/format"
-	"io/ioutil"
-	"log"
 )
 
 const Size24K = (1 << 10) * 24
@@ -63,7 +65,7 @@ func (i *Input) FormatFind() {
 	}
 }
 
-func (i *Input) Build() []byte {
+func (i *Input) Read() {
 	var err error
 
 	defer func() {
@@ -76,7 +78,7 @@ func (i *Input) Build() []byte {
 	if err != nil {
 		i.Structure.Status = http.StatusInternalServerError
 
-		return i.Structure.Content
+		return
 	}
 
 	for _, fheaders := range i.Reader.MultipartForm.File {
@@ -88,18 +90,18 @@ func (i *Input) Build() []byte {
 			if err != nil {
 				i.Structure.Status = http.StatusInternalServerError
 
-				return i.Structure.Content
+				return
 			}
 
 			// open destination
 			var outfile *os.File
 
-			i.Structure.File = "./uploaded/" + hdr.Filename
+			i.Structure.File = filepath.Join(config.Server.UploadDir, hdr.Filename)
 			outfile, err = os.Create(i.Structure.File)
 			if err != nil {
 				i.Structure.Status = http.StatusInternalServerError
 
-				return i.Structure.Content
+				return
 			}
 
 			// 32K buffer copy
@@ -109,14 +111,13 @@ func (i *Input) Build() []byte {
 			if err != nil {
 				i.Structure.Status = http.StatusInternalServerError
 
-				return i.Structure.Content
+				return
 			}
 
 			i.Structure.Content = []byte(strconv.Itoa(int(written)))
 //			w.Write([]byte("uploaded file:" + hdr.Filename + ";length:" + strconv.Itoa(int(written))))
 		}
 	}
-
 
 //	err = format.InputJsonFile(&i.Structure)
 //	if err != nil {
@@ -131,18 +132,21 @@ func (i *Input) Build() []byte {
 	}
 	i.Structure.Content = content
 	err = os.Remove(i.Structure.File)
+}
 
+func (i *Input) Build() []byte {
 	return i.Structure.Content
 }
 
 var InputHttpExecute = func(r *http.Request) []byte {
 	var input Input
 
-	input.Reader            = r
-	input.HttpMimeType      = InputHttpMimeType(r)
-	input.Structure         = format.InputStructure{}
+	input.Reader       = r
+	input.HttpMimeType = InputHttpMimeType(r)
+	input.Structure    = format.InputStructure{}
 
 	input.FormatFind()
+	input.Read()
 
 	return input.Build()
 }

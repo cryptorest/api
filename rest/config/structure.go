@@ -11,6 +11,7 @@ type Structure struct {
 	KeyFile    string `yaml:"KeyFile"`
 	Host       string `yaml:"Host"`
 	Port       int    `yaml:"Port"`
+	UploadDir  string `yaml:"UploadDir"`
 	GlobalPort int
 	Verbose    bool   `yaml:"Verbose"`
 }
@@ -25,6 +26,7 @@ func InitDefault(c *Structure) {
 	c.KeyFile    = "server.key"
 	c.Host       = "localhost"
 	c.Port       = 64443
+	c.UploadDir  = "./upload"
 	c.GlobalPort = 443
 	c.Verbose    = false
 }

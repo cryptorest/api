@@ -61,7 +61,7 @@ func (o *Output) FormatFind() {
 }
 
 func (o *Output) Build() {
-	tm := time.Now().UTC()
+	t := time.Now().UTC()
 
 	if o.Structure.Error == EmptyString {
 		o.Structure.Status = http.StatusOK
@@ -70,8 +70,8 @@ func (o *Output) Build() {
 		o.Structure.Content = EmptyString
 	}
 
-	o.Structure.Date      = tm.String()
-	o.Structure.Timestamp = tm.Unix()
+	o.Structure.Date      = t.String()
+	o.Structure.Timestamp = t.Unix()
 
 	if o.HttpMimeType != EmptyString {
 		o.Structure.Host = config.Server.Host
