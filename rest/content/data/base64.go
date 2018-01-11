@@ -15,7 +15,15 @@ var Base64Actions = []string{
 	"decode",
 }
 
-func Base64(w http.ResponseWriter, r *http.Request) {
+func Base64Encode(data []byte) (string, error) {
+	return base64.StdEncoding.EncodeToString(data), nil
+}
+
+func Base64Decode(str string) ([]byte, error) {
+	return base64.StdEncoding.DecodeString(str)
+}
+
+func Base64Http(w http.ResponseWriter, r *http.Request) {
 	if errors.MethodPost(w, r) {
 		return
 	}
@@ -28,7 +36,7 @@ func Base64(w http.ResponseWriter, r *http.Request) {
 		data, err, s := content.InputHttpBytes(r)
 
 		if err == nil {
-			str := base64.StdEncoding.EncodeToString(data)
+			str, _ := Base64Encode(data)
 
 			content.OutputHttpString(w, r, str)
 		} else {
@@ -39,10 +47,10 @@ func Base64(w http.ResponseWriter, r *http.Request) {
 		str, err, s := content.InputHttpString(r)
 
 		if err == nil {
-			data, err := base64.StdEncoding.DecodeString(str)
+			data, err := Base64Decode(str)
 
 			if err == nil {
-				content.OutputHttpBytes(w, r, data)
+				content.OutputHttpByte(w, r, data)
 			} else {
 				content.OutputHttpError(w, r, err, http.StatusUnprocessableEntity)
 			}

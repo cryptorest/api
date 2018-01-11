@@ -15,7 +15,15 @@ var Base32Actions = []string{
 	"decode",
 }
 
-func Base32(w http.ResponseWriter, r *http.Request) {
+func Base32Encode(data []byte) (string, error) {
+	return base32.StdEncoding.EncodeToString(data), nil
+}
+
+func Base32Decode(str string) ([]byte, error) {
+	return base32.StdEncoding.DecodeString(str)
+}
+
+func Base32Http(w http.ResponseWriter, r *http.Request) {
 	if errors.MethodPost(w, r) {
 		return
 	}
@@ -28,7 +36,7 @@ func Base32(w http.ResponseWriter, r *http.Request) {
 		data, err, s := content.InputHttpBytes(r)
 
 		if err == nil {
-			str := base32.StdEncoding.EncodeToString(data)
+			str, _ := Base32Encode(data)
 
 			content.OutputHttpString(w, r, str)
 		} else {
@@ -39,10 +47,10 @@ func Base32(w http.ResponseWriter, r *http.Request) {
 		str, err, s := content.InputHttpString(r)
 
 		if err == nil {
-			data, err := base32.StdEncoding.DecodeString(str)
+			data, err := Base32Decode(str)
 
 			if err == nil {
-				content.OutputHttpBytes(w, r, data)
+				content.OutputHttpByte(w, r, data)
 			} else {
 				content.OutputHttpError(w, r, err, http.StatusUnprocessableEntity)
 			}

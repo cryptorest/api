@@ -99,19 +99,20 @@ var OutputHttpExecute = func(w http.ResponseWriter, r *http.Request, c string, e
 	output.Writer            = w
 	output.HttpMimeType      = OutputHttpMimeType(r)
 	output.Structure         = format.OutputStructure{}
-	output.Structure.Error   = e.Error()
 	output.Structure.Status  = s
 	output.Structure.Content = c
+
+	if e == nil {
+		output.Structure.Error = EmptyString
+	} else {
+		output.Structure.Error = e.Error()
+	}
 
 	output.FormatFind()
 	output.Build()
 }
 
-func OutputHttpHash(w http.ResponseWriter, r *http.Request, b []byte) {
-	OutputHttpExecute(w, r, fmt.Sprintf("%x", b), nil, 0)
-}
-
-func OutputHttpBytes(w http.ResponseWriter, r *http.Request, b []byte) {
+func OutputHttpByte(w http.ResponseWriter, r *http.Request, b []byte) {
 	OutputHttpExecute(w, r, fmt.Sprintf("%s", b), nil, 0)
 }
 

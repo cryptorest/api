@@ -1,6 +1,7 @@
 package hashes
 
 import (
+	e "errors"
 	"net/http"
 	"encoding/hex"
 	"golang.org/x/crypto/sha3"
@@ -16,10 +17,45 @@ var ShakeBits = []string{
 	"256",
 }
 
-var minBits = 256
-//var maxBits = 1024 * 1024
+var MinBit = 256
+var MaxBit = 1024 * 1024 * 1024
 
-func SHAKE(w http.ResponseWriter, r *http.Request) {
+func checkBit(b int) error {
+	b *= 4
+	if b < MinBit || b > MaxBit || b%16 != 0 {
+		return e.New("invalid bit size")
+	}
+
+	return nil
+}
+
+func Shake128(data []byte, b int) ([]byte, error) {
+	err := checkBit(b)
+	if err != nil {
+		return nil, err
+	}
+
+	hash := make([]byte, b)
+
+	sha3.ShakeSum128(hash, data)
+
+	return hash, nil
+}
+
+func Shake256(data []byte, b int) ([]byte, error) {
+	err := checkBit(b)
+	if err != nil {
+		return nil, err
+	}
+
+	hash := make([]byte, b)
+
+	sha3.ShakeSum256(hash, data)
+
+	return hash, nil
+}
+
+func ShakeHttp(w http.ResponseWriter, r *http.Request) {
 	if errors.MethodPost(w, r) {
 		return
 	}
@@ -31,18 +67,22 @@ func SHAKE(w http.ResponseWriter, r *http.Request) {
 		switch bit {
 		// 128
 		case ShakeBits[0]:
-			hash := make([]byte, minBits / 8)
+			hash, err := Shake128(data, MinBit / 8)
 
-			sha3.ShakeSum128(hash, data)
-
-			content.OutputHttpString(w, r, hex.EncodeToString(hash))
+			if err == nil {
+				content.OutputHttpString(w, r, hex.EncodeToString(hash))
+			} else {
+				content.OutputHttpError(w, r, err, http.StatusUnprocessableEntity)
+			}
 		// 256
 		case ShakeBits[1]:
-			hash := make([]byte, minBits / 4)
+			hash, err := Shake256(data, MinBit / 4)
 
-			sha3.ShakeSum256(hash, data)
-
-			content.OutputHttpString(w, r, hex.EncodeToString(hash))
+			if err == nil {
+				content.OutputHttpString(w, r, hex.EncodeToString(hash))
+			} else {
+				content.OutputHttpError(w, r, err, http.StatusUnprocessableEntity)
+			}
 		}
 	} else {
 		content.OutputHttpError(w, r, err, s)

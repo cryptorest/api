@@ -11,13 +11,28 @@ import (
 const Crc16Path = content.HashesPath + "/crc16"
 
 var Crc16Types = []string{
-	"arc",
 	"ccitt",
 	"x25",
 	"xmodem",
 }
 
-func CRC16(w http.ResponseWriter, r *http.Request) {
+func Crc16(data []byte) uint64 {
+	return crc.CalculateCRC(crc.CRC16, data)
+}
+
+func Crc16Ccitt(data []byte) uint64 {
+	return crc.CalculateCRC(crc.CCITT, data)
+}
+
+func Crc16X25(data []byte) uint64 {
+	return crc.CalculateCRC(crc.X25, data)
+}
+
+func Crc16Xmodem(data []byte) uint64 {
+	return crc.CalculateCRC(crc.XMODEM, data)
+}
+
+func Crc16Http(w http.ResponseWriter, r *http.Request) {
 	if errors.MethodPost(w, r) {
 		return
 	}
@@ -27,18 +42,17 @@ func CRC16(w http.ResponseWriter, r *http.Request) {
 
 	if err == nil {
 		switch bit {
-		// ARC
-		case Crc16Types[0]:
-			content.OutputHttpUInt64(w, r, crc.CalculateCRC(crc.CRC16, data))
 		// CCITT
-		case Crc16Types[1]:
-			content.OutputHttpUInt64(w, r, crc.CalculateCRC(crc.CCITT, data))
+		case Crc16Types[0]:
+			content.OutputHttpUInt64(w, r, Crc16Ccitt(data))
 		// X25
-		case Crc16Types[2]:
-			content.OutputHttpUInt64(w, r, crc.CalculateCRC(crc.X25, data))
+		case Crc16Types[1]:
+			content.OutputHttpUInt64(w, r, Crc16X25(data))
 		// XMODEM
-		case Crc16Types[3]:
-			content.OutputHttpUInt64(w, r, crc.CalculateCRC(crc.XMODEM, data))
+		case Crc16Types[2]:
+			content.OutputHttpUInt64(w, r, Crc16Xmodem(data))
+		default:
+			content.OutputHttpUInt64(w, r, Crc16(data))
 		}
 	} else {
 		content.OutputHttpError(w, r, err, s)

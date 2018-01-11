@@ -7,9 +7,9 @@ import (
 )
 
 func Path2Bits(r *http.Request) int {
-	strBit := filepath.Base(r.URL.Path)
+	strByte := filepath.Base(r.URL.Path)
 
-	i, err := strconv.Atoi(strBit)
+	i, err := strconv.Atoi(strByte)
 
 	if err == nil {
 		return i

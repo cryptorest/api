@@ -10,17 +10,23 @@ import (
 
 const Sha1Path = content.HashesPath + "/sha1"
 
-func SHA1(w http.ResponseWriter, r *http.Request) {
+func Sha1(data []byte) []byte {
+	b := sha1.New()
+
+	b.Write(data)
+
+	return b.Sum(nil)
+}
+
+func Sha1Http(w http.ResponseWriter, r *http.Request) {
 	if errors.MethodPost(w, r) {
 		return
 	}
 
 	data, err, s := content.InputHttpBytes(r)
-	b            := sha1.New()
 
 	if err == nil {
-		b.Write(data)
-		content.OutputHttpHash(w, r, b.Sum(nil))
+		content.OutputHttpByte(w, r, Sha1(data))
 	} else {
 		content.OutputHttpError(w, r, err, s)
 	}

@@ -10,17 +10,23 @@ import (
 
 const Md4Path = content.HashesPath + "/md4"
 
-func MD4(w http.ResponseWriter, r *http.Request) {
+func Md4(data []byte) []byte {
+	md := md4.New()
+
+	md.Write(data)
+
+	return md.Sum(nil)
+}
+
+func Md4Http(w http.ResponseWriter, r *http.Request) {
 	if errors.MethodPost(w, r) {
 		return
 	}
 
 	data, err, s := content.InputHttpBytes(r)
-	md           := md4.New()
 
 	if err == nil {
-		md.Write(data)
-		content.OutputHttpHash(w, r, md.Sum(nil))
+		content.OutputHttpByte(w, r, Md4(data))
 	} else {
 		content.OutputHttpError(w, r, err, s)
 	}

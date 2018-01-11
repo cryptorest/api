@@ -3,6 +3,7 @@ package content
 import (
 	"io"
 	"os"
+	"errors"
 //	"strconv"
 	"strings"
 	"net/http"
@@ -12,7 +13,6 @@ import (
 
 	"rest/config"
 	"rest/content/format"
-	"errors"
 )
 
 const Size24K = (1 << 10) * 24
@@ -100,7 +100,7 @@ func (i *Input) Read() error {
 			i.Structure.File = filepath.Join(config.Server.UploadDir, header.Filename)
 			outFile, err = os.Create(i.Structure.File)
 			if err != nil {
-				i.Structure.Error = "Upload file error on system"
+				i.Structure.Error = "upload file error on system"
 
 				return errors.New(i.Structure.Error)
 			}

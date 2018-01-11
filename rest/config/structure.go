@@ -39,7 +39,7 @@ func DirectoryCreate(pathDir string, title string) {
 	_, err := os.Stat(pathDir)
 
 	if os.IsNotExist(err) {
-		err = os.MkdirAll(pathDir, 0000)
+		err = os.MkdirAll(pathDir, DirectoryPermisson)
 		if err != nil {
 			log.Fatalf("%s: %v", title, err)
 		}

@@ -10,17 +10,23 @@ import (
 
 const Md2Path = content.HashesPath + "/md2"
 
-func MD2(w http.ResponseWriter, r *http.Request) {
+func Md2(data []byte) []byte {
+	md := md2.New()
+
+	md.Write(data)
+
+	return md.Sum(nil)
+}
+
+func Md2Http(w http.ResponseWriter, r *http.Request) {
 	if errors.MethodPost(w, r) {
 		return
 	}
 
 	data, err, s := content.InputHttpBytes(r)
-	md           := md2.New()
 
 	if err == nil {
-		md.Write(data)
-		content.OutputHttpHash(w, r, md.Sum(nil))
+		content.OutputHttpByte(w, r, Md2(data))
 	} else {
 		content.OutputHttpError(w, r, err, s)
 	}

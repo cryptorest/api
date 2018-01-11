@@ -15,7 +15,15 @@ var Crc64Types = []string{
 	"ecma",
 }
 
-func CRC64(w http.ResponseWriter, r *http.Request) {
+func Crc64Iso(data []byte) uint64 {
+	return crc64.Checksum(data, crc64.MakeTable(crc64.ISO))
+}
+
+func Crc64Ecma(data []byte) uint64 {
+	return crc64.Checksum(data, crc64.MakeTable(crc64.ISO))
+}
+
+func Crc64Http(w http.ResponseWriter, r *http.Request) {
 	if errors.MethodPost(w, r) {
 		return
 	}
@@ -27,10 +35,10 @@ func CRC64(w http.ResponseWriter, r *http.Request) {
 		switch pType {
 		// ISO
 		case Crc64Types[0]:
-			content.OutputHttpUInt64(w, r, crc64.Checksum(data, crc64.MakeTable(crc64.ISO)))
+			content.OutputHttpUInt64(w, r, Crc64Iso(data))
 		// ECMA
 		case Crc64Types[1]:
-			content.OutputHttpUInt64(w, r, crc64.Checksum(data, crc64.MakeTable(crc64.ECMA)))
+			content.OutputHttpUInt64(w, r, Crc64Ecma(data))
 		}
 	} else {
 		content.OutputHttpError(w, r, err, s)
