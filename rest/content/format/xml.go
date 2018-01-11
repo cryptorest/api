@@ -6,7 +6,15 @@ import (
 	"encoding/xml"
 )
 
-var XmlHttpMimeTypes = [2]string {
+var Xml = Structure {
+	&XmlHttpMimeTypes,
+	&XmlFileExtensions,
+	InputXmlFile,
+	InputXml,
+	OutputXml,
+}
+
+var XmlHttpMimeTypes = []string {
 	// RFC 7303, for human readable mode
 	"text/xml",
 	// RFC RFC7303
@@ -15,6 +23,10 @@ var XmlHttpMimeTypes = [2]string {
 
 var XmlFileExtensions = []string {
 	".xml",
+}
+
+func InputXmlFile(s *InputStructure) error {
+	return nil
 }
 
 func InputXml(w io.Reader, s *InputStructure, hr bool) error {

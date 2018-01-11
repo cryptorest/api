@@ -18,20 +18,12 @@ var HttpMimePrefixes = [2]string {
 	"application",
 }
 
-var HttpMimeTypes = [5][2]string {
-	format.TextHttpMimeTypes,
-	format.JsonHttpMimeTypes,
-	format.YamlHttpMimeTypes,
-	format.TomlHttpMimeTypes,
-	format.XmlHttpMimeTypes,
-}
-
-var FileExtensions = [5][]string {
-	format.TextFileExtensions,
-	format.JsonFileExtensions,
-	format.YamlFileExtensions,
-	format.TomlFileExtensions,
-	format.XmlFileExtensions,
+var Formats = [5]format.Structure {
+	format.Text,
+	format.Json,
+	format.Yaml,
+	format.Toml,
+	format.Xml,
 }
 
 func HumanReadableFormat(m string) bool {

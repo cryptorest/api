@@ -17,14 +17,6 @@ import (
 
 const Size24K = (1 << 10) * 24
 
-var InputFormatFuncs = [5]func(w io.Reader, s *format.InputStructure, hr bool) error {
-	format.InputText,
-	format.InputJson,
-	format.InputYaml,
-	format.InputToml,
-	format.InputXml,
-}
-
 func InputHttpMimeType(r *http.Request) string {
 	return r.Header.Get(MimeKeyRequest)
 }
@@ -47,12 +39,12 @@ func (i *Input) FormatFind() {
 	i.HttpMimeType     = EmptyString
 
 	for _, mimeType := range strings.Split(inputHttpMimeType, ";") {
-		for f, formatHttpMimeType := range HttpMimeTypes {
-			for _, httpMimeType := range formatHttpMimeType {
+		for _, f := range Formats {
+			for _, httpMimeType := range *f.MimeTypes {
 				if mimeType == httpMimeType {
 					i.HttpMimeType   = httpMimeType
-					i.Format         = InputFormatFuncs[f]
-					i.FileExtensions = FileExtensions[f]
+					i.Format         = f.InputFormatFunc
+					i.FileExtensions = *f.FileExtensions
 
 					break
 				}

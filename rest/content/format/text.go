@@ -4,13 +4,25 @@ import (
 	"io"
 )
 
-var TextHttpMimeTypes = [2]string {
+var Text = Structure {
+	&TextHttpMimeTypes,
+	&TextFileExtensions,
+	InputTextFile,
+	InputText,
+	OutputText,
+}
+
+var TextHttpMimeTypes = []string {
 	// RFC2046, RFC3676, RFC5147
 	"text/plane",
 }
 
 var TextFileExtensions = []string {
 	".txt",
+}
+
+func InputTextFile(s *InputStructure) error {
+	return nil
 }
 
 func InputText(w io.Reader, s *InputStructure, hr bool) error {

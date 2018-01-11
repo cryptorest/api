@@ -8,7 +8,15 @@ import (
 	"encoding/json"
 )
 
-var JsonHttpMimeTypes = [2]string {
+var Json = Structure {
+	&JsonHttpMimeTypes,
+	&JsonFileExtensions,
+	InputJsonFile,
+	InputJson,
+	OutputJson,
+}
+
+var JsonHttpMimeTypes = []string {
 	// RFC 2046, for human readable mode
 	"text/json",
 	// RFC 8259
@@ -18,7 +26,6 @@ var JsonHttpMimeTypes = [2]string {
 var JsonFileExtensions = []string {
 	".json",
 }
-
 
 func InputJsonFile(s *InputStructure) error {
 	cFile, err := ioutil.ReadFile(s.File)

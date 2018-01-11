@@ -11,14 +11,6 @@ import (
 	"rest/content/format"
 )
 
-var OutputFormatFuncs = [5]func(w io.Writer, s *format.OutputStructure, hr bool) error {
-	format.OutputText,
-	format.OutputJson,
-	format.OutputYaml,
-	format.OutputToml,
-	format.OutputXml,
-}
-
 func OutputHttpMimeType(r *http.Request) string {
 	return r.Header.Get(MimeKeyResponse)
 }
@@ -42,12 +34,12 @@ func (o *Output) FormatFind() {
 	o.HttpMimeType      = EmptyString
 
 	for _, mimeType := range strings.Split(outputHttpMimeType, ";") {
-		for f, formatHttpMimeType := range HttpMimeTypes {
-			for _, httpMimeType := range formatHttpMimeType {
+		for _, f := range Formats {
+			for _, httpMimeType := range *f.MimeTypes {
 				if mimeType == httpMimeType {
 					o.HttpMimeType    = httpMimeType
 					o.IsHumanReadable = HumanReadableFormat(httpMimeType)
-					o.Format          = OutputFormatFuncs[f]
+					o.Format          = f.OutputFormatFunc
 
 					break
 				}

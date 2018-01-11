@@ -1,10 +1,22 @@
 package format
 
+import (
+	"io"
+)
+
 const HumanReadablePrefix = ""
 const HumanReadableIndent = "  "
 
+type Structure struct {
+	MimeTypes            *[]string
+	FileExtensions       *[]string
+	InputFormatFileFunc  func(s *InputStructure) error
+	InputFormatFunc      func(w io.Reader, s *InputStructure, hr bool) error
+	OutputFormatFunc     func(w io.Writer, s *OutputStructure, hr bool) error
+}
+
 type InputStructure struct {
-	FileExtensions []byte `yaml:"FileExtension"`
+	FileExtensions []byte `yaml:"FileExtensions"`
 	File           string `yaml:"File"`
 	Date           string `yaml:"Date"`
 	Host           string `yaml:"Host"`

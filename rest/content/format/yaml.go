@@ -6,7 +6,15 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-var YamlHttpMimeTypes = [2]string {
+var Yaml = Structure {
+	&YamlHttpMimeTypes,
+	&YamlFileExtensions,
+	InputYamlFile,
+	InputYaml,
+	OutputYaml,
+}
+
+var YamlHttpMimeTypes = []string {
 	// RFC 2046
 	"text/yaml",
 	// RFC 2046
@@ -16,6 +24,10 @@ var YamlHttpMimeTypes = [2]string {
 var YamlFileExtensions = []string {
 	".yml",
 	".yaml",
+}
+
+func InputYamlFile(s *InputStructure) error {
+	return nil
 }
 
 func InputYaml(w io.Reader, s *InputStructure, hr bool) error {

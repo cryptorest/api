@@ -6,7 +6,15 @@ import (
 	"github.com/BurntSushi/toml"
 )
 
-var TomlHttpMimeTypes = [2]string {
+var Toml = Structure {
+	&TomlHttpMimeTypes,
+	&TomlFileExtensions,
+	InputTomlFile,
+	InputToml,
+	OutputToml,
+}
+
+var TomlHttpMimeTypes = []string {
 	// RFC 2046
 	"text/toml",
 	// RFC 2046
@@ -16,6 +24,10 @@ var TomlHttpMimeTypes = [2]string {
 var TomlFileExtensions = []string {
 	".tml",
 	".toml",
+}
+
+func InputTomlFile(s *InputStructure) error {
+	return nil
 }
 
 func InputToml(w io.Reader, s *InputStructure, hr bool) error {
