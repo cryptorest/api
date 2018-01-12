@@ -3,6 +3,7 @@ package content
 import (
 	"io"
 	"os"
+	"bytes"
 	"errors"
 //	"strconv"
 	"strings"
@@ -16,6 +17,9 @@ import (
 )
 
 const Size24K = (1 << 10) * 24
+const MaxReadSize = (1 << 10) * 24
+
+const HttpMimeTypeFile = "multipart/form-data"
 
 func InputHttpMimeType(r *http.Request) string {
 	return r.Header.Get(MimeKeyRequest)
@@ -27,10 +31,10 @@ func DefaultInputHttpFormat(i *Input) {
 }
 
 type Input struct {
-	HttpMimeType   string
-	Reader         *http.Request
-	Structure      *format.InputStructure
-	Format         *format.Structure
+	HttpMimeType string
+	Reader       *http.Request
+	Structure    *format.InputStructure
+	Format       *format.Structure
 }
 
 func (i *Input) FormatFind() {
@@ -55,18 +59,16 @@ func (i *Input) FormatFind() {
 	}
 }
 
-func (i *Input) Read() error {
+func (i *Input) FileRead() error {
 	var err error
 
 	defer func() error {
-		i.Structure.Status = http.StatusInternalServerError
-
 		return err
 	}()
 
 	err = i.Reader.ParseMultipartForm(Size24K)
 	if err != nil {
-		i.Structure.Status = http.StatusInternalServerError
+		i.Structure.Status = http.StatusNotAcceptable
 		i.Structure.Error  = err.Error()
 
 		return err
@@ -79,7 +81,8 @@ func (i *Input) Read() error {
 
 			inFile, err = header.Open()
 			if err != nil {
-				i.Structure.Error = err.Error()
+				i.Structure.Status = http.StatusInternalServerError
+				i.Structure.Error  = err.Error()
 
 				return err
 			}
@@ -90,7 +93,8 @@ func (i *Input) Read() error {
 			i.Structure.File = filepath.Join(config.Server.UploadDir, header.Filename)
 			outFile, err = os.Create(i.Structure.File)
 			if err != nil {
-				i.Structure.Error = "upload file error on system"
+				i.Structure.Status = http.StatusInternalServerError
+				i.Structure.Error  = "upload file error on system"
 
 				return errors.New(i.Structure.Error)
 			}
@@ -100,7 +104,8 @@ func (i *Input) Read() error {
 
 			_, err = io.Copy(outFile, inFile)
 			if err != nil {
-				i.Structure.Error = err.Error()
+				i.Structure.Status = http.StatusInternalServerError
+				i.Structure.Error  = err.Error()
 
 				return err
 			}
@@ -139,6 +144,20 @@ func (i *Input) Read() error {
 	return nil
 }
 
+func (i *Input) BodyRead() error {
+	defer i.Reader.Body.Close()
+
+	part, err := ioutil.ReadAll(io.LimitReader(i.Reader.Body, MaxReadSize))
+	if err != nil {
+		return err
+	}
+
+	i.Structure.Content = part
+	i.Reader.Body       = ioutil.NopCloser(io.MultiReader(bytes.NewReader(part), i.Reader.Body))
+
+	return nil
+}
+
 func (i *Input) Build() ([]byte, error, int) {
 	return i.Structure.Content, nil, i.Structure.Status
 }
@@ -147,12 +166,16 @@ var InputHttpExecute = func(r *http.Request) ([]byte, error, int) {
 	var input Input
 	var err   error
 
-	input.Reader       = r
+	input.Reader       = &*r
 	input.HttpMimeType = InputHttpMimeType(&*r)
 	input.Structure    = &format.InputStructure{}
 
 	input.FormatFind()
-	err = input.Read()
+
+	if input.HttpMimeType == HttpMimeTypeFile {
+		err = input.FileRead()
+	}
+	err = input.BodyRead()
 
 	if err == nil {
 		return input.Build()

@@ -56,12 +56,9 @@ func (o *Output) Build() {
 	t := time.Now().UTC()
 
 	if o.Structure.Error == EmptyString {
-		o.Structure.Status = http.StatusOK
+		o.Structure.Status  = http.StatusOK
 	} else {
 		o.Structure.Content = EmptyString
-		if o.Structure.Status < 100 {
-			o.Structure.Status = http.StatusInternalServerError
-		}
 	}
 
 	o.Structure.Date      = t.String()
