@@ -17,7 +17,7 @@ func Base32(d []byte) string {
 }
 
 func Base32Http(w http.ResponseWriter, r *http.Request) {
-	if errors.MethodPost(w, r) {
+	if errors.MethodPost(w, &*r) {
 		return
 	}
 
@@ -25,8 +25,8 @@ func Base32Http(w http.ResponseWriter, r *http.Request) {
 
 	if err == nil {
 		// Encode
-		content.OutputHttpString(w, r, Base32(d))
+		content.OutputHttpString(w, &*r, Base32(d))
 	} else {
-		content.OutputHttpError(w, r, err, s)
+		content.OutputHttpError(w, &*r, err, s)
 	}
 }

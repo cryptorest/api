@@ -38,9 +38,9 @@ func OutputXml(w io.Writer, s *OutputStructure, hr bool) error {
 	var b   []byte
 
 	if hr {
-		b, err = xml.MarshalIndent(&s, HumanReadablePrefix, HumanReadableIndent)
+		b, err = xml.MarshalIndent(&*s, HumanReadablePrefix, HumanReadableIndent)
 	} else {
-		b, err = xml.Marshal(&s)
+		b, err = xml.Marshal(&*s)
 	}
 
 	if err == nil {

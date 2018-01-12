@@ -31,10 +31,10 @@ func InputJsonFile(s *InputStructure) error {
 	cFile, err := ioutil.ReadFile(s.File)
 
 	if err != nil {
-		log.Fatalf("JSON error: #%v ", err)
+		log.Fatalf("JSON error: %v ", err)
 	}
 
-	err = json.Unmarshal(cFile, &s)
+	err = json.Unmarshal(cFile, &*s)
 
 	if err != nil {
 		log.Fatalf("Unmarshal JSON: %v", err)
@@ -52,9 +52,9 @@ func OutputJson(w io.Writer, s *OutputStructure, hr bool) error {
 	var b   []byte
 
 	if hr {
-		b, err = json.MarshalIndent(&s, HumanReadablePrefix, HumanReadableIndent)
+		b, err = json.MarshalIndent(&*s, HumanReadablePrefix, HumanReadableIndent)
 	} else {
-		b, err = json.Marshal(&s)
+		b, err = json.Marshal(&*s)
 	}
 
 	if err == nil {

@@ -21,17 +21,16 @@ func InputHttpMimeType(r *http.Request) string {
 	return r.Header.Get(MimeKeyRequest)
 }
 
+func DefaultInputHttpFormat(i *Input) {
+	i.Format       = &format.Text
+	i.HttpMimeType = format.TextHttpMimeTypes[0]
+}
+
 type Input struct {
-	FileExtensions []string
 	HttpMimeType   string
 	Reader         *http.Request
 	Structure      *format.InputStructure
-	Format         func(w io.Reader, s *format.InputStructure, hr bool) error
-}
-
-func DefaultInputHttpFormat(i *Input) {
-	i.Format       = format.InputText
-	i.HttpMimeType = format.TextHttpMimeTypes[0]
+	Format         *format.Structure
 }
 
 func (i *Input) FormatFind() {
@@ -39,14 +38,13 @@ func (i *Input) FormatFind() {
 	i.HttpMimeType     = EmptyString
 
 	for _, mimeType := range strings.Split(inputHttpMimeType, ";") {
-		for _, f := range Formats {
+		for _, f := range &Formats {
 			for _, httpMimeType := range *f.MimeTypes {
 				if mimeType == httpMimeType {
-					i.HttpMimeType   = httpMimeType
-					i.Format         = f.InputFormatFunc
-					i.FileExtensions = *f.FileExtensions
+					i.HttpMimeType = httpMimeType
+					i.Format       = &f
 
-					break
+					return
 				}
 			}
 		}
@@ -150,7 +148,7 @@ var InputHttpExecute = func(r *http.Request) ([]byte, error, int) {
 	var err   error
 
 	input.Reader       = r
-	input.HttpMimeType = InputHttpMimeType(r)
+	input.HttpMimeType = InputHttpMimeType(&*r)
 	input.Structure    = &format.InputStructure{}
 
 	input.FormatFind()
@@ -164,11 +162,11 @@ var InputHttpExecute = func(r *http.Request) ([]byte, error, int) {
 }
 
 func InputHttpBytes(r *http.Request) ([]byte, error, int) {
-	return InputHttpExecute(r)
+	return InputHttpExecute(&*r)
 }
 
 func InputHttpString(r *http.Request) (string, error, int) {
-	i, err, s := InputHttpExecute(r)
+	i, err, s := InputHttpExecute(&*r)
 
 	return string(i), err, s
 }

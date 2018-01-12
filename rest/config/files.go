@@ -20,7 +20,7 @@ func InitYamlFile(c *Structure) {
 		log.Fatalf("YAML error: #%v ", err)
 	}
 
-	err = yaml.Unmarshal(cFile, c)
+	err = yaml.Unmarshal(cFile, &*c)
 
 	if err != nil {
 		log.Fatalf("Unmarshal YAML: %v", err)
@@ -28,7 +28,7 @@ func InitYamlFile(c *Structure) {
 }
 
 func InitTomlFile(c *Structure) {
-	_, err := toml.DecodeFile(c.ConfigFile, &c)
+	_, err := toml.DecodeFile(c.ConfigFile, &*c)
 
 	if err != nil {
 		log.Fatalf("Unmarshal TOML: %v", err)
@@ -42,7 +42,7 @@ func InitJsonFile(c *Structure) {
 		log.Fatalf("JSON error: #%v ", err)
 	}
 
-	err = json.Unmarshal(cFile, &c)
+	err = json.Unmarshal(cFile, &*c)
 
 	if err != nil {
 		log.Fatalf("Unmarshal JSON: %v", err)
@@ -56,7 +56,7 @@ func InitXmlFile(c *Structure) {
 		log.Fatalf("XML error: #%v ", err)
 	}
 
-	err = xml.Unmarshal(cFile, &c)
+	err = xml.Unmarshal(cFile, &*c)
 
 	if err != nil {
 		log.Fatalf("Unmarshal XML: %v", err)

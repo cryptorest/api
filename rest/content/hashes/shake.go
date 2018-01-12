@@ -56,12 +56,12 @@ func Shake256(data []byte, b int) ([]byte, error) {
 }
 
 func ShakeHttp(w http.ResponseWriter, r *http.Request) {
-	if errors.MethodPost(w, r) {
+	if errors.MethodPost(w, &*r) {
 		return
 	}
 
-	bit          := content.Path2Bit(r)
-	data, err, s := content.InputHttpBytes(r)
+	bit          := content.Path2Bit(&*r)
+	data, err, s := content.InputHttpBytes(&*r)
 
 	if err == nil {
 		switch bit {
@@ -70,21 +70,21 @@ func ShakeHttp(w http.ResponseWriter, r *http.Request) {
 			hash, err := Shake128(data, MinBit / 8)
 
 			if err == nil {
-				content.OutputHttpString(w, r, hex.EncodeToString(hash))
+				content.OutputHttpString(w, &*r, hex.EncodeToString(hash))
 			} else {
-				content.OutputHttpError(w, r, err, http.StatusUnprocessableEntity)
+				content.OutputHttpError(w, &*r, err, http.StatusUnprocessableEntity)
 			}
 		// 256
 		case ShakeBits[1]:
 			hash, err := Shake256(data, MinBit / 4)
 
 			if err == nil {
-				content.OutputHttpString(w, r, hex.EncodeToString(hash))
+				content.OutputHttpString(w, &*r, hex.EncodeToString(hash))
 			} else {
-				content.OutputHttpError(w, r, err, http.StatusUnprocessableEntity)
+				content.OutputHttpError(w, &*r, err, http.StatusUnprocessableEntity)
 			}
 		}
 	} else {
-		content.OutputHttpError(w, r, err, s)
+		content.OutputHttpError(w, &*r, err, s)
 	}
 }

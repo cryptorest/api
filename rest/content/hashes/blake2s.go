@@ -19,20 +19,20 @@ func Blake2s256(data []byte) [32]byte {
 }
 
 func Blake2sHttp(w http.ResponseWriter, r *http.Request) {
-	if errors.MethodPost(w, r) {
+	if errors.MethodPost(w, &*r) {
 		return
 	}
 
-	bit          := content.Path2Bit(r)
-	data, err, s := content.InputHttpBytes(r)
+	bit          := content.Path2Bit(&*r)
+	data, err, s := content.InputHttpBytes(&*r)
 
 	if err == nil {
 		switch bit {
 		// 256
 		case Blake2sBits[0]:
-			content.OutputHttp32Byte(w, r, Blake2s256(data))
+			content.OutputHttp32Byte(w, &*r, Blake2s256(data))
 		}
 	} else {
-		content.OutputHttpError(w, r, err, s)
+		content.OutputHttpError(w, &*r, err, s)
 	}
 }

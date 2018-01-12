@@ -29,26 +29,26 @@ func Blake2b512(data []byte) [64]byte {
 }
 
 func Blake2bHttp(w http.ResponseWriter, r *http.Request) {
-	if errors.MethodPost(w, r) {
+	if errors.MethodPost(w, &*r) {
 		return
 	}
 
-	bit          := content.Path2Bit(r)
-	data, err, s := content.InputHttpBytes(r)
+	bit          := content.Path2Bit(&*r)
+	data, err, s := content.InputHttpBytes(&*r)
 
 	if err == nil {
 		switch bit {
 		// 256
 		case Blake2bBits[0]:
-			content.OutputHttp32Byte(w, r, Blake2b256(data))
+			content.OutputHttp32Byte(w, &*r, Blake2b256(data))
 		// 384
 		case Blake2bBits[1]:
-			content.OutputHttp48Byte(w, r, Blake2b384(data))
+			content.OutputHttp48Byte(w, &*r, Blake2b384(data))
 		// 512
 		case Blake2bBits[2]:
-			content.OutputHttp64Byte(w, r, Blake2b512(data))
+			content.OutputHttp64Byte(w, &*r, Blake2b512(data))
 		}
 	} else {
-		content.OutputHttpError(w, r, err, s)
+		content.OutputHttpError(w, &*r, err, s)
 	}
 }

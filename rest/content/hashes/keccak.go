@@ -43,26 +43,26 @@ func Keccak512(data []byte) []byte {
 }
 
 func KeccakHttp(w http.ResponseWriter, r *http.Request) {
-	if errors.MethodPost(w, r) {
+	if errors.MethodPost(w, &*r) {
 		return
 	}
 
-	bit          := content.Path2Bit(r)
-	data, err, s := content.InputHttpBytes(r)
+	bit          := content.Path2Bit(&*r)
+	data, err, s := content.InputHttpBytes(&*r)
 
 	if err == nil {
 		switch bit {
 		// IEEE
 		case KeccakBits[0]:
-			content.OutputHttpHash(w, r, Keccak224(data))
+			content.OutputHttpHash(w, &*r, Keccak224(data))
 		case KeccakBits[1]:
-			content.OutputHttpHash(w, r, Keccak256(data))
+			content.OutputHttpHash(w, &*r, Keccak256(data))
 		case KeccakBits[2]:
-			content.OutputHttpHash(w, r, Keccak384(data))
+			content.OutputHttpHash(w, &*r, Keccak384(data))
 		case KeccakBits[3]:
-			content.OutputHttpHash(w, r, Keccak512(data))
+			content.OutputHttpHash(w, &*r, Keccak512(data))
 		}
 	} else {
-		content.OutputHttpError(w, r, err, s)
+		content.OutputHttpError(w, &*r, err, s)
 	}
 }

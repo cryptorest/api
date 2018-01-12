@@ -42,29 +42,29 @@ func Sha3b512(data []byte) []byte {
 }
 
 func Sha3Http(w http.ResponseWriter, r *http.Request) {
-	if errors.MethodPost(w, r) {
+	if errors.MethodPost(w, &*r) {
 		return
 	}
 
-	bit          := content.Path2Bit(r)
-	data, err, s := content.InputHttpBytes(r)
+	bit          := content.Path2Bit(&*r)
+	data, err, s := content.InputHttpBytes(&*r)
 
 	if err == nil {
 		switch bit {
 		// 224
 		case Sha3Bits[0]:
-			content.OutputHttpHash(w, r, Sha3b224(data))
+			content.OutputHttpHash(w, &*r, Sha3b224(data))
 			// 256
 		case Sha3Bits[1]:
-			content.OutputHttpHash(w, r, Sha3b256(data))
+			content.OutputHttpHash(w, &*r, Sha3b256(data))
 			// 384
 		case Sha3Bits[2]:
-			content.OutputHttpHash(w, r, Sha3b384(data))
+			content.OutputHttpHash(w, &*r, Sha3b384(data))
 			// 512
 		case Sha3Bits[3]:
-			content.OutputHttpHash(w, r, Sha3b512(data))
+			content.OutputHttpHash(w, &*r, Sha3b512(data))
 		}
 	} else {
-		content.OutputHttpError(w, r, err, s)
+		content.OutputHttpError(w, &*r, err, s)
 	}
 }

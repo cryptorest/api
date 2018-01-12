@@ -17,7 +17,7 @@ func OutputHttpMimeType(r *http.Request) string {
 
 func DefaultOutputHttpFormat(o *Output) {
 	o.IsHumanReadable = false
-	o.Format          = format.OutputText
+	o.Format          = &format.Text
 	o.HttpMimeType    = format.TextHttpMimeTypes[0]
 }
 
@@ -26,7 +26,7 @@ type Output struct {
 	HttpMimeType    string
 	Writer          http.ResponseWriter
 	Structure       *format.OutputStructure
-	Format          func(w io.Writer, s *format.OutputStructure, hr bool) error
+	Format          *format.Structure
 }
 
 func (o *Output) FormatFind() {
@@ -34,14 +34,14 @@ func (o *Output) FormatFind() {
 	o.HttpMimeType      = EmptyString
 
 	for _, mimeType := range strings.Split(outputHttpMimeType, ";") {
-		for _, f := range Formats {
+		for _, f := range &Formats {
 			for _, httpMimeType := range *f.MimeTypes {
 				if mimeType == httpMimeType {
 					o.HttpMimeType    = httpMimeType
 					o.IsHumanReadable = HumanReadableFormat(httpMimeType)
-					o.Format          = f.OutputFormatFunc
+					o.Format          = &f
 
-					break
+					return
 				}
 			}
 		}
@@ -56,7 +56,7 @@ func (o *Output) Build() {
 	t := time.Now().UTC()
 
 	if o.Structure.Error == EmptyString {
-		o.Structure.Status  = http.StatusOK
+		o.Structure.Status = http.StatusOK
 	} else {
 		o.Structure.Content = EmptyString
 		if o.Structure.Status < 100 {
@@ -74,7 +74,7 @@ func (o *Output) Build() {
 		o.Writer.Header().Set(MimeKeyRequest, o.HttpMimeType)
 	}
 
-	err := o.Format(o.Writer, &*o.Structure, o.IsHumanReadable)
+	err := o.Format.OutputFormatFunc(o.Writer, &*o.Structure, o.IsHumanReadable)
 
 	if err != nil {
 		o.Structure.Error   = err.Error()
@@ -89,7 +89,7 @@ var OutputHttpExecute = func(w http.ResponseWriter, r *http.Request, c string, e
 	var output Output
 
 	output.Writer            = w
-	output.HttpMimeType      = OutputHttpMimeType(r)
+	output.HttpMimeType      = OutputHttpMimeType(&*r)
 	output.Structure         = &format.OutputStructure{}
 	output.Structure.Status  = s
 	output.Structure.Content = c
@@ -105,41 +105,41 @@ var OutputHttpExecute = func(w http.ResponseWriter, r *http.Request, c string, e
 }
 
 func OutputHttpHash(w http.ResponseWriter, r *http.Request, b []byte) {
-	OutputHttpExecute(w, r, fmt.Sprintf("%x", b), nil, 0)
+	OutputHttpExecute(w, &*r, fmt.Sprintf("%x", b), nil, 0)
 }
 
 func OutputHttpByte(w http.ResponseWriter, r *http.Request, b []byte) {
-	OutputHttpExecute(w, r, fmt.Sprintf("%s", b), nil, 0)
+	OutputHttpExecute(w, &*r, fmt.Sprintf("%s", b), nil, 0)
 }
 
 func OutputHttpString(w http.ResponseWriter, r *http.Request, s string) {
-	OutputHttpExecute(w, r, s, nil, 0)
+	OutputHttpExecute(w, &*r, s, nil, 0)
 }
 
 func OutputHttpUInt8(w http.ResponseWriter, r *http.Request, i uint8) {
-	OutputHttpExecute(w, r, fmt.Sprintf("%x", i), nil, 0)
+	OutputHttpExecute(w, &*r, fmt.Sprintf("%x", i), nil, 0)
 }
 
 func OutputHttpUInt32(w http.ResponseWriter, r *http.Request, i uint32) {
-	OutputHttpExecute(w, r, fmt.Sprintf("%x", i), nil, 0)
+	OutputHttpExecute(w, &*r, fmt.Sprintf("%x", i), nil, 0)
 }
 
 func OutputHttpUInt64(w http.ResponseWriter, r *http.Request, i uint64) {
-	OutputHttpExecute(w, r, fmt.Sprintf("%x", i), nil, 0)
+	OutputHttpExecute(w, &*r, fmt.Sprintf("%x", i), nil, 0)
 }
 
 func OutputHttp32Byte(w http.ResponseWriter, r *http.Request, b [32]byte) {
-	OutputHttpExecute(w, r, fmt.Sprintf("%x", b), nil, 0)
+	OutputHttpExecute(w, &*r, fmt.Sprintf("%x", b), nil, 0)
 }
 
 func OutputHttp48Byte(w http.ResponseWriter, r *http.Request, b [48]byte) {
-	OutputHttpExecute(w, r, fmt.Sprintf("%x", b), nil, 0)
+	OutputHttpExecute(w, &*r, fmt.Sprintf("%x", b), nil, 0)
 }
 
 func OutputHttp64Byte(w http.ResponseWriter, r *http.Request, b [64]byte) {
-	OutputHttpExecute(w, r, fmt.Sprintf("%x", b), nil, 0)
+	OutputHttpExecute(w, &*r, fmt.Sprintf("%x", b), nil, 0)
 }
 
 func OutputHttpError(w http.ResponseWriter, r *http.Request, e error, s int) {
-	OutputHttpExecute(w, r, EmptyString, e, s)
+	OutputHttpExecute(w, &*r, EmptyString, e, s)
 }

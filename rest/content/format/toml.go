@@ -37,7 +37,7 @@ func InputToml(w io.Reader, s *InputStructure, hr bool) error {
 func OutputToml(w io.Writer, s *OutputStructure, hr bool) error {
 	hr = true
 
-	err := toml.NewEncoder(w).Encode(&s)
+	err := toml.NewEncoder(w).Encode(&*s)
 
 	return err
 }

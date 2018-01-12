@@ -29,26 +29,26 @@ func Crc32Castagnoli(data []byte) uint32 {
 }
 
 func Crc32Http(w http.ResponseWriter, r *http.Request) {
-	if errors.MethodPost(w, r) {
+	if errors.MethodPost(w, &*r) {
 		return
 	}
 
-	pType        := content.Path2Type(r)
-	data, err, s := content.InputHttpBytes(r)
+	pType        := content.Path2Type(&*r)
+	data, err, s := content.InputHttpBytes(&*r)
 
 	if err == nil {
 		switch pType {
 		// IEEE
 		case Crc32Types[0]:
-			content.OutputHttpUInt32(w, r, Crc32Ieee(data))
+			content.OutputHttpUInt32(w, &*r, Crc32Ieee(data))
 		// Koopman
 		case Crc32Types[1]:
-			content.OutputHttpUInt32(w, r, Crc32Koopman(data))
+			content.OutputHttpUInt32(w, &*r, Crc32Koopman(data))
 		// Castagnoli
 		case Crc32Types[2]:
-			content.OutputHttpUInt32(w, r, Crc32Castagnoli(data))
+			content.OutputHttpUInt32(w, &*r, Crc32Castagnoli(data))
 		}
 	} else {
-		content.OutputHttpError(w, r, err, s)
+		content.OutputHttpError(w, &*r, err, s)
 	}
 }

@@ -39,7 +39,7 @@ func OutputYaml(w io.Writer, s *OutputStructure, hr bool) error {
 	var err error
 	var b   []byte
 
-	b, err = yaml.Marshal(&s)
+	b, err = yaml.Marshal(&*s)
 
 	if err == nil {
 		_, err = w.Write(b)

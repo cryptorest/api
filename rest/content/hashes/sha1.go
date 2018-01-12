@@ -17,15 +17,15 @@ func Sha1(data []byte) []byte {
 }
 
 func Sha1Http(w http.ResponseWriter, r *http.Request) {
-	if errors.MethodPost(w, r) {
+	if errors.MethodPost(w, &*r) {
 		return
 	}
 
-	data, err, s := content.InputHttpBytes(r)
+	data, err, s := content.InputHttpBytes(&*r)
 
 	if err == nil {
-		content.OutputHttpHash(w, r, Sha1(data))
+		content.OutputHttpHash(w, &*r, Sha1(data))
 	} else {
-		content.OutputHttpError(w, r, err, s)
+		content.OutputHttpError(w, &*r, err, s)
 	}
 }

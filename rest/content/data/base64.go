@@ -24,38 +24,38 @@ func Base64Decode(str string) ([]byte, error) {
 }
 
 func Base64Http(w http.ResponseWriter, r *http.Request) {
-	if errors.MethodPost(w, r) {
+	if errors.MethodPost(w, &*r) {
 		return
 	}
 
-	action := content.Path2Action(r)
+	action := content.Path2Action(&*r)
 
 	switch action {
 	// Encode
 	case Base32Actions[0]:
-		data, err, s := content.InputHttpBytes(r)
+		data, err, s := content.InputHttpBytes(&*r)
 
 		if err == nil {
 			str, _ := Base64Encode(data)
 
-			content.OutputHttpString(w, r, str)
+			content.OutputHttpString(w, &*r, str)
 		} else {
-			content.OutputHttpError(w, r, err, s)
+			content.OutputHttpError(w, &*r, err, s)
 		}
 	// Decode
 	case Base32Actions[1]:
-		str, err, s := content.InputHttpString(r)
+		str, err, s := content.InputHttpString(&*r)
 
 		if err == nil {
 			data, err := Base64Decode(str)
 
 			if err == nil {
-				content.OutputHttpByte(w, r, data)
+				content.OutputHttpByte(w, &*r, data)
 			} else {
-				content.OutputHttpError(w, r, err, http.StatusUnprocessableEntity)
+				content.OutputHttpError(w, &*r, err, http.StatusUnprocessableEntity)
 			}
 		} else {
-			content.OutputHttpError(w, r, err, s)
+			content.OutputHttpError(w, &*r, err, s)
 		}
 	}
 }
