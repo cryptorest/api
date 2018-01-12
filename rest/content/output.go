@@ -25,7 +25,7 @@ type Output struct {
 	IsHumanReadable bool
 	HttpMimeType    string
 	Writer          http.ResponseWriter
-	Structure       format.OutputStructure
+	Structure       *format.OutputStructure
 	Format          func(w io.Writer, s *format.OutputStructure, hr bool) error
 }
 
@@ -74,7 +74,7 @@ func (o *Output) Build() {
 		o.Writer.Header().Set(MimeKeyRequest, o.HttpMimeType)
 	}
 
-	err := o.Format(o.Writer, &o.Structure, o.IsHumanReadable)
+	err := o.Format(o.Writer, &*o.Structure, o.IsHumanReadable)
 
 	if err != nil {
 		o.Structure.Error   = err.Error()
@@ -90,7 +90,7 @@ var OutputHttpExecute = func(w http.ResponseWriter, r *http.Request, c string, e
 
 	output.Writer            = w
 	output.HttpMimeType      = OutputHttpMimeType(r)
-	output.Structure         = format.OutputStructure{}
+	output.Structure         = &format.OutputStructure{}
 	output.Structure.Status  = s
 	output.Structure.Content = c
 
@@ -102,6 +102,10 @@ var OutputHttpExecute = func(w http.ResponseWriter, r *http.Request, c string, e
 
 	output.FormatFind()
 	output.Build()
+}
+
+func OutputHttpHash(w http.ResponseWriter, r *http.Request, b []byte) {
+	OutputHttpExecute(w, r, fmt.Sprintf("%x", b), nil, 0)
 }
 
 func OutputHttpByte(w http.ResponseWriter, r *http.Request, b []byte) {

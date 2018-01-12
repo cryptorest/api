@@ -13,9 +13,7 @@ const Sha1Path = content.HashesPath + "/sha1"
 func Sha1(data []byte) []byte {
 	b := sha1.New()
 
-	b.Write(data)
-
-	return b.Sum(nil)
+	return hashSum(data, b)
 }
 
 func Sha1Http(w http.ResponseWriter, r *http.Request) {
@@ -26,7 +24,7 @@ func Sha1Http(w http.ResponseWriter, r *http.Request) {
 	data, err, s := content.InputHttpBytes(r)
 
 	if err == nil {
-		content.OutputHttpByte(w, r, Sha1(data))
+		content.OutputHttpHash(w, r, Sha1(data))
 	} else {
 		content.OutputHttpError(w, r, err, s)
 	}

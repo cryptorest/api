@@ -21,7 +21,7 @@ var MinBit = 256
 var MaxBit = 1024 * 1024 * 1024
 
 func checkBit(b int) error {
-	b *= 4
+	b *= 8
 	if b < MinBit || b > MaxBit || b%16 != 0 {
 		return e.New("invalid bit size")
 	}

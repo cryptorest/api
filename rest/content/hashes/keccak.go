@@ -21,33 +21,25 @@ var KeccakBits = []string {
 func Keccak224(data []byte) []byte {
 	b := keccak.New224()
 
-	b.Write(data)
-
-	return b.Sum(nil)
+	return hashSum(data, b)
 }
 
 func Keccak256(data []byte) []byte {
 	b := keccak.New256()
 
-	b.Write(data)
-
-	return b.Sum(nil)
+	return hashSum(data, b)
 }
 
 func Keccak384(data []byte) []byte {
 	b := keccak.New384()
 
-	b.Write(data)
-
-	return b.Sum(nil)
+	return hashSum(data, b)
 }
 
 func Keccak512(data []byte) []byte {
 	b := keccak.New512()
 
-	b.Write(data)
-
-	return b.Sum(nil)
+	return hashSum(data, b)
 }
 
 func KeccakHttp(w http.ResponseWriter, r *http.Request) {
@@ -62,13 +54,13 @@ func KeccakHttp(w http.ResponseWriter, r *http.Request) {
 		switch bit {
 		// IEEE
 		case KeccakBits[0]:
-			content.OutputHttpByte(w, r, Keccak224(data))
+			content.OutputHttpHash(w, r, Keccak224(data))
 		case KeccakBits[1]:
-			content.OutputHttpByte(w, r, Keccak256(data))
+			content.OutputHttpHash(w, r, Keccak256(data))
 		case KeccakBits[2]:
-			content.OutputHttpByte(w, r, Keccak384(data))
+			content.OutputHttpHash(w, r, Keccak384(data))
 		case KeccakBits[3]:
-			content.OutputHttpByte(w, r, Keccak512(data))
+			content.OutputHttpHash(w, r, Keccak512(data))
 		}
 	} else {
 		content.OutputHttpError(w, r, err, s)

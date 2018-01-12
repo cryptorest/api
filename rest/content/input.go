@@ -25,7 +25,7 @@ type Input struct {
 	FileExtensions []string
 	HttpMimeType   string
 	Reader         *http.Request
-	Structure      format.InputStructure
+	Structure      *format.InputStructure
 	Format         func(w io.Reader, s *format.InputStructure, hr bool) error
 }
 
@@ -151,7 +151,7 @@ var InputHttpExecute = func(r *http.Request) ([]byte, error, int) {
 
 	input.Reader       = r
 	input.HttpMimeType = InputHttpMimeType(r)
-	input.Structure    = format.InputStructure{}
+	input.Structure    = &format.InputStructure{}
 
 	input.FormatFind()
 	err = input.Read()
