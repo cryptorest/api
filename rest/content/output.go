@@ -12,7 +12,7 @@ import (
 )
 
 func OutputHttpMimeType(r *http.Request) string {
-	return r.Header.Get(MimeKeyResponse)
+	return r.Header.Get(HttpMimeTypeOutputKey)
 }
 
 func DefaultOutputHttpFormat(o *Output) {
@@ -33,7 +33,7 @@ func (o *Output) FormatFind() {
 	outputHttpMimeType := o.HttpMimeType
 	o.HttpMimeType      = EmptyString
 
-	for _, mimeType := range strings.Split(outputHttpMimeType, ";") {
+	for _, mimeType := range strings.Split(outputHttpMimeType, HttpMimeTypeSeparator) {
 		for _, f := range &Formats {
 			for _, httpMimeType := range *f.MimeTypes {
 				if mimeType == httpMimeType {
@@ -68,7 +68,7 @@ func (o *Output) Build() {
 		o.Structure.Host = config.Server.Host
 		o.Structure.Port = config.Server.Port
 
-		o.Writer.Header().Set(MimeKeyRequest, o.HttpMimeType)
+		o.Writer.Header().Set(HttpMimeTypeInputKey, o.HttpMimeType)
 	}
 
 	err := o.Format.OutputFormatFunc(o.Writer, &*o.Structure, o.IsHumanReadable)

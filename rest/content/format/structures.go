@@ -16,12 +16,12 @@ type Structure struct {
 }
 
 type InputStructure struct {
-	FileExtensions []byte `yaml:"FileExtensions"`
 	File           string `yaml:"File"`
 	Date           string `yaml:"Date"`
 	Host           string `yaml:"Host"`
 	Port           int    `yaml:"Port"`
 	Content        []byte `yaml:"Content"`
+	ContentSize    int64  `yaml:"ContentSize"`
 	Error          string `yaml:"Error"`
 	Status         int    `yaml:"Status"`
 }

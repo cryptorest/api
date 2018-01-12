@@ -19,6 +19,7 @@ var YamlHttpMimeTypes = []string {
 	"text/yaml",
 	// RFC 2046
 	"application/yaml",
+	"application/x-yaml",
 }
 
 var YamlFileExtensions = []string {

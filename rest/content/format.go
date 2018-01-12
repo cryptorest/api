@@ -6,16 +6,19 @@ import (
 	"rest/content/format"
 )
 
-const MimeKeyRequest  = "Content-Type"
-const MimeKeyResponse = "Accept"
+const HttpMimeTypeSeparator = ";"
+const HttpMimeTypeInputKey  = "Content-Type"
+const HttpMimeTypeInputSize = "Content-Length"
+const HttpMimeTypeInputFile = "multipart/form-data"
+const HttpMimeTypeOutputKey = "Accept"
 
 const EmptyString = ""
 
 var HttpMimePrefixes = [2]string {
 	// For human readable mode
-	"text",
+	"text/",
 	// For applications
-	"application",
+	"application/",
 }
 
 var Formats = [5]format.Structure {

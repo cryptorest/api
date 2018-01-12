@@ -19,6 +19,7 @@ var TomlHttpMimeTypes = []string {
 	"text/toml",
 	// RFC 2046
 	"application/toml",
+	"application/x-toml",
 }
 
 var TomlFileExtensions = []string {
