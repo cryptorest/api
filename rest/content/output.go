@@ -84,6 +84,9 @@ func (o *Output) Clean() {
 	o.Format    = nil
 	o.Writer    = nil
 
+	o.IsHumanReadable = false
+	o.HttpMimeType    = EmptyString
+
 	debug.FreeOSMemory()
 }
 

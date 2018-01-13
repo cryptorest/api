@@ -3,7 +3,6 @@ package content
 import (
 	"io"
 	"os"
-//	"bytes"
 	"errors"
 	"strconv"
 	"strings"
@@ -16,9 +15,9 @@ import (
 	"rest/content/format"
 )
 
+const BufferSizeBlock = 1024
+
 const Size24K = (1 << 10) * 24
-const BufferSizeMin = 1024
-const BufferSizeMax = 256 * BufferSizeMin
 
 func InputHttpMimeType(r *http.Request) string {
 	return r.Header.Get(HttpMimeTypeInputKey)
@@ -30,10 +29,13 @@ func DefaultInputHttpFormat(i *Input) {
 }
 
 type Input struct {
-	HttpMimeType string
-	Reader       *http.Request
-	Structure    *format.InputStructure
-	Format       *format.Structure
+	BufferSize    int
+	FileSizeLimit int
+	UploadDir     string
+	HttpMimeType  string
+	Reader        *http.Request
+	Structure     *format.InputStructure
+	Format        *format.Structure
 }
 
 func (i *Input) FormatFind() {
@@ -74,7 +76,7 @@ func (i *Input) Size() error {
 	if size == EmptyString {
 		i.Structure.ContentSize = 0
 
-		return errors.New("content size 0")
+		return errors.New("content size is 0")
 	}
 
 	s, err = strconv.Atoi(size)
@@ -83,6 +85,36 @@ func (i *Input) Size() error {
 		i.Structure.ContentSize = 0
 	} else {
 		i.Structure.ContentSize = int64(s)
+	}
+
+	return err
+}
+
+func (i *Input) ReadBuffer(r multipart.File, w io.Writer) error {
+	var n   int
+	var err error
+
+	buf := make([]byte, i.BufferSize * BufferSizeBlock)
+
+	for {
+		// read a chunk
+		n, err = r.Read(buf)
+		if err != nil {
+			if err != io.EOF {
+				return err
+			} else {
+				err = nil
+			}
+		}
+		if n == 0 {
+			break
+		}
+
+		// write a chunk
+		_, err = w.Write(buf[:n])
+		if err != nil {
+			return err
+		}
 	}
 
 	return err
@@ -106,43 +138,44 @@ func (i *Input) FileRead() error {
 	for _, fileHeaders := range i.Reader.MultipartForm.File {
 		for _, header := range fileHeaders {
 			// open uploaded
-			var inFile multipart.File
+			var inFile   multipart.File
+			// open destination
+			var outFile *os.File
+
+			i.Structure.File = filepath.Join(config.Server.UploadDir, header.Filename)
 
 			inFile, err = header.Open()
-//			defer inFile.Close()
 			if err != nil {
+				inFile.Close()
 				i.Structure.Status = http.StatusInternalServerError
 				i.Structure.Error  = err.Error()
 
 				return err
 			}
 
-			// open destination
-			var outFile *os.File
-
-			i.Structure.File = filepath.Join(config.Server.UploadDir, header.Filename)
 			outFile, err = os.Create(i.Structure.File)
-//			defer outFile.Close()
 			if err != nil {
+				inFile.Close()
+				outFile.Close()
 				i.Structure.Status = http.StatusInternalServerError
 				i.Structure.Error  = "upload file error on system"
 
 				return errors.New(i.Structure.Error)
 			}
 
-			// 32K buffer copy
-//			var written int64
-
-			_, err = io.Copy(outFile, inFile)
+			err = i.ReadBuffer(inFile, outFile)
 			if err != nil {
+				inFile.Close()
+				outFile.Close()
+
 				i.Structure.Status = http.StatusInternalServerError
 				i.Structure.Error  = err.Error()
 
 				return err
 			}
 
-//			i.Structure.Content = []byte(strconv.Itoa(int(written)))
-//			w.Write([]byte("uploaded file:" + hdr.Filename + ";length:" + strconv.Itoa(int(written))))
+			inFile.Close()
+			outFile.Close()
 		}
 	}
 
@@ -193,6 +226,11 @@ func (i *Input) Clean() {
 	i.Structure = nil
 	i.Format    = nil
 	i.Reader    = nil
+
+	i.BufferSize    = 0
+	i.FileSizeLimit = 0
+	i.UploadDir     = EmptyString
+	i.HttpMimeType  = EmptyString
 }
 
 func (i *Input) Build() ([]byte, error, int) {
@@ -217,9 +255,12 @@ func (i *Input) Build() ([]byte, error, int) {
 var InputHttpExecute = func(r *http.Request) ([]byte, error, int) {
 	var input Input
 
-	input.Reader       = &*r
-	input.HttpMimeType = InputHttpMimeType(&*r)
-	input.Structure    = &format.InputStructure{}
+	input.BufferSize    = config.Server.BufferSize
+	input.FileSizeLimit = config.Server.FileSizeLimit
+	input.UploadDir     = config.Server.UploadDir
+	input.Reader        = &*r
+	input.HttpMimeType  = InputHttpMimeType(&*r)
+	input.Structure     = &format.InputStructure{}
 
 	input.FormatFind()
 
