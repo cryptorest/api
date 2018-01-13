@@ -7,7 +7,6 @@ import (
 	"strings"
 	"net/http"
 
-	"rest/config"
 	"rest/content/format"
 )
 
@@ -55,46 +54,43 @@ func (o *Output) FormatFind() {
 func (o *Output) Build() {
 	t := time.Now().UTC()
 
-	if o.Structure.Error == EmptyString {
-		o.Structure.Status  = http.StatusOK
+	if o.Structure.Status.Message == EmptyString {
+		o.Structure.Status.Code  = http.StatusOK
 	} else {
-		o.Structure.Content = EmptyString
+		o.Structure.Content      = EmptyString
 	}
 
-	o.Structure.Date      = t.String()
-	o.Structure.Timestamp = t.Unix()
+	o.Structure.Time.RFC3339 = t.Format(time.RFC3339)
+	o.Structure.Time.Stamp   = t.Unix()
+	o.Structure.Status.Text  = http.StatusText(o.Structure.Status.Code)
 
-	if o.HttpMimeType != EmptyString {
-		o.Structure.Host = config.Server.Host
-		o.Structure.Port = config.Server.Port
-
-		o.Writer.Header().Set(HttpMimeTypeInputKey, o.HttpMimeType)
-	}
+	o.Writer.Header().Set(HttpMimeTypeInputKey, o.HttpMimeType)
 
 	err := o.Format.OutputFormatFunc(o.Writer, &*o.Structure, o.IsHumanReadable)
 
 	if err != nil {
-		o.Structure.Error   = err.Error()
-		o.Structure.Status  = http.StatusUnsupportedMediaType
-		o.Structure.Content = EmptyString
+		o.Structure.Status.Message = err.Error()
+		o.Structure.Status.Code    = http.StatusUnsupportedMediaType
+		o.Structure.Status.Text    = http.StatusText(o.Structure.Status.Code)
+		o.Structure.Content        = EmptyString
 
-		io.WriteString(o.Writer, o.Structure.Error)
+		io.WriteString(o.Writer, o.Structure.Status.Message)
 	}
 }
 
 var OutputHttpExecute = func(w http.ResponseWriter, r *http.Request, c string, e error, s int) {
 	var output Output
 
-	output.Writer            = w
-	output.HttpMimeType      = OutputHttpMimeType(&*r)
-	output.Structure         = &format.OutputStructure{}
-	output.Structure.Status  = s
-	output.Structure.Content = c
+	output.Writer                = w
+	output.HttpMimeType          = OutputHttpMimeType(&*r)
+	output.Structure             = &format.OutputStructure{}
+	output.Structure.Status.Code = s
+	output.Structure.Content     = c
 
 	if e == nil {
-		output.Structure.Error = EmptyString
+		output.Structure.Status.Message = EmptyString
 	} else {
-		output.Structure.Error = e.Error()
+		output.Structure.Status.Message = e.Error()
 	}
 
 	output.FormatFind()

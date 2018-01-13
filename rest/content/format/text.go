@@ -19,6 +19,7 @@ var TextHttpMimeTypes = []string {
 
 var TextFileExtensions = []string {
 	".txt",
+	".text",
 }
 
 func InputTextFile(s *InputStructure) error {
@@ -33,11 +34,12 @@ func OutputText(w io.Writer, s *OutputStructure, hr bool) error {
 	hr = false
 	var data []byte
 
-	if s.Error == "" {
+	if s.Status.Message == "" {
 		data = []byte(s.Content)
 	} else {
-		data = []byte(s.Error)
+		data = []byte(s.Status.Message)
 	}
+
 	_, err := w.Write(data)
 
 	return err

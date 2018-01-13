@@ -190,9 +190,8 @@ func (i *Input) BodyRead() error {
 }
 
 func (i *Input) Build() ([]byte, error, int) {
-//	var err error
-
 	err := i.Size()
+
 	if err == nil {
 		if i.HttpMimeType == HttpMimeTypeInputFile {
 			err = i.FileRead()

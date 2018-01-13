@@ -27,11 +27,14 @@ type InputStructure struct {
 }
 
 type OutputStructure struct {
-	Date       string `yaml:"Date"`
-	Timestamp  int64  `yaml:"Timestamp"`
-	Host       string `yaml:"Host"`
-	Port       int    `yaml:"Port"`
-	Content    string `yaml:"Content"`
-	Error      string `yaml:"Error"`
-	Status     int    `yaml:"Status"`
+	Time   struct {
+		Stamp   int64  `yaml:"Stamp"`
+		RFC3339 string `yaml:"RFC3339"`
+	}
+	Status struct{
+		Code    int    `yaml:"Code"`
+		Text    string `yaml:"Text"`
+		Message string `yaml:"Message"`
+	}
+	Content     string `yaml:"Content"`
 }
