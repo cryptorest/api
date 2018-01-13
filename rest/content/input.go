@@ -13,7 +13,6 @@ import (
 
 	"rest/config"
 	"rest/content/format"
-	"fmt"
 )
 
 func InputHttpMimeType(r *http.Request) string {
@@ -84,7 +83,7 @@ func (i *Input) Size() error {
 		}
 
 		if i.Structure.ContentSize > i.FileSizeLimit {
-			err                = errors.New(fmt.Sprintf("content size more %d bytes", i.FileSizeLimit))
+			err                = http.ErrContentLength
 			i.Structure.Status = http.StatusLengthRequired
 		}
 	}
@@ -120,6 +119,43 @@ func (i *Input) ReadBuffer(r multipart.File, w io.Writer) error {
 	return err
 }
 
+func (i *Input) FilePut(fileHeader *multipart.FileHeader, err error) error {
+	var inputFile  multipart.File
+	var outputFile *os.File
+
+	i.Structure.File = filepath.Join(i.UploadDir, fileHeader.Filename)
+
+	inputFile, err = fileHeader.Open()
+	defer inputFile.Close()
+	if err != nil {
+		inputFile.Close()
+
+		i.Structure.Status = http.StatusNotAcceptable
+		i.Structure.Error  = err.Error()
+
+		return err
+	}
+
+	outputFile, err = os.Create(i.Structure.File)
+	defer outputFile.Close()
+	if err != nil {
+		i.Structure.Status = http.StatusInternalServerError
+		i.Structure.Error  = "upload file error on system"
+
+		return errors.New(i.Structure.Error)
+	}
+
+	err = i.ReadBuffer(inputFile, outputFile)
+	if err != nil {
+		i.Structure.Status = http.StatusInternalServerError
+		i.Structure.Error  = err.Error()
+
+		return err
+	}
+
+	return err
+}
+
 func (i *Input) FileRead() error {
 	var err error
 
@@ -136,46 +172,12 @@ func (i *Input) FileRead() error {
 	}
 
 	for _, fileHeaders := range i.Reader.MultipartForm.File {
-		for _, header := range fileHeaders {
-			var inFile  multipart.File
-			var outFile *os.File
+		for _, fileHeader := range fileHeaders {
+			err = i.FilePut(&*fileHeader, err)
 
-			i.Structure.File = filepath.Join(i.UploadDir, header.Filename)
-
-			inFile, err = header.Open()
 			if err != nil {
-				inFile.Close()
-
-				i.Structure.Status = http.StatusInternalServerError
-				i.Structure.Error  = err.Error()
-
 				return err
 			}
-
-			outFile, err = os.Create(i.Structure.File)
-			if err != nil {
-				inFile.Close()
-				outFile.Close()
-
-				i.Structure.Status = http.StatusInternalServerError
-				i.Structure.Error  = "upload file error on system"
-
-				return errors.New(i.Structure.Error)
-			}
-
-			err = i.ReadBuffer(inFile, outFile)
-			if err != nil {
-				inFile.Close()
-				outFile.Close()
-
-				i.Structure.Status = http.StatusInternalServerError
-				i.Structure.Error  = err.Error()
-
-				return err
-			}
-
-			inFile.Close()
-			outFile.Close()
 		}
 	}
 
