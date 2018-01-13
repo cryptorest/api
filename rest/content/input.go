@@ -119,6 +119,8 @@ func (i *Input) ReadBuffer(r multipart.File, w io.Writer) error {
 		}
 	}
 
+	buf = nil
+
 	return err
 }
 
