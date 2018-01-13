@@ -6,6 +6,7 @@ import (
 	"time"
 	"strings"
 	"net/http"
+	"runtime/debug"
 
 	"rest/content/format"
 )
@@ -23,8 +24,8 @@ func DefaultOutputHttpFormat(o *Output) {
 type Output struct {
 	IsHumanReadable bool
 	HttpMimeType    string
-	Writer          http.ResponseWriter
 	Structure       *format.OutputStructure
+	Writer          http.ResponseWriter
 	Format          *format.Structure
 }
 
@@ -88,6 +89,8 @@ func (o *Output) Clean() {
 	o.Format    = nil
 	o.Writer    = nil
 	o.Structure = nil
+
+	debug.FreeOSMemory()
 }
 
 var OutputHttpExecute = func(w http.ResponseWriter, r *http.Request, c string, e error, s int) {
