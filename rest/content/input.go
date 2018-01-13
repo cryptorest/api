@@ -267,14 +267,14 @@ func (i *Input) Build() ([]byte, error, int) {
 
 		if err == nil {
 			err = i.FileRead()
-			// TODO: parsing or upload
+			// TODO: 1) parsing or 2) upload or 3) upload and remove
 		}
 	} else {
 		err = i.BodySize()
 
 		if err == nil {
 			err = i.BodyRead()
-			// TODO: parsing or not
+			// TODO: 1) parsing or 2) not parsing
 		}
 	}
 
