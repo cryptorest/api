@@ -15,6 +15,9 @@ import (
 	"rest/content/format"
 )
 
+const messageErrorContentSize0 = "content size is 0 bytes"
+const messageErrorFileUpload   = "upload file error on system"
+
 func InputHttpMimeType(r *http.Request) string {
 	return r.Header.Get(HttpMimeTypeInputKey)
 }
@@ -27,8 +30,8 @@ func DefaultInputHttpFormat(i *Input) {
 type Input struct {
 	BufferSize    int
 	FileSizeLimit int64
-	UploadDir     string
 	HttpMimeType  string
+	UploadDir     *string
 	Reader        *http.Request
 	Structure     *format.InputStructure
 	Format        *format.Structure
@@ -71,7 +74,7 @@ func (i *Input) Size() error {
 
 	if size == EmptyString {
 		i.Structure.ContentSize = 0
-		err                     = errors.New("content size is 0 bytes")
+		err                     = errors.New(messageErrorContentSize0)
 		i.Structure.Status      = http.StatusLengthRequired
 	} else {
 		s, err = strconv.Atoi(size)
@@ -123,7 +126,7 @@ func (i *Input) FilePut(fileHeader *multipart.FileHeader, err error) error {
 	var inputFile  multipart.File
 	var outputFile *os.File
 
-	i.Structure.File = filepath.Join(i.UploadDir, fileHeader.Filename)
+	i.Structure.File = filepath.Join(*i.UploadDir, fileHeader.Filename)
 
 	inputFile, err = fileHeader.Open()
 	defer inputFile.Close()
@@ -140,7 +143,7 @@ func (i *Input) FilePut(fileHeader *multipart.FileHeader, err error) error {
 	defer outputFile.Close()
 	if err != nil {
 		i.Structure.Status = http.StatusInternalServerError
-		i.Structure.Error  = "upload file error on system"
+		i.Structure.Error  = messageErrorFileUpload
 
 		return errors.New(i.Structure.Error)
 	}
@@ -231,7 +234,7 @@ func (i *Input) Clean() {
 
 	i.BufferSize    = 0
 	i.FileSizeLimit = 0
-	i.UploadDir     = EmptyString
+	*i.UploadDir    = EmptyString
 	i.HttpMimeType  = EmptyString
 }
 
@@ -259,7 +262,7 @@ var InputHttpExecute = func(r *http.Request) ([]byte, error, int) {
 
 	input.BufferSize    = config.Server.BufferSize * config.BufferSizeBlock
 	input.FileSizeLimit = int64(config.Server.FileSizeLimit * config.BufferSizeBlock)
-	input.UploadDir     = config.Server.UploadDir
+	input.UploadDir     = &config.Server.UploadDir
 	input.Reader        = &*r
 	input.HttpMimeType  = InputHttpMimeType(&*r)
 	input.Structure     = &format.InputStructure{}

@@ -11,6 +11,9 @@ import (
 	"rest/content/format"
 )
 
+const formatString = "%s"
+const formatHex    = "%x"
+
 func OutputHttpMimeType(r *http.Request) string {
 	return r.Header.Get(HttpMimeTypeOutputKey)
 }
@@ -111,11 +114,11 @@ var OutputHttpExecute = func(w http.ResponseWriter, r *http.Request, c string, e
 }
 
 func OutputHttpHash(w http.ResponseWriter, r *http.Request, b []byte) {
-	OutputHttpExecute(w, &*r, fmt.Sprintf("%x", b), nil, 0)
+	OutputHttpExecute(w, &*r, fmt.Sprintf(formatHex, b), nil, 0)
 }
 
 func OutputHttpByte(w http.ResponseWriter, r *http.Request, b []byte) {
-	OutputHttpExecute(w, &*r, fmt.Sprintf("%s", b), nil, 0)
+	OutputHttpExecute(w, &*r, fmt.Sprintf(formatString, b), nil, 0)
 }
 
 func OutputHttpString(w http.ResponseWriter, r *http.Request, s string) {
@@ -123,27 +126,27 @@ func OutputHttpString(w http.ResponseWriter, r *http.Request, s string) {
 }
 
 func OutputHttpUInt8(w http.ResponseWriter, r *http.Request, i uint8) {
-	OutputHttpExecute(w, &*r, fmt.Sprintf("%x", i), nil, 0)
+	OutputHttpExecute(w, &*r, fmt.Sprintf(formatHex, i), nil, 0)
 }
 
 func OutputHttpUInt32(w http.ResponseWriter, r *http.Request, i uint32) {
-	OutputHttpExecute(w, &*r, fmt.Sprintf("%x", i), nil, 0)
+	OutputHttpExecute(w, &*r, fmt.Sprintf(formatHex, i), nil, 0)
 }
 
 func OutputHttpUInt64(w http.ResponseWriter, r *http.Request, i uint64) {
-	OutputHttpExecute(w, &*r, fmt.Sprintf("%x", i), nil, 0)
+	OutputHttpExecute(w, &*r, fmt.Sprintf(formatHex, i), nil, 0)
 }
 
 func OutputHttp32Byte(w http.ResponseWriter, r *http.Request, b [32]byte) {
-	OutputHttpExecute(w, &*r, fmt.Sprintf("%x", b), nil, 0)
+	OutputHttpExecute(w, &*r, fmt.Sprintf(formatHex, b), nil, 0)
 }
 
 func OutputHttp48Byte(w http.ResponseWriter, r *http.Request, b [48]byte) {
-	OutputHttpExecute(w, &*r, fmt.Sprintf("%x", b), nil, 0)
+	OutputHttpExecute(w, &*r, fmt.Sprintf(formatHex, b), nil, 0)
 }
 
 func OutputHttp64Byte(w http.ResponseWriter, r *http.Request, b [64]byte) {
-	OutputHttpExecute(w, &*r, fmt.Sprintf("%x", b), nil, 0)
+	OutputHttpExecute(w, &*r, fmt.Sprintf(formatHex, b), nil, 0)
 }
 
 func OutputHttpError(w http.ResponseWriter, r *http.Request, e error, s int) {
