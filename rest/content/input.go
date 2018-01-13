@@ -189,6 +189,12 @@ func (i *Input) BodyRead() error {
 	return nil
 }
 
+func (i *Input) Clean() {
+	i.Structure = nil
+	i.Format    = nil
+	i.Reader    = nil
+}
+
 func (i *Input) Build() ([]byte, error, int) {
 	err := i.Size()
 
@@ -200,7 +206,12 @@ func (i *Input) Build() ([]byte, error, int) {
 		}
 	}
 
-	return i.Structure.Content, err, i.Structure.Status
+	c := i.Structure.Content
+	s := i.Structure.Status
+
+	i.Clean()
+
+	return c, err, s
 }
 
 var InputHttpExecute = func(r *http.Request) ([]byte, error, int) {

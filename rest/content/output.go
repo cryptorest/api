@@ -80,15 +80,9 @@ func (o *Output) Build() {
 }
 
 func (o *Output) Clean() {
-	o.Format.InputFormatFileFunc = nil
-	o.Format.OutputFormatFunc    = nil
-	o.Format.InputFormatFunc     = nil
-	o.Format.FileExtensions      = nil
-	o.Format.MimeTypes           = nil
-
+	o.Structure = nil
 	o.Format    = nil
 	o.Writer    = nil
-	o.Structure = nil
 
 	debug.FreeOSMemory()
 }
