@@ -6,7 +6,7 @@ import (
 	"strconv"
 )
 
-var envVars = [7]string {
+var envVars = [8]string {
 	"CRYPTOREST_CERT_FILE",
 	"CRYPTOREST_KEY_FILE",
 	"CRYPTOREST_HOST",
@@ -14,6 +14,7 @@ var envVars = [7]string {
 	"CRYPTOREST_VERBOSE",
 	"CRYPTOREST_BUFFER_SIZE",
 	"CRYPTOREST_FILE_SIZE_LIMIT",
+	"CRYPTOREST_BODY_SIZE_LIMIT",
 }
 
 func envString(envName string, pDefault string) (string) {
@@ -61,4 +62,5 @@ func InitEnvironment(c *Structure) {
 	c.Verbose       = envBool(envVars[4],   Default.Verbose)
 	c.BufferSize    = envInt(envVars[5],    Default.BufferSize)
 	c.FileSizeLimit = envInt(envVars[6],    Default.FileSizeLimit)
+	c.BodySizeLimit = envInt(envVars[6],    Default.BodySizeLimit)
 }

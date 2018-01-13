@@ -30,6 +30,7 @@ func DefaultInputHttpFormat(i *Input) {
 type Input struct {
 	BufferSize    int
 	FileSizeLimit int64
+	BodySizeLimit int64
 	HttpMimeType  string
 	UploadDir     *string
 	Reader        *http.Request
@@ -66,7 +67,7 @@ func (i *Input) FormatFind() {
 	}
 }
 
-func (i *Input) Size() error {
+func (i *Input) FileSize() error {
 	var s   int
 	var err error
 
@@ -94,7 +95,7 @@ func (i *Input) Size() error {
 	return err
 }
 
-func (i *Input) ReadBuffer(r multipart.File, w io.Writer) error {
+func (i *Input) BufferRead(r multipart.File, w io.Writer) error {
 	var n   int
 	var err error
 
@@ -150,7 +151,7 @@ func (i *Input) FilePut(fileHeader *multipart.FileHeader, err error) error {
 		return errors.New(i.Structure.Error)
 	}
 
-	err = i.ReadBuffer(inputFile, outputFile)
+	err = i.BufferRead(inputFile, outputFile)
 	if err != nil {
 		i.Structure.Status = http.StatusInternalServerError
 		i.Structure.Error  = err.Error()
@@ -186,14 +187,6 @@ func (i *Input) FileRead() error {
 		}
 	}
 
-//	err = format.InputJsonFile(&i.Structure)
-//	if err != nil {
-//		i.Structure.Status = http.StatusInternalServerError
-//		i.Structure.Error  = err.Error()
-//
-//		return
-//	}
-
 	content, err := ioutil.ReadFile(i.Structure.File)
 	if err == nil {
 		i.Structure.Content = content
@@ -215,10 +208,37 @@ func (i *Input) FileRead() error {
 	return nil
 }
 
-func (i *Input) BodyRead() error {
-	defer i.Reader.Body.Close()
+func (i *Input) BodySize() error {
+	var s   int
+	var err error
 
+	size := i.Reader.Header.Get(HttpMimeTypeInputSize)
+
+	if size == EmptyString {
+		i.Structure.ContentSize = 0
+		err                     = errors.New(messageErrorContentSize0)
+		i.Structure.Status      = http.StatusLengthRequired
+	} else {
+		s, err = strconv.Atoi(size)
+
+		if err != nil {
+			i.Structure.ContentSize = 0
+		} else {
+			i.Structure.ContentSize = int64(s)
+		}
+
+		if i.Structure.ContentSize > i.BodySizeLimit {
+			err                = http.ErrContentLength
+			i.Structure.Status = http.StatusRequestEntityTooLarge
+		}
+	}
+
+	return err
+}
+
+func (i *Input) BodyRead() error {
 	part, err := ioutil.ReadAll(io.LimitReader(i.Reader.Body, i.Structure.ContentSize))
+	defer i.Reader.Body.Close()
 	if err != nil {
 		return err
 	}
@@ -240,13 +260,21 @@ func (i *Input) Clean() {
 }
 
 func (i *Input) Build() ([]byte, error, int) {
-	err := i.Size()
+	var err error
 
-	if err == nil {
-		if i.HttpMimeType == HttpMimeTypeInputFile {
+	if i.HttpMimeType == HttpMimeTypeInputFile {
+		err = i.FileSize()
+
+		if err == nil {
 			err = i.FileRead()
-		} else {
+			// TODO: parsing or upload
+		}
+	} else {
+		err = i.BodySize()
+
+		if err == nil {
 			err = i.BodyRead()
+			// TODO: parsing or not
 		}
 	}
 
@@ -263,6 +291,7 @@ var InputHttpExecute = func(r *http.Request) ([]byte, error, int) {
 
 	input.BufferSize    = config.Server.BufferSize * config.BufferSizeBlock
 	input.FileSizeLimit = int64(config.Server.FileSizeLimit * config.BufferSizeBlock)
+	input.BodySizeLimit = int64(config.Server.BodySizeLimit * config.BufferSizeBlock)
 	input.UploadDir     = &config.Server.UploadDir
 	input.Reader        = &*r
 	input.HttpMimeType  = InputHttpMimeType(&*r)

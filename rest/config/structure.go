@@ -16,6 +16,9 @@ const DefaultBufferSize = 4
 const FileSizeLimitMin     = 0
 const DefaultFileSizeLimit = BufferSizeBlock * BufferSizeBlock
 
+const BodySizeLimitMin     = 0
+const DefaultBodySizeLimit = 64 * BufferSizeBlock
+
 type Structure struct {
 	GlobalPort    int
 	URISchema     string
@@ -28,6 +31,7 @@ type Structure struct {
 	Verbose       bool   `yaml:"Verbose"`
 	BufferSize    int    `yaml:"BufferSize"`
 	FileSizeLimit int    `yaml:"FileSizeLimit"`
+	BodySizeLimit int    `yaml:"BobySizeLimit"`
 }
 
 var Server  Structure
@@ -45,6 +49,7 @@ func InitDefault(c *Structure) {
 	c.Verbose       = false
 	c.BufferSize    = DefaultBufferSize
 	c.FileSizeLimit = DefaultFileSizeLimit
+	c.BodySizeLimit = DefaultBodySizeLimit
 }
 
 func DirectoryCreate(pathDir string, title string) {

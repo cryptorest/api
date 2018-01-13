@@ -15,6 +15,7 @@ func InitCommand(c *Structure) {
 	flag.BoolVar(&c.Verbose, "verbose", Default.Verbose, "Verbose HTTP/2 debugging. Required.")
 	flag.IntVar(&c.BufferSize, "bufferSize", Default.BufferSize, fmt.Sprintf("Buffer size(in kilobytes) for reading (Min: %d, Max: %d). Required.", BufferSizeMin, BufferSizeMax))
 	flag.IntVar(&c.FileSizeLimit, "fileSizeLimit", Default.FileSizeLimit, fmt.Sprintf("File size(in kilobytes) limit for upload (Min: %d, Max: unlimited). Required.", FileSizeLimitMin))
+	flag.IntVar(&c.BodySizeLimit, "bodySizeLimit", Default.BodySizeLimit, fmt.Sprintf("Body size(in kilobytes) limit for upload (Min: %d, Max: unlimited). Required.", BodySizeLimitMin))
 
 	flag.Parse()
 }
