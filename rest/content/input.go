@@ -13,11 +13,8 @@ import (
 
 	"rest/config"
 	"rest/content/format"
+	"fmt"
 )
-
-const BufferSizeBlock = 1024
-
-const Size24K = (1 << 10) * 24
 
 func InputHttpMimeType(r *http.Request) string {
 	return r.Header.Get(HttpMimeTypeInputKey)
@@ -30,7 +27,7 @@ func DefaultInputHttpFormat(i *Input) {
 
 type Input struct {
 	BufferSize    int
-	FileSizeLimit int
+	FileSizeLimit int64
 	UploadDir     string
 	HttpMimeType  string
 	Reader        *http.Request
@@ -75,16 +72,21 @@ func (i *Input) Size() error {
 
 	if size == EmptyString {
 		i.Structure.ContentSize = 0
-
-		return errors.New("content size is 0")
-	}
-
-	s, err = strconv.Atoi(size)
-
-	if err != nil {
-		i.Structure.ContentSize = 0
+		err                     = errors.New("content size is 0 bytes")
+		i.Structure.Status      = http.StatusLengthRequired
 	} else {
-		i.Structure.ContentSize = int64(s)
+		s, err = strconv.Atoi(size)
+
+		if err != nil {
+			i.Structure.ContentSize = 0
+		} else {
+			i.Structure.ContentSize = int64(s)
+		}
+
+		if i.Structure.ContentSize > i.FileSizeLimit {
+			err                = errors.New(fmt.Sprintf("content size more %d bytes", i.FileSizeLimit))
+			i.Structure.Status = http.StatusLengthRequired
+		}
 	}
 
 	return err
@@ -94,10 +96,9 @@ func (i *Input) ReadBuffer(r multipart.File, w io.Writer) error {
 	var n   int
 	var err error
 
-	buf := make([]byte, i.BufferSize * BufferSizeBlock)
+	buf := make([]byte, i.BufferSize)
 
 	for {
-		// read a chunk
 		n, err = r.Read(buf)
 		if err != nil {
 			if err != io.EOF {
@@ -110,7 +111,6 @@ func (i *Input) ReadBuffer(r multipart.File, w io.Writer) error {
 			break
 		}
 
-		// write a chunk
 		_, err = w.Write(buf[:n])
 		if err != nil {
 			return err
@@ -127,7 +127,7 @@ func (i *Input) FileRead() error {
 		return err
 	}()
 
-	err = i.Reader.ParseMultipartForm(Size24K)
+	err = i.Reader.ParseMultipartForm(i.FileSizeLimit)
 	if err != nil {
 		i.Structure.Status = http.StatusNotAcceptable
 		i.Structure.Error  = err.Error()
@@ -137,16 +137,15 @@ func (i *Input) FileRead() error {
 
 	for _, fileHeaders := range i.Reader.MultipartForm.File {
 		for _, header := range fileHeaders {
-			// open uploaded
-			var inFile   multipart.File
-			// open destination
+			var inFile  multipart.File
 			var outFile *os.File
 
-			i.Structure.File = filepath.Join(config.Server.UploadDir, header.Filename)
+			i.Structure.File = filepath.Join(i.UploadDir, header.Filename)
 
 			inFile, err = header.Open()
 			if err != nil {
 				inFile.Close()
+
 				i.Structure.Status = http.StatusInternalServerError
 				i.Structure.Error  = err.Error()
 
@@ -157,6 +156,7 @@ func (i *Input) FileRead() error {
 			if err != nil {
 				inFile.Close()
 				outFile.Close()
+
 				i.Structure.Status = http.StatusInternalServerError
 				i.Structure.Error  = "upload file error on system"
 
@@ -255,8 +255,8 @@ func (i *Input) Build() ([]byte, error, int) {
 var InputHttpExecute = func(r *http.Request) ([]byte, error, int) {
 	var input Input
 
-	input.BufferSize    = config.Server.BufferSize
-	input.FileSizeLimit = config.Server.FileSizeLimit
+	input.BufferSize    = config.Server.BufferSize * config.BufferSizeBlock
+	input.FileSizeLimit = int64(config.Server.FileSizeLimit * config.BufferSizeBlock)
 	input.UploadDir     = config.Server.UploadDir
 	input.Reader        = &*r
 	input.HttpMimeType  = InputHttpMimeType(&*r)

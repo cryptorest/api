@@ -8,13 +8,13 @@ import (
 
 const DirectoryPermisson = 0700
 
-const BufferSize1K      = 1024
+const BufferSizeBlock   = 1024
 const BufferSizeMin     = 1
-const BufferSizeMax     = BufferSize1K
-const DefaultBufferSize = 16
+const BufferSizeMax     = BufferSizeBlock
+const DefaultBufferSize = 4
 
 const FileSizeLimitMin     = 0
-const DefaultFileSizeLimit = BufferSize1K * BufferSize1K
+const DefaultFileSizeLimit = BufferSizeBlock * BufferSizeBlock
 
 type Structure struct {
 	GlobalPort    int
