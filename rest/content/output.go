@@ -55,9 +55,9 @@ func (o *Output) Build() {
 	t := time.Now().UTC()
 
 	if o.Structure.Status.Message == EmptyString {
-		o.Structure.Status.Code  = http.StatusOK
+		o.Structure.Status.Code = http.StatusOK
 	} else {
-		o.Structure.Content      = EmptyString
+		o.Structure.Content     = EmptyString
 	}
 
 	o.Structure.Time.RFC3339 = t.Format(time.RFC3339)
