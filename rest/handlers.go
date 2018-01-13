@@ -38,7 +38,7 @@ func Root(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if errors.IsMethodGet(r) && errors.IsMethodHead(r) {
+	if errors.IsMethodGet(&*r) && errors.IsMethodHead(&*r) {
 		errors.MethodGet(w, &*r)
 
 		return

@@ -10,8 +10,18 @@ import (
 	"rest/config"
 )
 
+func prcSetup() {
+	n := int(runtime.NumCPU() / 2)
+
+	if n < 1 {
+		n = 1
+	}
+
+	runtime.GOMAXPROCS(n)
+}
+
 func main() {
-	runtime.GOMAXPROCS(runtime.NumCPU())
+	prcSetup()
 
 	config.Init()
 

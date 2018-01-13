@@ -234,7 +234,6 @@ func (i *Input) Clean() {
 
 	i.BufferSize    = 0
 	i.FileSizeLimit = 0
-	*i.UploadDir    = EmptyString
 	i.HttpMimeType  = EmptyString
 }
 

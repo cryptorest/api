@@ -5,8 +5,10 @@ import (
 	"net/http"
 )
 
+const errorMethodFormatString = "Error %d: %s %s for %s"
+
 func eMethodMessage(eID int, eCurrentMethod string, eMethod string) string {
-	return fmt.Sprintf("Error %d: %s %s for %s",
+	return fmt.Sprintf(errorMethodFormatString,
 			eID,
 			eCurrentMethod,
 			http.StatusText(eID),

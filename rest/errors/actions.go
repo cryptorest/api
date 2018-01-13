@@ -5,8 +5,10 @@ import (
 	"net/http"
 )
 
+const errorActionFormatString = "Error %d: Path %s %s"
+
 func ePathMessage(eID int, eURI string) string {
-	return fmt.Sprintf("Error %d: Path %s %s",
+	return fmt.Sprintf(errorActionFormatString,
 		eID,
 		eURI,
 		http.StatusText(eID))
