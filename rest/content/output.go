@@ -36,8 +36,8 @@ func (o *Output) FormatFind() {
 		for _, f := range &Formats {
 			for _, httpMimeType := range *f.MimeTypes {
 				if mimeType == httpMimeType {
-					o.HttpMimeType    = httpMimeType
 					o.IsHumanReadable = HumanReadableFormat(httpMimeType)
+					o.HttpMimeType    = httpMimeType
 					o.Format          = &f
 
 					return
@@ -78,14 +78,26 @@ func (o *Output) Build() {
 	}
 }
 
+func (o *Output) Clean() {
+	o.Format.InputFormatFileFunc = nil
+	o.Format.OutputFormatFunc    = nil
+	o.Format.InputFormatFunc     = nil
+	o.Format.FileExtensions      = nil
+	o.Format.MimeTypes           = nil
+
+	o.Format    = nil
+	o.Writer    = nil
+	o.Structure = nil
+}
+
 var OutputHttpExecute = func(w http.ResponseWriter, r *http.Request, c string, e error, s int) {
 	var output Output
 
-	output.Writer                = w
-	output.HttpMimeType          = OutputHttpMimeType(&*r)
 	output.Structure             = &format.OutputStructure{}
 	output.Structure.Status.Code = s
 	output.Structure.Content     = c
+	output.HttpMimeType          = OutputHttpMimeType(&*r)
+	output.Writer                = w
 
 	if e == nil {
 		output.Structure.Status.Message = EmptyString
@@ -95,6 +107,7 @@ var OutputHttpExecute = func(w http.ResponseWriter, r *http.Request, c string, e
 
 	output.FormatFind()
 	output.Build()
+	output.Clean()
 }
 
 func OutputHttpHash(w http.ResponseWriter, r *http.Request, b []byte) {
