@@ -1,6 +1,8 @@
 package data
 
 import (
+	"fmt"
+	e "errors"
 	"net/http"
 	"encoding/base32"
 
@@ -9,6 +11,8 @@ import (
 )
 
 const Base32Path = content.DataPath + "/base32"
+
+const errorBase32Message = "invalid action %s for Base32"
 
 var Base32Actions = []string{
 	"encode",
@@ -28,6 +32,7 @@ func Base32Http(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var err error
 	action := content.Path2Action(&*r)
 
 	switch action {
@@ -57,5 +62,11 @@ func Base32Http(w http.ResponseWriter, r *http.Request) {
 		} else {
 			content.OutputHttpError(w, &*r, err, s)
 		}
+	default:
+		err = e.New(fmt.Sprintf(errorBase32Message, action))
+	}
+
+	if err != nil {
+		content.OutputHttpError(w, &*r, err, http.StatusNotAcceptable)
 	}
 }

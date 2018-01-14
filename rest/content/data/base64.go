@@ -1,14 +1,19 @@
 package data
 
 import (
+	"fmt"
+	e "errors"
 	"net/http"
 	"encoding/base64"
 
 	"rest/errors"
 	"rest/content"
+
 )
 
 const Base64Path = content.DataPath + "/base64"
+
+const errorBase64Message = "invalid action %s for Base64"
 
 var Base64Actions = []string{
 	"encode",
@@ -28,6 +33,7 @@ func Base64Http(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var err error
 	action := content.Path2Action(&*r)
 
 	switch action {
@@ -57,5 +63,11 @@ func Base64Http(w http.ResponseWriter, r *http.Request) {
 		} else {
 			content.OutputHttpError(w, &*r, err, s)
 		}
+	default:
+		err = e.New(fmt.Sprintf(errorBase64Message, action))
+	}
+
+	if err != nil {
+		content.OutputHttpError(w, &*r, err, http.StatusNotAcceptable)
 	}
 }
