@@ -250,6 +250,12 @@ func (i *Input) BodyRead() error {
 }
 
 func (i *Input) Clean() {
+	i.Structure.File        = EmptyString
+	i.Structure.Error       = EmptyString
+	i.Structure.Content     = []byte(EmptyString)
+	i.Structure.Status      = 0
+	i.Structure.ContentSize = 0
+
 	i.Structure = nil
 	i.Format    = nil
 	i.Reader    = nil

@@ -83,6 +83,15 @@ func (o *Output) Build() {
 }
 
 func (o *Output) Clean() {
+	o.Structure.Status.Message = EmptyString
+	o.Structure.Status.Text    = EmptyString
+	o.Structure.Status.Code    = 0
+
+	o.Structure.Time.RFC3339 = EmptyString
+	o.Structure.Time.Stamp   = 0
+
+	o.Structure.Content = EmptyString
+
 	o.Structure = nil
 	o.Format    = nil
 	o.Writer    = nil
