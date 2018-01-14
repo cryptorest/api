@@ -1,6 +1,8 @@
 package hashes
 
 import (
+	"fmt"
+	e "errors"
 	"net/http"
 	"hash/crc32"
 
@@ -9,6 +11,8 @@ import (
 )
 
 const Crc32Path = content.HashesPath + "/crc32"
+
+const errorCrc32Message = "invalid type %s for CRC32"
 
 var Crc32Types = []string{
 	"ieee",
@@ -37,16 +41,26 @@ func Crc32Http(w http.ResponseWriter, r *http.Request) {
 	data, err, s := content.InputHttpBytes(&*r)
 
 	if err == nil {
+		var i uint32
+
 		switch pType {
 		// IEEE
 		case Crc32Types[0]:
-			content.OutputHttpUInt32(w, &*r, Crc32Ieee(data))
+			i = Crc32Ieee(data)
 		// Koopman
 		case Crc32Types[1]:
-			content.OutputHttpUInt32(w, &*r, Crc32Koopman(data))
+			i = Crc32Koopman(data)
 		// Castagnoli
 		case Crc32Types[2]:
-			content.OutputHttpUInt32(w, &*r, Crc32Castagnoli(data))
+			i = Crc32Castagnoli(data)
+		default:
+			err = e.New(fmt.Sprintf(errorCrc32Message, pType))
+		}
+
+		if err == nil {
+			content.OutputHttpUInt32(w, &*r, i)
+		} else {
+			content.OutputHttpError(w, &*r, err, http.StatusNotAcceptable)
 		}
 	} else {
 		content.OutputHttpError(w, &*r, err, s)

@@ -1,6 +1,8 @@
 package hashes
 
 import (
+	"fmt"
+	e "errors"
 	"net/http"
 	"github.com/golang/crypto/blake2b"
 
@@ -9,6 +11,8 @@ import (
 )
 
 const Blake2bPath = content.HashesPath + "/blake2b"
+
+const errorBlake2bMessage = "invalid bit size %s for BLAKE2b"
 
 var Blake2bBits = []string{
 	"256",
@@ -47,6 +51,12 @@ func Blake2bHttp(w http.ResponseWriter, r *http.Request) {
 		// 512
 		case Blake2bBits[2]:
 			content.OutputHttp64Byte(w, &*r, Blake2b512(data))
+		default:
+			err = e.New(fmt.Sprintf(errorBlake2bMessage, bit))
+		}
+
+		if err != nil {
+			content.OutputHttpError(w, &*r, err, http.StatusNotAcceptable)
 		}
 	} else {
 		content.OutputHttpError(w, &*r, err, s)

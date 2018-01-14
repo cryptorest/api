@@ -66,34 +66,38 @@ func Crc8Http(w http.ResponseWriter, r *http.Request) {
 	data, err, s := content.InputHttpBytes(&*r)
 
 	if err == nil {
+		var i uint8
+
 		switch bit {
 		// DARC
 		case Crc8Types[1]:
-			content.OutputHttpUInt8(w, &*r, Crc8Darc(data))
+			i = Crc8Darc(data)
 		// DVB S2
 		case Crc8Types[2]:
-			content.OutputHttpUInt8(w, &*r, Crc8Dvbs2(data))
+			i = Crc8Dvbs2(data)
 		// EBU
 		case Crc8Types[3]:
-			content.OutputHttpUInt8(w, &*r, Crc8Ebu(data))
+			i = Crc8Ebu(data)
 		// iCODE
 		case Crc8Types[4]:
-			content.OutputHttpUInt8(w, &*r, Crc8Icode(data))
+			i = Crc8Icode(data)
 		// ITU
 		case Crc8Types[5]:
-			content.OutputHttpUInt8(w, &*r, Crc8Itu(data))
+			i = Crc8Itu(data)
 		// MAXIM
 		case Crc8Types[6]:
-			content.OutputHttpUInt8(w, &*r, Crc8Maxim(data))
+			i = Crc8Maxim(data)
 		// ROHC
 		case Crc8Types[7]:
-			content.OutputHttpUInt8(w, &*r, Crc8Rohc(data))
+			i = Crc8Rohc(data)
 		// WCDMA
 		case Crc8Types[8]:
-			content.OutputHttpUInt8(w, &*r, Crc8Wcdma(data))
+			i = Crc8Wcdma(data)
 		default:
-			content.OutputHttpUInt8(w, &*r, Crc8(data))
+			i = Crc8(data)
 		}
+
+		content.OutputHttpUInt8(w, &*r, i)
 	} else {
 		content.OutputHttpError(w, &*r, err, s)
 	}

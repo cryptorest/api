@@ -1,6 +1,8 @@
 package hashes
 
 import (
+	"fmt"
+	e "errors"
 	"net/http"
 	"golang.org/x/crypto/sha3"
 
@@ -9,6 +11,8 @@ import (
 )
 
 const Sha3Path = content.HashesPath + "/sha3"
+
+const errorSha3Message = "invalid bit size %s for SHA3"
 
 var Sha3Bits = []string {
 	"224",
@@ -50,19 +54,29 @@ func Sha3Http(w http.ResponseWriter, r *http.Request) {
 	data, err, s := content.InputHttpBytes(&*r)
 
 	if err == nil {
+		var b []byte
+
 		switch bit {
 		// 224
 		case Sha3Bits[0]:
-			content.OutputHttpHash(w, &*r, Sha3b224(data))
-			// 256
+			b = Sha3b224(data)
+		// 256
 		case Sha3Bits[1]:
-			content.OutputHttpHash(w, &*r, Sha3b256(data))
-			// 384
+			b = Sha3b256(data)
+		// 384
 		case Sha3Bits[2]:
-			content.OutputHttpHash(w, &*r, Sha3b384(data))
-			// 512
+			b = Sha3b384(data)
+		// 512
 		case Sha3Bits[3]:
-			content.OutputHttpHash(w, &*r, Sha3b512(data))
+			b = Sha3b512(data)
+		default:
+			err = e.New(fmt.Sprintf(errorSha3Message, bit))
+		}
+
+		if err == nil {
+			content.OutputHttpHash(w, &*r, b)
+		} else {
+			content.OutputHttpError(w, &*r, err, http.StatusNotAcceptable)
 		}
 	} else {
 		content.OutputHttpError(w, &*r, err, s)

@@ -1,6 +1,7 @@
 package hashes
 
 import (
+	"fmt"
 	e "errors"
 	"net/http"
 	"encoding/hex"
@@ -11,6 +12,8 @@ import (
 )
 
 const ShakePath = content.HashesPath + "/shake"
+
+const errorShakeMessage = "invalid bit size %s for SHAKE"
 
 var ShakeBits = []string{
 	"128",
@@ -23,7 +26,7 @@ var MaxBit = 1024 * 1024 * 1024
 func checkBit(b int) error {
 	b *= 8
 	if b < MinBit || b > MaxBit || b%16 != 0 {
-		return e.New("invalid bit size")
+		return e.New(fmt.Sprintf(errorShakeMessage, b))
 	}
 
 	return nil
@@ -83,6 +86,12 @@ func ShakeHttp(w http.ResponseWriter, r *http.Request) {
 			} else {
 				content.OutputHttpError(w, &*r, err, http.StatusUnprocessableEntity)
 			}
+		default:
+			err = e.New(fmt.Sprintf(errorShakeMessage, bit))
+		}
+
+		if err != nil {
+			content.OutputHttpError(w, &*r, err, http.StatusNotAcceptable)
 		}
 	} else {
 		content.OutputHttpError(w, &*r, err, s)

@@ -1,6 +1,8 @@
 package hashes
 
 import (
+	"fmt"
+	e "errors"
 	"net/http"
 	"hash/crc64"
 
@@ -9,6 +11,8 @@ import (
 )
 
 const Crc64Path = content.HashesPath + "/crc64"
+
+const errorCrc64Message = "invalid type %s for CRC64"
 
 var Crc64Types = []string{
 	"iso",
@@ -32,13 +36,23 @@ func Crc64Http(w http.ResponseWriter, r *http.Request) {
 	data, err, s := content.InputHttpBytes(&*r)
 
 	if err == nil {
+		var i uint64
+
 		switch pType {
 		// ISO
 		case Crc64Types[0]:
-			content.OutputHttpUInt64(w, &*r, Crc64Iso(data))
+			i = Crc64Iso(data)
 		// ECMA
 		case Crc64Types[1]:
-			content.OutputHttpUInt64(w, &*r, Crc64Ecma(data))
+			i = Crc64Ecma(data)
+		default:
+			err = e.New(fmt.Sprintf(errorCrc64Message, pType))
+		}
+
+		if err == nil {
+			content.OutputHttpUInt64(w, &*r, i)
+		} else {
+			content.OutputHttpError(w, &*r, err, http.StatusNotAcceptable)
 		}
 	} else {
 		content.OutputHttpError(w, &*r, err, s)

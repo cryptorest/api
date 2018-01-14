@@ -1,6 +1,8 @@
 package hashes
 
 import (
+	"fmt"
+	e "errors"
 	"net/http"
 	"crypto/sha256"
 	"crypto/sha512"
@@ -10,6 +12,8 @@ import (
 )
 
 const Sha2Path = content.HashesPath + "/sha2"
+
+const errorSha2Message = "invalid bit size %s for SHA2"
 
 var Sha2Bits = []string {
 	"224",
@@ -65,25 +69,35 @@ func Sha2Http(w http.ResponseWriter, r *http.Request) {
 	data, err, s := content.InputHttpBytes(&*r)
 
 	if err == nil {
+		var b []byte
+
 		switch bit {
 		// 224
 		case Sha2Bits[0]:
-			content.OutputHttpHash(w, &*r, Sha2b224(data))
+			b = Sha2b224(data)
 		// 256
 		case Sha2Bits[1]:
-			content.OutputHttpHash(w, &*r, Sha2b256(data))
+			b = Sha2b256(data)
 		// 384
 		case Sha2Bits[2]:
-			content.OutputHttpHash(w, &*r, Sha2b384(data))
+			b = Sha2b384(data)
 		// 512
 		case Sha2Bits[3]:
-			content.OutputHttpHash(w, &*r, Sha2b512(data))
+			b = Sha2b512(data)
 		// 512_224
 		case Sha2Bits[4]:
-			content.OutputHttpHash(w, &*r, Sha2b512b224(data))
+			b = Sha2b512b224(data)
 		// 512_256
 		case Sha2Bits[5]:
-			content.OutputHttpHash(w, &*r, Sha2b512b256(data))
+			b = Sha2b512b256(data)
+		default:
+			err = e.New(fmt.Sprintf(errorSha2Message, bit))
+		}
+
+		if err == nil {
+			content.OutputHttpHash(w, &*r, b)
+		} else {
+			content.OutputHttpError(w, &*r, err, http.StatusNotAcceptable)
 		}
 	} else {
 		content.OutputHttpError(w, &*r, err, s)

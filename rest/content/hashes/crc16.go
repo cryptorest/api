@@ -41,19 +41,23 @@ func Crc16Http(w http.ResponseWriter, r *http.Request) {
 	data, err, s := content.InputHttpBytes(&*r)
 
 	if err == nil {
+		var i uint64
+
 		switch bit {
 		// CCITT
 		case Crc16Types[0]:
-			content.OutputHttpUInt64(w, &*r, Crc16Ccitt(data))
+			i = Crc16Ccitt(data)
 		// X25
 		case Crc16Types[1]:
-			content.OutputHttpUInt64(w, &*r, Crc16X25(data))
+			i = Crc16X25(data)
 		// XMODEM
 		case Crc16Types[2]:
-			content.OutputHttpUInt64(w, &*r, Crc16Xmodem(data))
+			i = Crc16Xmodem(data)
 		default:
-			content.OutputHttpUInt64(w, &*r, Crc16(data))
+			i = Crc16(data)
 		}
+
+		content.OutputHttpUInt64(w, &*r, i)
 	} else {
 		content.OutputHttpError(w, &*r, err, s)
 	}

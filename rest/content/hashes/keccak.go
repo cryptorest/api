@@ -1,6 +1,8 @@
 package hashes
 
 import (
+	"fmt"
+	e "errors"
 	"net/http"
 
 	"github.com/cryptorest/keccakc"
@@ -51,16 +53,29 @@ func KeccakHttp(w http.ResponseWriter, r *http.Request) {
 	data, err, s := content.InputHttpBytes(&*r)
 
 	if err == nil {
+		var b []byte
+
 		switch bit {
-		// IEEE
+		// 224
 		case KeccakBits[0]:
-			content.OutputHttpHash(w, &*r, Keccak224(data))
+			b = Keccak224(data)
+		// 256
 		case KeccakBits[1]:
-			content.OutputHttpHash(w, &*r, Keccak256(data))
+			b = Keccak256(data)
+		// 384
 		case KeccakBits[2]:
-			content.OutputHttpHash(w, &*r, Keccak384(data))
+			b = Keccak384(data)
+		// 512
 		case KeccakBits[3]:
-			content.OutputHttpHash(w, &*r, Keccak512(data))
+			b = Keccak512(data)
+		default:
+			err = e.New(fmt.Sprintf("invalid bit size %s for Keccak", bit))
+		}
+
+		if err == nil {
+			content.OutputHttpHash(w, &*r, b)
+		} else {
+			content.OutputHttpError(w, &*r, err, http.StatusNotAcceptable)
 		}
 	} else {
 		content.OutputHttpError(w, &*r, err, s)
