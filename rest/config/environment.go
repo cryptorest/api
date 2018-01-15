@@ -6,7 +6,7 @@ import (
 	"strconv"
 )
 
-var envVars = [9]string {
+var envVars = [11]string {
 	"CRYPTOREST_CERT_FILE",
 	"CRYPTOREST_KEY_FILE",
 	"CRYPTOREST_HOST",
@@ -16,6 +16,8 @@ var envVars = [9]string {
 	"CRYPTOREST_FILE_SIZE_LIMIT",
 	"CRYPTOREST_BODY_SIZE_LIMIT",
 	"CRYPTOREST_TEMPORARY_DEPLOY",
+	"CRYPTOREST_TEMPORARY_DIR",
+	"CRYPTOREST_UPLOAD_DIR",
 }
 
 func envString(envName string, pDefault string) (string) {
@@ -56,13 +58,15 @@ func envInt(envName string, pDefault int) int {
 }
 
 func InitEnvironment(c *Structure) {
-	c.CertFile        = envString(envVars[0], Default.CertFile)
-	c.KeyFile         = envString(envVars[1], Default.KeyFile)
-	c.Host            = envString(envVars[2], Default.Host)
-	c.Port            = envInt(envVars[3],    Default.Port)
-	c.Verbose         = envBool(envVars[4],   Default.Verbose)
-	c.TemporaryDeploy = envBool(envVars[4],   Default.TemporaryDeploy)
-	c.BufferSize      = envInt(envVars[5],    Default.BufferSize)
-	c.FileSizeLimit   = envInt(envVars[6],    Default.FileSizeLimit)
-	c.BodySizeLimit   = envInt(envVars[6],    Default.BodySizeLimit)
+	c.CertFile        = envString(envVars[0],  Default.CertFile)
+	c.KeyFile         = envString(envVars[1],  Default.KeyFile)
+	c.Host            = envString(envVars[2],  Default.Host)
+	c.Port            = envInt(envVars[3],     Default.Port)
+	c.Verbose         = envBool(envVars[4],    Default.Verbose)
+	c.BufferSize      = envInt(envVars[5],     Default.BufferSize)
+	c.FileSizeLimit   = envInt(envVars[6],     Default.FileSizeLimit)
+	c.BodySizeLimit   = envInt(envVars[7],     Default.BodySizeLimit)
+	c.TemporaryDeploy = envBool(envVars[8],    Default.TemporaryDeploy)
+	c.TmpDir          = envString(envVars[9],  Default.TmpDir)
+	c.UploadDir       = envString(envVars[10], Default.UploadDir)
 }

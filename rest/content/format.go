@@ -33,8 +33,9 @@ type conf struct {
 	BufferSize      int
 	FileSizeLimit   int64
 	BodySizeLimit   int64
-	UploadDir       *string
 	TemporaryDeploy bool
+	TmpDir          *string
+	UploadDir       *string
 }
 
 var Config = &conf{}

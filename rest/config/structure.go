@@ -30,8 +30,9 @@ type Structure struct {
 	Host            string `yaml:"Host"`
 	Port            int    `yaml:"Port"`
 	UploadDir       string `yaml:"UploadDir"`
+	TmpDir          string `yaml:"TmpDir"`
 	Verbose         bool   `yaml:"Verbose"`
-	TemporaryDeploy bool
+	TemporaryDeploy bool   `yaml:"TemporaryDeploy"`
 	BufferSize      int    `yaml:"BufferSize"`
 	FileSizeLimit   int    `yaml:"FileSizeLimit"`
 	BodySizeLimit   int    `yaml:"BobySizeLimit"`
@@ -48,6 +49,7 @@ func InitDefault(c *Structure) {
 	c.Host            = "localhost"
 	c.Port            = 64443
 	c.UploadDir       = "./upload"
+	c.TmpDir          = "./tmp"
 	c.GlobalPort      = 443
 	c.Verbose         = false
 	c.TemporaryDeploy = false
@@ -61,6 +63,7 @@ func DirectoryCreate(pathDir string, title string) {
 
 	if os.IsNotExist(err) {
 		err = os.MkdirAll(pathDir, DirectoryPermisson)
+
 		if err != nil {
 			log.Fatalf("%s: %v", title, err)
 		}
@@ -86,6 +89,7 @@ func Init() {
 	Server.URISchema  = Default.URISchema
 	Server.GlobalPort = Default.GlobalPort
 	Server.UploadDir  = Default.UploadDir
+	Server.TmpDir     = Default.TmpDir
 
 	if Server == Default {
 		InitEnvironment(&Server)
@@ -105,8 +109,13 @@ func Init() {
 
 	DirectoryCreate(Server.UploadDir, "Upload directory")
 
-	content.Config.TemporaryDeploy = false
+	if Server.TemporaryDeploy {
+		DirectoryCreate(Server.TmpDir, "Temporary directory")
+	}
+
+	content.Config.TemporaryDeploy = Server.TemporaryDeploy
 	content.Config.UploadDir       = &Server.UploadDir
+	content.Config.TmpDir          = &Server.TmpDir
 	content.Config.BufferSize      = Server.BufferSize * BufferSizeBlock
 	content.Config.FileSizeLimit   = int64(Server.FileSizeLimit * BufferSizeBlock)
 	content.Config.BodySizeLimit   = int64(Server.BodySizeLimit * BufferSizeBlock)
