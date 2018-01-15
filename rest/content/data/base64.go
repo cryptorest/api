@@ -39,7 +39,7 @@ func Base64Http(w http.ResponseWriter, r *http.Request) {
 	switch action {
 	// Encode
 	case Base32Actions[0]:
-		data, err, s := content.InputHttpBytes(&*r)
+		data, err, s := content.InputHttpBytes(&*r, false, false)
 
 		if err == nil {
 			str, _ := Base64Encode(data)
@@ -50,7 +50,7 @@ func Base64Http(w http.ResponseWriter, r *http.Request) {
 		}
 	// Decode
 	case Base32Actions[1]:
-		str, err, s := content.InputHttpString(&*r)
+		str, err, s := content.InputHttpString(&*r, false, false)
 
 		if err == nil {
 			data, err := Base64Decode(str)

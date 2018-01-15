@@ -11,7 +11,6 @@ import (
 	"path/filepath"
 	"mime/multipart"
 
-	"rest/config"
 	"rest/content/format"
 )
 
@@ -28,11 +27,9 @@ func DefaultInputHttpFormat(i *Input) {
 }
 
 type Input struct {
-	BufferSize    int
-	FileSizeLimit int64
-	BodySizeLimit int64
+	Deploy        bool
+	Parsing       bool
 	HttpMimeType  string
-	UploadDir     *string
 	Reader        *http.Request
 	Structure     *format.InputStructure
 	Format        *format.Structure
@@ -86,7 +83,7 @@ func (i *Input) FileSize() error {
 			i.Structure.ContentSize = int64(s)
 		}
 
-		if i.Structure.ContentSize > i.FileSizeLimit {
+		if i.Structure.ContentSize > Config.FileSizeLimit {
 			err                = http.ErrContentLength
 			i.Structure.Status = http.StatusLengthRequired
 		}
@@ -99,7 +96,7 @@ func (i *Input) BufferRead(r multipart.File, w io.Writer) error {
 	var n   int
 	var err error
 
-	buf := make([]byte, i.BufferSize)
+	buf := make([]byte, Config.BufferSize)
 
 	for {
 		n, err = r.Read(buf)
@@ -129,7 +126,7 @@ func (i *Input) FilePut(fileHeader *multipart.FileHeader, err error) error {
 	var inputFile  multipart.File
 	var outputFile *os.File
 
-	i.Structure.File = filepath.Join(*i.UploadDir, fileHeader.Filename)
+	i.Structure.File = filepath.Join(*Config.UploadDir, fileHeader.Filename)
 
 	inputFile, err = fileHeader.Open()
 	defer inputFile.Close()
@@ -169,7 +166,7 @@ func (i *Input) FileRead() error {
 		return err
 	}()
 
-	err = i.Reader.ParseMultipartForm(i.FileSizeLimit)
+	err = i.Reader.ParseMultipartForm(Config.FileSizeLimit)
 	if err != nil {
 		i.Structure.Status = http.StatusNotAcceptable
 		i.Structure.Error  = err.Error()
@@ -227,7 +224,7 @@ func (i *Input) BodySize() error {
 			i.Structure.ContentSize = int64(s)
 		}
 
-		if i.Structure.ContentSize > i.BodySizeLimit {
+		if i.Structure.ContentSize > Config.BodySizeLimit {
 			err                = http.ErrContentLength
 			i.Structure.Status = http.StatusRequestEntityTooLarge
 		}
@@ -260,9 +257,9 @@ func (i *Input) Clean() {
 	i.Format    = nil
 	i.Reader    = nil
 
-	i.BufferSize    = 0
-	i.FileSizeLimit = 0
-	i.HttpMimeType  = EmptyString
+	i.Deploy       = false
+	i.Parsing      = false
+	i.HttpMimeType = EmptyString
 }
 
 func (i *Input) Build() ([]byte, error, int) {
@@ -292,28 +289,24 @@ func (i *Input) Build() ([]byte, error, int) {
 	return c, err, s
 }
 
-var InputHttpExecute = func(r *http.Request) ([]byte, error, int) {
+var InputHttpExecute = func(r *http.Request, deploy bool, parsing bool) ([]byte, error, int) {
 	var input Input
 
-	input.BufferSize    = config.Server.BufferSize * config.BufferSizeBlock
-	input.FileSizeLimit = int64(config.Server.FileSizeLimit * config.BufferSizeBlock)
-	input.BodySizeLimit = int64(config.Server.BodySizeLimit * config.BufferSizeBlock)
-	input.UploadDir     = &config.Server.UploadDir
-	input.Reader        = &*r
-	input.HttpMimeType  = InputHttpMimeType(&*r)
-	input.Structure     = &format.InputStructure{}
+	input.Reader       = &*r
+	input.HttpMimeType = InputHttpMimeType(&*r)
+	input.Structure    = &format.InputStructure{}
 
 	input.FormatFind()
 
 	return input.Build()
 }
 
-func InputHttpBytes(r *http.Request) ([]byte, error, int) {
-	return InputHttpExecute(&*r)
+func InputHttpBytes(r *http.Request, deploy bool, parsing bool) ([]byte, error, int) {
+	return InputHttpExecute(&*r, deploy, parsing)
 }
 
-func InputHttpString(r *http.Request) (string, error, int) {
-	i, err, s := InputHttpExecute(&*r)
+func InputHttpString(r *http.Request, deploy bool, parsing bool) (string, error, int) {
+	i, err, s := InputHttpExecute(&*r, deploy, parsing)
 
 	return string(i), err, s
 }

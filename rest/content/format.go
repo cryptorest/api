@@ -29,6 +29,15 @@ var Formats = [5]format.Structure {
 	format.Xml,
 }
 
+type conf struct {
+	BufferSize    int
+	FileSizeLimit int64
+	BodySizeLimit int64
+	UploadDir     *string
+}
+
+var Config = &conf{}
+
 func HumanReadableFormat(m string) bool {
 	var hr bool
 

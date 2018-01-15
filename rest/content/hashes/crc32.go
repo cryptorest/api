@@ -38,7 +38,7 @@ func Crc32Http(w http.ResponseWriter, r *http.Request) {
 	}
 
 	pType        := content.Path2Type(&*r)
-	data, err, s := content.InputHttpBytes(&*r)
+	data, err, s := content.InputHttpBytes(&*r, false, false)
 
 	if err == nil {
 		var i uint32

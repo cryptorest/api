@@ -4,6 +4,8 @@ import (
 	"os"
 	"fmt"
 	"log"
+
+	"rest/content"
 )
 
 const DirectoryPermisson = 0700
@@ -100,4 +102,9 @@ func Init() {
 	Server.GlobalPort = Default.GlobalPort
 
 	DirectoryCreate(Server.UploadDir, "Upload directory")
+
+	content.Config.UploadDir     = &Server.UploadDir
+	content.Config.BufferSize    = Server.BufferSize * BufferSizeBlock
+	content.Config.FileSizeLimit = int64(Server.FileSizeLimit * BufferSizeBlock)
+	content.Config.BodySizeLimit = int64(Server.BodySizeLimit * BufferSizeBlock)
 }

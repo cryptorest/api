@@ -66,7 +66,7 @@ func Sha2Http(w http.ResponseWriter, r *http.Request) {
 	}
 
 	bit          := content.Path2Bit(&*r)
-	data, err, s := content.InputHttpBytes(&*r)
+	data, err, s := content.InputHttpBytes(&*r, false, false)
 
 	if err == nil {
 		var b []byte
