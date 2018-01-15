@@ -22,36 +22,38 @@ const BodySizeLimitMin     = 0
 const DefaultBodySizeLimit = 64 * BufferSizeBlock
 
 type Structure struct {
-	GlobalPort    int
-	URISchema     string
-	ConfigFile    string `yaml:"ConfigFile"`
-	CertFile      string `yaml:"CertFile"`
-	KeyFile       string `yaml:"KeyFile"`
-	Host          string `yaml:"Host"`
-	Port          int    `yaml:"Port"`
-	UploadDir     string `yaml:"UploadDir"`
-	Verbose       bool   `yaml:"Verbose"`
-	BufferSize    int    `yaml:"BufferSize"`
-	FileSizeLimit int    `yaml:"FileSizeLimit"`
-	BodySizeLimit int    `yaml:"BobySizeLimit"`
+	GlobalPort      int
+	URISchema       string
+	ConfigFile      string `yaml:"ConfigFile"`
+	CertFile        string `yaml:"CertFile"`
+	KeyFile         string `yaml:"KeyFile"`
+	Host            string `yaml:"Host"`
+	Port            int    `yaml:"Port"`
+	UploadDir       string `yaml:"UploadDir"`
+	Verbose         bool   `yaml:"Verbose"`
+	TemporaryDeploy bool
+	BufferSize      int    `yaml:"BufferSize"`
+	FileSizeLimit   int    `yaml:"FileSizeLimit"`
+	BodySizeLimit   int    `yaml:"BobySizeLimit"`
 }
 
 var Server  Structure
 var Default Structure
 
 func InitDefault(c *Structure) {
-	c.ConfigFile    = ""
-	c.URISchema     = "https://"
-	c.CertFile      = "server.crt"
-	c.KeyFile       = "server.key"
-	c.Host          = "localhost"
-	c.Port          = 64443
-	c.UploadDir     = "./upload"
-	c.GlobalPort    = 443
-	c.Verbose       = false
-	c.BufferSize    = DefaultBufferSize
-	c.FileSizeLimit = DefaultFileSizeLimit
-	c.BodySizeLimit = DefaultBodySizeLimit
+	c.ConfigFile      = ""
+	c.URISchema       = "https://"
+	c.CertFile        = "server.crt"
+	c.KeyFile         = "server.key"
+	c.Host            = "localhost"
+	c.Port            = 64443
+	c.UploadDir       = "./upload"
+	c.GlobalPort      = 443
+	c.Verbose         = false
+	c.TemporaryDeploy = false
+	c.BufferSize      = DefaultBufferSize
+	c.FileSizeLimit   = DefaultFileSizeLimit
+	c.BodySizeLimit   = DefaultBodySizeLimit
 }
 
 func DirectoryCreate(pathDir string, title string) {
@@ -103,8 +105,9 @@ func Init() {
 
 	DirectoryCreate(Server.UploadDir, "Upload directory")
 
-	content.Config.UploadDir     = &Server.UploadDir
-	content.Config.BufferSize    = Server.BufferSize * BufferSizeBlock
-	content.Config.FileSizeLimit = int64(Server.FileSizeLimit * BufferSizeBlock)
-	content.Config.BodySizeLimit = int64(Server.BodySizeLimit * BufferSizeBlock)
+	content.Config.TemporaryDeploy = false
+	content.Config.UploadDir       = &Server.UploadDir
+	content.Config.BufferSize      = Server.BufferSize * BufferSizeBlock
+	content.Config.FileSizeLimit   = int64(Server.FileSizeLimit * BufferSizeBlock)
+	content.Config.BodySizeLimit   = int64(Server.BodySizeLimit * BufferSizeBlock)
 }

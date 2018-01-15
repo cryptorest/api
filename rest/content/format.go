@@ -30,10 +30,11 @@ var Formats = [5]format.Structure {
 }
 
 type conf struct {
-	BufferSize    int
-	FileSizeLimit int64
-	BodySizeLimit int64
-	UploadDir     *string
+	BufferSize      int
+	FileSizeLimit   int64
+	BodySizeLimit   int64
+	UploadDir       *string
+	TemporaryDeploy bool
 }
 
 var Config = &conf{}
