@@ -21,7 +21,7 @@ func Base64Http(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	d, err, s := content.InputHttpBytes(&*r, false, false)
+	d, err, s := content.InputHttpBytes(&*r, true, false)
 
 	if err == nil {
 		// Encode

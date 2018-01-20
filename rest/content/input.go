@@ -18,8 +18,10 @@ import (
 	"rest/content/format"
 )
 
-const messageErrorContentSize0 = "content size is 0 bytes"
-const messageErrorFileUpload   = "upload file error on system"
+const messageErrorContentSize0    = "content size is 0 bytes"
+const messageErrorFileUpload      = "file upload error on system"
+const messageErrorFileUploadNo    = "file upload does not support"
+const messageErrorFileUploadTmpNo = "temporary file upload does not support"
 
 var initTime = fmt.Sprint(time.Now().UnixNano())
 
@@ -140,19 +142,33 @@ func (i *Input) RandomName() string {
 	return fmt.Sprintf(formatHex, b)
 }
 
-func (i *Input) FilePut(fileHeader *multipart.FileHeader) error {
+func (i *Input) FilePut(fileHeader *multipart.FileHeader, temporary bool) error {
 	var inputFile  multipart.File
 	var outputFile *os.File
 	var fileName   string
 	var dirName    string
 	var err        error
 
-	if Config.TemporaryUpload {
-		fileName = i.RandomName()
-		dirName  = *Config.TmpDir
+	if temporary {
+		if Config.TemporaryUpload {
+			fileName = i.RandomName()
+			dirName  = *Config.TmpDir
+		} else {
+			i.Structure.Status = http.StatusNotAcceptable
+			i.Structure.Error  = messageErrorFileUploadTmpNo
+
+			return errors.New(i.Structure.Error)
+		}
 	} else {
-		fileName = fileHeader.Filename
-		dirName  = *Config.UploadDir
+		if Config.FilesUpload {
+			fileName = fileHeader.Filename
+			dirName  = *Config.UploadDir
+		} else {
+			i.Structure.Status = http.StatusNotAcceptable
+			i.Structure.Error  = messageErrorFileUploadNo
+
+			return errors.New(i.Structure.Error)
+		}
 	}
 
 	i.Structure.File = filepath.Join(dirName, fileName)
@@ -227,7 +243,7 @@ func (i *Input) FileToBufferContentRead(fileHeader *multipart.FileHeader, err er
 	return err
 }
 
-func (i *Input) FileRead() error {
+func (i *Input) FileRead(temporary bool) error {
 	var err error
 
 	defer func() error {
@@ -246,7 +262,7 @@ func (i *Input) FileRead() error {
 	for _, fileHeaders := range i.Reader.MultipartForm.File {
 		for _, fileHeader := range fileHeaders {
 			if int(i.Structure.ContentSize) > Config.BufferSize {
-				err = i.FilePut(&*fileHeader)
+				err = i.FilePut(&*fileHeader, temporary)
 
 				if err == nil {
 					err = i.FileContentRead()
@@ -322,26 +338,28 @@ func (i *Input) Clean() {
 	i.HttpMimeType = EmptyString
 }
 
-func (i *Input) Build() ([]byte, error, int) {
+func (i *Input) Build(temporary bool, parsing bool) ([]byte, error, int) {
 	var err error
 
 	if i.HttpMimeType == HttpMimeTypeInputFile {
 		err = i.FileSize()
 
 		if err == nil {
-			err = i.FileRead()
-			// TODO: 1) parsing define
+			err = i.FileRead(temporary)
+
+			if err == nil {
+				// TODO: 1) parsing type define
+			}
 		}
 	} else {
 		err = i.BodySize()
 
 		if err == nil {
 			err = i.BodyRead()
-			// TODO: 1) parsing define
 		}
 	}
 
-	if err == nil {
+	if err == nil && parsing {
 		// TODO: parsing
 	}
 
@@ -353,7 +371,7 @@ func (i *Input) Build() ([]byte, error, int) {
 	return c, err, s
 }
 
-var InputHttpExecute = func(r *http.Request, upload bool, parsing bool) ([]byte, error, int) {
+var InputHttpExecute = func(r *http.Request, temporary bool, parsing bool) ([]byte, error, int) {
 	var input Input
 
 	input.Reader       = &*r
@@ -362,15 +380,15 @@ var InputHttpExecute = func(r *http.Request, upload bool, parsing bool) ([]byte,
 
 	input.FormatFind()
 
-	return input.Build()
+	return input.Build(temporary, parsing)
 }
 
-func InputHttpBytes(r *http.Request, upload bool, parsing bool) ([]byte, error, int) {
-	return InputHttpExecute(&*r, upload, parsing)
+func InputHttpBytes(r *http.Request, temporary bool, parsing bool) ([]byte, error, int) {
+	return InputHttpExecute(&*r, temporary, parsing)
 }
 
-func InputHttpString(r *http.Request, upload bool, parsing bool) (string, error, int) {
-	i, err, s := InputHttpExecute(&*r, upload, parsing)
+func InputHttpString(r *http.Request, temporary bool, parsing bool) (string, error, int) {
+	i, err, s := InputHttpExecute(&*r, temporary, parsing)
 
 	return string(i), err, s
 }

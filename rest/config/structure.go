@@ -32,6 +32,7 @@ type Structure struct {
 	UploadDir       string `yaml:"UploadDir"`
 	TmpDir          string `yaml:"TmpDir"`
 	Verbose         bool   `yaml:"Verbose"`
+	FilesUpload     bool   `yaml:"FilesUpload"`
 	TemporaryUpload bool   `yaml:"TemporaryUpload"`
 	BufferSize      int    `yaml:"BufferSize"`
 	FileSizeLimit   int    `yaml:"FileSizeLimit"`
@@ -52,6 +53,7 @@ func InitDefault(c *Structure) {
 	c.TmpDir          = "./tmp"
 	c.GlobalPort      = 443
 	c.Verbose         = false
+	c.FilesUpload     = true
 	c.TemporaryUpload = true
 	c.BufferSize      = DefaultBufferSize
 	c.FileSizeLimit   = DefaultFileSizeLimit
@@ -113,6 +115,7 @@ func Init() {
 		DirectoryCreate(Server.TmpDir, "Temporary upload directory")
 	}
 
+	content.Config.FilesUpload     = Server.FilesUpload
 	content.Config.TemporaryUpload = Server.TemporaryUpload
 	content.Config.UploadDir       = &Server.UploadDir
 	content.Config.TmpDir          = &Server.TmpDir

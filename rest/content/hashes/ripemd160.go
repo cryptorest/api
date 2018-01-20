@@ -23,7 +23,7 @@ func Ripemd160Http(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data, err, s := content.InputHttpBytes(&*r, false, false)
+	data, err, s := content.InputHttpBytes(&*r, true, false)
 
 	if err == nil {
 		content.OutputHttpByte(w, &*r, Ripemd160(data))

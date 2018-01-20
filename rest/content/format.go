@@ -36,6 +36,7 @@ type conf struct {
 	BufferSize      int
 	FileSizeLimit   int64
 	BodySizeLimit   int64
+	FilesUpload     bool
 	TemporaryUpload bool
 	TmpDir          *string
 	UploadDir       *string

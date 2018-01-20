@@ -28,7 +28,7 @@ func Blake2sHttp(w http.ResponseWriter, r *http.Request) {
 	}
 
 	bit          := content.Path2Bit(&*r)
-	data, err, s := content.InputHttpBytes(&*r, false, false)
+	data, err, s := content.InputHttpBytes(&*r, true, false)
 
 	if err == nil {
 		switch bit {

@@ -6,7 +6,7 @@ import (
 	"strconv"
 )
 
-var envVars = [11]string {
+var envVars = [12]string {
 	"CRYPTOREST_CERT_FILE",
 	"CRYPTOREST_KEY_FILE",
 	"CRYPTOREST_HOST",
@@ -15,6 +15,7 @@ var envVars = [11]string {
 	"CRYPTOREST_BUFFER_SIZE",
 	"CRYPTOREST_FILE_SIZE_LIMIT",
 	"CRYPTOREST_BODY_SIZE_LIMIT",
+	"CRYPTOREST_FILES_UPLOAD",
 	"CRYPTOREST_TEMPORARY_UPLOAD",
 	"CRYPTOREST_TEMPORARY_DIR",
 	"CRYPTOREST_UPLOAD_DIR",
@@ -66,6 +67,7 @@ func InitEnvironment(c *Structure) {
 	c.BufferSize      = envInt(envVars[5],     Default.BufferSize)
 	c.FileSizeLimit   = envInt(envVars[6],     Default.FileSizeLimit)
 	c.BodySizeLimit   = envInt(envVars[7],     Default.BodySizeLimit)
+	c.FilesUpload     = envBool(envVars[8],    Default.FilesUpload)
 	c.TemporaryUpload = envBool(envVars[8],    Default.TemporaryUpload)
 	c.TmpDir          = envString(envVars[9],  Default.TmpDir)
 	c.UploadDir       = envString(envVars[10], Default.UploadDir)

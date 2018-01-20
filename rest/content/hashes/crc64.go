@@ -33,7 +33,7 @@ func Crc64Http(w http.ResponseWriter, r *http.Request) {
 	}
 
 	pType        := content.Path2Type(&*r)
-	data, err, s := content.InputHttpBytes(&*r, false, false)
+	data, err, s := content.InputHttpBytes(&*r, true, false)
 
 	if err == nil {
 		var i uint64
