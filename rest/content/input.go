@@ -221,7 +221,7 @@ func (i *Input) FileContentRead() error {
 	return err
 }
 
-func (i *Input) FileToBufferRead(fileHeader *multipart.FileHeader, err error) error {
+func (i *Input) FileToBufferContentRead(fileHeader *multipart.FileHeader, err error) error {
 	// TODO: File read to buffer
 
 	return err
@@ -251,12 +251,8 @@ func (i *Input) FileRead() error {
 				if err == nil {
 					err = i.FileContentRead()
 				}
-
-				if err != nil {
-					return err
-				}
 			} else {
-				err = i.FileToBufferRead(&*fileHeader, err)
+				err = i.FileToBufferContentRead(&*fileHeader, err)
 			}
 
 			if err != nil {
