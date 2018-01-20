@@ -14,6 +14,9 @@ const HttpMimeTypeOutputKey = "Accept"
 
 const EmptyString = ""
 
+const formatString = "%s"
+const formatHex    = "%x"
+
 var HttpMimePrefixes = [2]string {
 	// For human readable mode
 	"text/",
@@ -33,7 +36,7 @@ type conf struct {
 	BufferSize      int
 	FileSizeLimit   int64
 	BodySizeLimit   int64
-	TemporaryDeploy bool
+	TemporaryUpload bool
 	TmpDir          *string
 	UploadDir       *string
 }

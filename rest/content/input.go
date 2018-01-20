@@ -3,6 +3,8 @@ package content
 import (
 	"io"
 	"os"
+	"fmt"
+	"time"
 	"errors"
 	"strconv"
 	"strings"
@@ -11,11 +13,15 @@ import (
 	"path/filepath"
 	"mime/multipart"
 
+	"github.com/dustin/randbo"
+
 	"rest/content/format"
 )
 
 const messageErrorContentSize0 = "content size is 0 bytes"
 const messageErrorFileUpload   = "upload file error on system"
+
+var initTime = fmt.Sprint(time.Now().UnixNano())
 
 func InputHttpMimeType(r *http.Request) string {
 	return r.Header.Get(HttpMimeTypeInputKey)
@@ -122,11 +128,32 @@ func (i *Input) BufferRead(r multipart.File, w io.Writer) error {
 	return err
 }
 
+func (i *Input) RandomName() string {
+	r := randbo.New()
+	b := []byte(initTime)
+
+	r.Read(b)
+
+	return fmt.Sprintf(formatHex, b)
+}
+
 func (i *Input) FilePut(fileHeader *multipart.FileHeader, err error) error {
 	var inputFile  multipart.File
 	var outputFile *os.File
+	var fileName   string
+	var dirName    string
 
-	i.Structure.File = filepath.Join(*Config.UploadDir, fileHeader.Filename)
+	if Config.TemporaryUpload {
+		fileName = i.RandomName()
+		dirName  = *Config.TmpDir
+	} else {
+		fileName = fileHeader.Filename
+		dirName  = *Config.UploadDir
+	}
+
+	i.Structure.File = filepath.Join(dirName, fileName)
+	fileName = EmptyString
+	dirName  = EmptyString
 
 	inputFile, err = fileHeader.Open()
 	defer inputFile.Close()
@@ -188,13 +215,15 @@ func (i *Input) FileRead() error {
 	if err == nil {
 		i.Structure.Content = content
 
-//		err = os.Remove(i.Structure.File)
-//		if err != nil {
-//			i.Structure.Status = http.StatusInternalServerError
-//			i.Structure.Error  = err.Error()
-//
-//			return err
-//		}
+		if Config.TemporaryUpload {
+			err = os.Remove(i.Structure.File)
+			if err != nil {
+				i.Structure.Status = http.StatusInternalServerError
+				i.Structure.Error = err.Error()
+
+				return err
+			}
+		}
 	} else {
 		i.Structure.Status = http.StatusInternalServerError
 		i.Structure.Error  = err.Error()
@@ -301,12 +330,12 @@ var InputHttpExecute = func(r *http.Request, deploy bool, parsing bool) ([]byte,
 	return input.Build()
 }
 
-func InputHttpBytes(r *http.Request, deploy bool, parsing bool) ([]byte, error, int) {
-	return InputHttpExecute(&*r, deploy, parsing)
+func InputHttpBytes(r *http.Request, upload bool, parsing bool) ([]byte, error, int) {
+	return InputHttpExecute(&*r, upload, parsing)
 }
 
-func InputHttpString(r *http.Request, deploy bool, parsing bool) (string, error, int) {
-	i, err, s := InputHttpExecute(&*r, deploy, parsing)
+func InputHttpString(r *http.Request, upload bool, parsing bool) (string, error, int) {
+	i, err, s := InputHttpExecute(&*r, upload, parsing)
 
 	return string(i), err, s
 }

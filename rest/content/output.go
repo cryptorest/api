@@ -11,9 +11,6 @@ import (
 	"rest/content/format"
 )
 
-const formatString = "%s"
-const formatHex    = "%x"
-
 func OutputHttpMimeType(r *http.Request) string {
 	return r.Header.Get(HttpMimeTypeOutputKey)
 }
