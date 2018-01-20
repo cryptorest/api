@@ -106,6 +106,7 @@ func (i *Input) BufferRead(r multipart.File, w io.Writer) error {
 
 	for {
 		n, err = r.Read(buf)
+
 		if err != nil {
 			if err != io.EOF {
 				return err
@@ -113,11 +114,13 @@ func (i *Input) BufferRead(r multipart.File, w io.Writer) error {
 				err = nil
 			}
 		}
+
 		if n == 0 {
 			break
 		}
 
 		_, err = w.Write(buf[:n])
+
 		if err != nil {
 			return err
 		}
@@ -137,11 +140,12 @@ func (i *Input) RandomName() string {
 	return fmt.Sprintf(formatHex, b)
 }
 
-func (i *Input) FilePut(fileHeader *multipart.FileHeader, err error) error {
+func (i *Input) FilePut(fileHeader *multipart.FileHeader) error {
 	var inputFile  multipart.File
 	var outputFile *os.File
 	var fileName   string
 	var dirName    string
+	var err        error
 
 	if Config.TemporaryUpload {
 		fileName = i.RandomName()
@@ -157,6 +161,7 @@ func (i *Input) FilePut(fileHeader *multipart.FileHeader, err error) error {
 
 	inputFile, err = fileHeader.Open()
 	defer inputFile.Close()
+
 	if err != nil {
 		inputFile.Close()
 
@@ -168,6 +173,7 @@ func (i *Input) FilePut(fileHeader *multipart.FileHeader, err error) error {
 
 	outputFile, err = os.Create(i.Structure.File)
 	defer outputFile.Close()
+
 	if err != nil {
 		i.Structure.Status = http.StatusInternalServerError
 		i.Structure.Error  = messageErrorFileUpload
@@ -176,6 +182,7 @@ func (i *Input) FilePut(fileHeader *multipart.FileHeader, err error) error {
 	}
 
 	err = i.BufferRead(inputFile, outputFile)
+
 	if err != nil {
 		i.Structure.Status = http.StatusInternalServerError
 		i.Structure.Error  = err.Error()
@@ -186,40 +193,20 @@ func (i *Input) FilePut(fileHeader *multipart.FileHeader, err error) error {
 	return err
 }
 
-func (i *Input) FileRead() error {
+func (i *Input) FileContentRead() error {
 	var err error
 
-	defer func() error {
-		return err
-	}()
-
-	err = i.Reader.ParseMultipartForm(Config.FileSizeLimit)
-	if err != nil {
-		i.Structure.Status = http.StatusNotAcceptable
-		i.Structure.Error  = err.Error()
-
-		return err
-	}
-
-	for _, fileHeaders := range i.Reader.MultipartForm.File {
-		for _, fileHeader := range fileHeaders {
-			err = i.FilePut(&*fileHeader, err)
-
-			if err != nil {
-				return err
-			}
-		}
-	}
-
 	content, err := ioutil.ReadFile(i.Structure.File)
+
 	if err == nil {
 		i.Structure.Content = content
 
 		if Config.TemporaryUpload {
 			err = os.Remove(i.Structure.File)
+
 			if err != nil {
 				i.Structure.Status = http.StatusInternalServerError
-				i.Structure.Error = err.Error()
+				i.Structure.Error  = err.Error()
 
 				return err
 			}
@@ -231,7 +218,54 @@ func (i *Input) FileRead() error {
 		return err
 	}
 
-	return nil
+	return err
+}
+
+func (i *Input) FileToBufferRead(fileHeader *multipart.FileHeader, err error) error {
+	// TODO: File read to buffer
+
+	return err
+}
+
+func (i *Input) FileRead() error {
+	var err error
+
+	defer func() error {
+		return err
+	}()
+
+	err = i.Reader.ParseMultipartForm(i.Structure.ContentSize)
+
+	if err != nil {
+		i.Structure.Status = http.StatusNotAcceptable
+		i.Structure.Error  = err.Error()
+
+		return err
+	}
+
+	for _, fileHeaders := range i.Reader.MultipartForm.File {
+		for _, fileHeader := range fileHeaders {
+			if int(i.Structure.ContentSize) > Config.BufferSize {
+				err = i.FilePut(&*fileHeader)
+
+				if err == nil {
+					err = i.FileContentRead()
+				}
+
+				if err != nil {
+					return err
+				}
+			} else {
+				err = i.FileToBufferRead(&*fileHeader, err)
+			}
+
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return err
 }
 
 func (i *Input) BodySize() error {
@@ -265,6 +299,7 @@ func (i *Input) BodySize() error {
 func (i *Input) BodyRead() error {
 	part, err := ioutil.ReadAll(io.LimitReader(i.Reader.Body, i.Structure.ContentSize))
 	defer i.Reader.Body.Close()
+
 	if err != nil {
 		return err
 	}
@@ -299,15 +334,19 @@ func (i *Input) Build() ([]byte, error, int) {
 
 		if err == nil {
 			err = i.FileRead()
-			// TODO: 1) parsing or 2) upload or 3) upload and remove
+			// TODO: 1) parsing define
 		}
 	} else {
 		err = i.BodySize()
 
 		if err == nil {
 			err = i.BodyRead()
-			// TODO: 1) parsing or 2) not parsing
+			// TODO: 1) parsing define
 		}
+	}
+
+	if err == nil {
+		// TODO: parsing
 	}
 
 	c := i.Structure.Content
@@ -318,7 +357,7 @@ func (i *Input) Build() ([]byte, error, int) {
 	return c, err, s
 }
 
-var InputHttpExecute = func(r *http.Request, deploy bool, parsing bool) ([]byte, error, int) {
+var InputHttpExecute = func(r *http.Request, upload bool, parsing bool) ([]byte, error, int) {
 	var input Input
 
 	input.Reader       = &*r
