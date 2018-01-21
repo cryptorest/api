@@ -142,14 +142,14 @@ func (i *Input) RandomName() string {
 	return fmt.Sprintf(formatHex, b)
 }
 
-func (i *Input) FilePut(fileHeader *multipart.FileHeader, temporaryFile bool) error {
+func (i *Input) FilePut(fileHeader *multipart.FileHeader, isTemporaryFile bool) error {
 	var inputFile  multipart.File
 	var outputFile *os.File
 	var fileName   string
 	var dirName    string
 	var err        error
 
-	if temporaryFile {
+	if isTemporaryFile {
 		if Config.TemporaryUpload {
 			fileName = i.RandomName()
 			dirName  = *Config.TmpDir
@@ -243,7 +243,7 @@ func (i *Input) FileToBufferContentRead(fileHeader *multipart.FileHeader, err er
 	return err
 }
 
-func (i *Input) FileRead(temporary bool) error {
+func (i *Input) FileRead(isTemporaryFile bool) error {
 	var err error
 
 	defer func() error {
@@ -262,7 +262,7 @@ func (i *Input) FileRead(temporary bool) error {
 	for _, fileHeaders := range i.Reader.MultipartForm.File {
 		for _, fileHeader := range fileHeaders {
 			if int(i.Structure.ContentSize) > Config.BufferSize {
-				err = i.FilePut(&*fileHeader, temporary)
+				err = i.FilePut(&*fileHeader, isTemporaryFile)
 
 				if err == nil {
 					err = i.FileContentRead()
@@ -338,16 +338,16 @@ func (i *Input) Clean() {
 	i.HttpMimeType = EmptyString
 }
 
-func (i *Input) Build(temporaryFile bool, formatParse bool) ([]byte, error, int) {
+func (i *Input) Build(isTemporaryFile bool, isFormatParse bool) ([]byte, error, int) {
 	var err error
 
 	if i.HttpMimeType == HttpMimeTypeInputFile {
 		err = i.FileSize()
 
 		if err == nil {
-			err = i.FileRead(temporaryFile)
+			err = i.FileRead(isTemporaryFile)
 
-			if err == nil {
+			if err == nil && isFormatParse {
 				// TODO: 1) parsing type define
 			}
 		}
@@ -359,19 +359,16 @@ func (i *Input) Build(temporaryFile bool, formatParse bool) ([]byte, error, int)
 		}
 	}
 
-	if err == nil && formatParse {
+	if err == nil && isFormatParse {
 		// TODO: parsing
 	}
 
-	c := i.Structure.Content
-	s := i.Structure.Status
+	defer i.Clean()
 
-	i.Clean()
-
-	return c, err, s
+	return i.Structure.Content, err, i.Structure.Status
 }
 
-var InputHttpExecute = func(r *http.Request, temporaryFile bool, formatParse bool) ([]byte, error, int) {
+var InputHttpExecute = func(r *http.Request, isTemporaryFile bool, isFormatParse bool) ([]byte, error, int) {
 	var input Input
 
 	input.Reader       = &*r
@@ -380,15 +377,15 @@ var InputHttpExecute = func(r *http.Request, temporaryFile bool, formatParse boo
 
 	input.FormatFind()
 
-	return input.Build(temporaryFile, formatParse)
+	return input.Build(isTemporaryFile, isFormatParse)
 }
 
-func InputHttpBytes(r *http.Request, temporaryFile bool, formatParse bool) ([]byte, error, int) {
-	return InputHttpExecute(&*r, temporaryFile, formatParse)
+func InputHttpBytes(r *http.Request, isTemporaryFile bool, isFormatParse bool) ([]byte, error, int) {
+	return InputHttpExecute(&*r, isTemporaryFile, isFormatParse)
 }
 
-func InputHttpString(r *http.Request, temporaryFile bool, formatParse bool) (string, error, int) {
-	i, err, s := InputHttpExecute(&*r, temporaryFile, formatParse)
+func InputHttpString(r *http.Request, isTemporaryFile bool, isFormatParse bool) (string, error, int) {
+	i, err, s := InputHttpExecute(&*r, isTemporaryFile, isFormatParse)
 
 	return string(i), err, s
 }
