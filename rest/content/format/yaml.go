@@ -11,6 +11,7 @@ var Yaml = Structure {
 	&YamlFileExtensions,
 	InputYamlFile,
 	InputYaml,
+	nil,
 	OutputYaml,
 }
 
@@ -31,7 +32,7 @@ func InputYamlFile(s *InputStructure) error {
 	return nil
 }
 
-func InputYaml(w io.Reader, s *InputStructure, hr bool) error {
+func InputYaml(b []byte, s *struct{}) error {
 	return nil
 }
 

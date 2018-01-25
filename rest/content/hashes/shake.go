@@ -64,7 +64,7 @@ func ShakeHttp(w http.ResponseWriter, r *http.Request) {
 	}
 
 	bit          := content.Path2Bit(&*r)
-	data, err, s := content.InputHttpBytes(&*r, true, false)
+	data, err, s := content.InputHttpBytes(&*r, true, true)
 
 	if err == nil {
 		switch bit {

@@ -11,6 +11,7 @@ var Xml = Structure {
 	&XmlFileExtensions,
 	InputXmlFile,
 	InputXml,
+	nil,
 	OutputXml,
 }
 
@@ -29,7 +30,7 @@ func InputXmlFile(s *InputStructure) error {
 	return nil
 }
 
-func InputXml(w io.Reader, s *InputStructure, hr bool) error {
+func InputXml(b []byte, s *struct{}) error {
 	return nil
 }
 

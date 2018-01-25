@@ -8,11 +8,12 @@ const HumanReadablePrefix = ""
 const HumanReadableIndent = "  "
 
 type Structure struct {
-	MimeTypes           *[]string
-	FileExtensions      *[]string
-	InputFormatFileFunc func(s *InputStructure) error
-	InputFormatFunc     func(w io.Reader, s *InputStructure, hr bool) error
-	OutputFormatFunc    func(w io.Writer, s *OutputStructure, hr bool) error
+	MimeTypes            *[]string
+	FileExtensions       *[]string
+	InputFormatFileFunc  func(s *InputStructure) error
+	InputFormatFunc      func(b []byte, s *struct{}) error
+	InputFormatStructure *struct{}
+	OutputFormatFunc     func(w io.Writer, s *OutputStructure, hr bool) error
 }
 
 type InputStructure struct {

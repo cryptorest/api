@@ -13,6 +13,7 @@ var Json = Structure {
 	&JsonFileExtensions,
 	InputJsonFile,
 	InputJson,
+	nil,
 	OutputJson,
 }
 
@@ -43,8 +44,12 @@ func InputJsonFile(s *InputStructure) error {
 	return err
 }
 
-func InputJson(w io.Reader, s *InputStructure, hr bool) error {
-	return nil
+func InputJson(b []byte, s *struct{}) error {
+	if s == nil {
+		return nil
+	} else {
+		return json.Unmarshal(b, &*s)
+	}
 }
 
 func OutputJson(w io.Writer, s *OutputStructure, hr bool) error {

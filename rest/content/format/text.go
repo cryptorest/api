@@ -9,6 +9,7 @@ var Text = Structure {
 	&TextFileExtensions,
 	InputTextFile,
 	InputText,
+	nil,
 	OutputText,
 }
 
@@ -26,7 +27,7 @@ func InputTextFile(s *InputStructure) error {
 	return nil
 }
 
-func InputText(w io.Reader, s *InputStructure, hr bool) error {
+func InputText(b []byte, s *struct{}) error {
 	return nil
 }
 

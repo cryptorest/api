@@ -11,6 +11,7 @@ var Toml = Structure {
 	&TomlFileExtensions,
 	InputTomlFile,
 	InputToml,
+	nil,
 	OutputToml,
 }
 
@@ -31,7 +32,7 @@ func InputTomlFile(s *InputStructure) error {
 	return nil
 }
 
-func InputToml(w io.Reader, s *InputStructure, hr bool) error {
+func InputToml(b []byte, s *struct{}) error {
 	return nil
 }
 

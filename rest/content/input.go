@@ -72,6 +72,21 @@ func (i *Input) FormatFind() {
 	}
 }
 
+func (i *Input) FormatFindByExtention() {
+	fileExt := filepath.Ext(i.Structure.File)
+
+	for _, f := range &Formats {
+		for _, fileExtension := range *f.FileExtensions {
+			if *&fileExt == *&fileExtension {
+				//i.HttpMimeType = fileExtension
+				i.Format       = &f
+
+				return
+			}
+		}
+	}
+}
+
 func (i *Input) FileSize() error {
 	var s   int
 	var err error
@@ -261,6 +276,8 @@ func (i *Input) FileRead(isTemporaryFile bool) error {
 
 	for _, fileHeaders := range i.Reader.MultipartForm.File {
 		for _, fileHeader := range fileHeaders {
+			i.Structure.File = fileHeader.Filename
+
 			if int(i.Structure.ContentSize) > Config.BufferSize {
 				err = i.FilePut(&*fileHeader, isTemporaryFile)
 
@@ -348,7 +365,7 @@ func (i *Input) Build(isTemporaryFile bool, isFormatParse bool) ([]byte, error, 
 			err = i.FileRead(isTemporaryFile)
 
 			if err == nil && isFormatParse {
-				// TODO: 1) parsing type define
+				i.FormatFindByExtention()
 			}
 		}
 	} else {
@@ -360,7 +377,7 @@ func (i *Input) Build(isTemporaryFile bool, isFormatParse bool) ([]byte, error, 
 	}
 
 	if err == nil && isFormatParse {
-		// TODO: parsing
+		i.Format.InputFormatFunc(*&i.Structure.Content, nil)
 	}
 
 	defer i.Clean()
