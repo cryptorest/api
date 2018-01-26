@@ -32,7 +32,7 @@ func InputTomlFile(s *InputStructure) error {
 	return nil
 }
 
-func InputToml(b []byte, s *struct{}) error {
+func InputToml(b []byte, f *Format) error {
 	return nil
 }
 

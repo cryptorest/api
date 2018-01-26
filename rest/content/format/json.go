@@ -44,11 +44,11 @@ func InputJsonFile(s *InputStructure) error {
 	return err
 }
 
-func InputJson(b []byte, s *struct{}) error {
-	if s == nil {
+func InputJson(b []byte, f *Format) error {
+	if f == nil {
 		return nil
 	} else {
-		return json.Unmarshal(b, &*s)
+		return json.Unmarshal(b, &*f)
 	}
 }
 

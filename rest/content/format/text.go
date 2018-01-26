@@ -27,7 +27,7 @@ func InputTextFile(s *InputStructure) error {
 	return nil
 }
 
-func InputText(b []byte, s *struct{}) error {
+func InputText(b []byte, f *Format) error {
 	return nil
 }
 

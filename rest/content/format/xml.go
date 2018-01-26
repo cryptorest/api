@@ -30,7 +30,7 @@ func InputXmlFile(s *InputStructure) error {
 	return nil
 }
 
-func InputXml(b []byte, s *struct{}) error {
+func InputXml(b []byte, f *Format) error {
 	return nil
 }
 

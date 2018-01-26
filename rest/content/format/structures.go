@@ -7,11 +7,16 @@ import (
 const HumanReadablePrefix = ""
 const HumanReadableIndent = "  "
 
+type Format interface {
+	read()
+	write()
+}
+
 type Structure struct {
 	MimeTypes            *[]string
 	FileExtensions       *[]string
 	InputFormatFileFunc  func(s *InputStructure) error
-	InputFormatFunc      func(b []byte, s *struct{}) error
+	InputFormatFunc      func(b []byte, f *Format) error
 	InputFormatStructure *struct{}
 	OutputFormatFunc     func(w io.Writer, s *OutputStructure, hr bool) error
 }

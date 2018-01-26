@@ -32,7 +32,7 @@ func InputYamlFile(s *InputStructure) error {
 	return nil
 }
 
-func InputYaml(b []byte, s *struct{}) error {
+func InputYaml(b []byte, f *Format) error {
 	return nil
 }
 
