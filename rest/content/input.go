@@ -194,8 +194,6 @@ func (i *Input) FilePut(fileHeader *multipart.FileHeader, isTemporaryFile bool) 
 	defer inputFile.Close()
 
 	if err != nil {
-		inputFile.Close()
-
 		i.Structure.Status = http.StatusNotAcceptable
 		i.Structure.Error  = err.Error()
 
@@ -252,8 +250,23 @@ func (i *Input) FileContentRead() error {
 	return err
 }
 
-func (i *Input) FileToBufferContentRead(fileHeader *multipart.FileHeader, err error) error {
-	// TODO: File read to buffer
+func (i *Input) FileToBufferContentRead(fileHeader *multipart.FileHeader) error {
+	var inputFile multipart.File
+	var err       error
+
+	i.Structure.Content = make([]byte, i.Structure.ContentSize)
+
+	inputFile, err = fileHeader.Open()
+	defer inputFile.Close()
+
+	if err != nil {
+		i.Structure.Status = http.StatusNotAcceptable
+		i.Structure.Error  = err.Error()
+
+		return err
+	}
+
+	_, err = inputFile.Read(i.Structure.Content)
 
 	return err
 }
@@ -285,7 +298,7 @@ func (i *Input) FileRead(isTemporaryFile bool) error {
 					err = i.FileContentRead()
 				}
 			} else {
-				err = i.FileToBufferContentRead(&*fileHeader, err)
+				err = i.FileToBufferContentRead(&*fileHeader)
 			}
 
 			if err != nil {
