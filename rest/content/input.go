@@ -149,10 +149,9 @@ func (i *Input) BufferRead(r multipart.File, w io.Writer) error {
 }
 
 func (i *Input) RandomName() string {
-	r := randbo.New()
 	b := []byte(initTime)
 
-	r.Read(b)
+	randbo.New().Read(b)
 
 	return fmt.Sprintf(formatHex, b)
 }
@@ -339,17 +338,12 @@ func (i *Input) BodySize() error {
 }
 
 func (i *Input) BodyRead() error {
-	part, err := ioutil.ReadAll(io.LimitReader(i.Reader.Body, i.Structure.ContentSize))
+	var err error
+
+	i.Structure.Content, err = ioutil.ReadAll(io.LimitReader(i.Reader.Body, i.Structure.ContentSize))
 	defer i.Reader.Body.Close()
 
-	if err != nil {
-		return err
-	}
-
-	i.Structure.Content = part
-//	i.Reader.Body       = ioutil.NopCloser(io.MultiReader(bytes.NewReader(part), i.Reader.Body))
-
-	return nil
+	return err
 }
 
 func (i *Input) Clean() {
