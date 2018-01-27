@@ -222,8 +222,6 @@ func (i *Input) FilePut(fileHeader *multipart.FileHeader, isTemporaryFile bool) 
 }
 
 func (i *Input) FileContentRead() error {
-	var err error
-
 	content, err := ioutil.ReadFile(i.Structure.File)
 
 	if err == nil {
@@ -250,12 +248,9 @@ func (i *Input) FileContentRead() error {
 }
 
 func (i *Input) FileToBufferContentRead(fileHeader *multipart.FileHeader) error {
-	var inputFile multipart.File
-	var err       error
-
 	i.Structure.Content = make([]byte, i.Structure.ContentSize)
 
-	inputFile, err = fileHeader.Open()
+	inputFile, err := fileHeader.Open()
 	defer inputFile.Close()
 
 	if err != nil {
@@ -271,13 +266,11 @@ func (i *Input) FileToBufferContentRead(fileHeader *multipart.FileHeader) error 
 }
 
 func (i *Input) FileRead(isTemporaryFile bool) error {
-	var err error
+	err := i.Reader.ParseMultipartForm(i.Structure.ContentSize)
 
 	defer func() error {
 		return err
 	}()
-
-	err = i.Reader.ParseMultipartForm(i.Structure.ContentSize)
 
 	if err != nil {
 		i.Structure.Status = http.StatusNotAcceptable
